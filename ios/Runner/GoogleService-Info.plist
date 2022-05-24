@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>858469897414-47us4irjk7bjo4kkoqnjoq977vsqto2j.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.858469897414-47us4irjk7bjo4kkoqnjoq977vsqto2j</string>
+	<key>API_KEY</key>
+	<string>AIzaSyB4fX2eFI0aVUYVztuHEm6-VCN-pfErLMk</string>
+	<key>GCM_SENDER_ID</key>
+	<string>858469897414</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.signinPage</string>
+	<key>PROJECT_ID</key>
+	<string>aquafocus-signin</string>
+	<key>STORAGE_BUCKET</key>
+	<string>aquafocus-signin.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:858469897414:ios:1dfc0d0c44e247cd43b3c7</string>
+</dict>
+</plist>

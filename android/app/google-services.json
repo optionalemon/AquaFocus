@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "241365465719",
+    "project_id": "aquafocus-f1ef5",
+    "storage_bucket": "aquafocus-f1ef5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:241365465719:android:3c5669cc86f2194a1ea472",
+        "android_client_info": {
+          "package_name": "com.example.signin_page"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "241365465719-oi2cvn1dhur8b4ofsqilc791voesnb1c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCy2N43mAXXcVhtjD2d9IkIruDetAu8Jic"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "241365465719-oi2cvn1dhur8b4ofsqilc791voesnb1c.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "241365465719-qicrk2006b16i8r8aaaq3vlrr0eh23mm.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.signinPage"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
