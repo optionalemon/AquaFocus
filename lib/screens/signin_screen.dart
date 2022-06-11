@@ -170,7 +170,7 @@ class _SignInScreenState extends State<SignInScreen> {
           buildSocialBtn(
             () async {
               await FirebaseServices().signInWithGoogle();
-              Navigator.push(context,
+              Navigator.pushReplacement(context,
                   MaterialPageRoute(builder: (context) => const HomeScreen()));
             },
             const AssetImage(

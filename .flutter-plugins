@@ -1,9 +1,11 @@
 # This is a generated file; do not edit or check into version control.
-firebase_auth=/Users/xuyi/flutter/.pub-cache/hosted/pub.dartlang.org/firebase_auth-3.3.18/
-firebase_auth_web=/Users/xuyi/flutter/.pub-cache/hosted/pub.dartlang.org/firebase_auth_web-3.3.15/
-firebase_core=/Users/xuyi/flutter/.pub-cache/hosted/pub.dartlang.org/firebase_core-1.17.0/
-firebase_core_web=/Users/xuyi/flutter/.pub-cache/hosted/pub.dartlang.org/firebase_core_web-1.6.4/
-google_sign_in=/Users/xuyi/flutter/.pub-cache/hosted/pub.dartlang.org/google_sign_in-5.3.2/
-google_sign_in_android=/Users/xuyi/flutter/.pub-cache/hosted/pub.dartlang.org/google_sign_in_android-5.2.8/
-google_sign_in_ios=/Users/xuyi/flutter/.pub-cache/hosted/pub.dartlang.org/google_sign_in_ios-5.3.1/
-google_sign_in_web=/Users/xuyi/flutter/.pub-cache/hosted/pub.dartlang.org/google_sign_in_web-0.10.1+2/
+cloud_firestore=/Users/xiaoying/Developer/flutter/.pub-cache/hosted/pub.dartlang.org/cloud_firestore-3.1.17/
+cloud_firestore_web=/Users/xiaoying/Developer/flutter/.pub-cache/hosted/pub.dartlang.org/cloud_firestore_web-2.6.16/
+firebase_auth=/Users/xiaoying/Developer/flutter/.pub-cache/hosted/pub.dartlang.org/firebase_auth-3.3.18/
+firebase_auth_web=/Users/xiaoying/Developer/flutter/.pub-cache/hosted/pub.dartlang.org/firebase_auth_web-3.3.15/
+firebase_core=/Users/xiaoying/Developer/flutter/.pub-cache/hosted/pub.dartlang.org/firebase_core-1.17.0/
+firebase_core_web=/Users/xiaoying/Developer/flutter/.pub-cache/hosted/pub.dartlang.org/firebase_core_web-1.6.4/
+google_sign_in=/Users/xiaoying/Developer/flutter/.pub-cache/hosted/pub.dartlang.org/google_sign_in-5.3.2/
+google_sign_in_android=/Users/xiaoying/Developer/flutter/.pub-cache/hosted/pub.dartlang.org/google_sign_in_android-5.2.8/
+google_sign_in_ios=/Users/xiaoying/Developer/flutter/.pub-cache/hosted/pub.dartlang.org/google_sign_in_ios-5.3.1/
+google_sign_in_web=/Users/xiaoying/Developer/flutter/.pub-cache/hosted/pub.dartlang.org/google_sign_in_web-0.10.1+2/
