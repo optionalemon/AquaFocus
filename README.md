@@ -26,7 +26,9 @@ In total, we have 4 main features(Still implementing).
 One of the issue we have encountered is the Authorisation Error when login
 
 ## Team Members
-Xu Yi
-Yan Xiaoying
 
-Thank you. _SEA_
+**Xu Yi
+
+**Yan Xiaoying
+
+Thank you(Ocean waved a goodbye).
