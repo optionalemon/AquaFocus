@@ -1,8 +1,6 @@
-# signin_page
+# AquaFocus
 
-A new Flutter project.
-
-## Getting Started
+## Team Members
 
 This project is a starting point for a Flutter application.
 
