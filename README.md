@@ -1,6 +1,10 @@
-# AquaFocus
+# AquaFocus - NUS Orbital Project 2022
 
 ## Team Members
+
+Xu Yi
+
+Yan Xiaoying
 
 This project is a starting point for a Flutter application.
 
