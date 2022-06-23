@@ -1,4 +1,5 @@
 import 'package:AquaFocus/assets/fish_icon_icons.dart';
+import 'package:AquaFocus/model/state.dart';
 import 'package:AquaFocus/services/firebase_services.dart';
 import 'package:AquaFocus/widgets/focus_timer.dart';
 import 'package:AquaFocus/widgets/habit_tracker.dart';
@@ -6,6 +7,7 @@ import 'package:AquaFocus/widgets/to_do_list.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:AquaFocus/screens/signin_screen.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../widgets/fun_fact.dart';
 
@@ -41,21 +43,20 @@ class _HomeScreenState extends State<HomeScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(child: FocusTimer()),
-                  Expanded(child: HabitTracker()),
+                  Expanded(child: HabitTracker())]
+                  ),
+                  ),
                 ]
               ),
             ),
-              Row(
+              /*Row(
                   children: [
                     Expanded(child: FunFact())
                   ]
-              )
+              )*/
             ],
           )
-          )
-        ]
-        ),
-    );
+          );
   }
 
   AppBar _buildAppBar() {

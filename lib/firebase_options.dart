@@ -63,6 +63,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '241365465719',
     projectId: 'aquafocus-f1ef5',
     storageBucket: 'aquafocus-f1ef5.appspot.com',
+    androidClientId: '241365465719-ai1drq82qdhh99ktignf8kh2fb2gb9b5.apps.googleusercontent.com',
     iosClientId: '241365465719-qicrk2006b16i8r8aaaq3vlrr0eh23mm.apps.googleusercontent.com',
     iosBundleId: 'com.example.signinPage',
   );

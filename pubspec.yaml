@@ -36,6 +36,12 @@ dependencies:
   firebase_core: ^1.17.0
   firebase_auth: ^3.3.18
   cloud_firestore: ^3.1.17
+  flutter_bloc: ^8.0.0
+
+  table_calendar: ^2.3.3
+  json_serializable: ^6.2.0
+  build_runner: ^2.1.11
+  path_provider: ^2.0.11
 
   # Google sign in
   google_sign_in: ^5.3.2

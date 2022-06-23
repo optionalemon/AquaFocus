@@ -1,5 +1,9 @@
+import 'package:AquaFocus/loading.dart';
 import 'package:AquaFocus/services/database_services.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:AquaFocus/model/todo.dart';
+
 
 class ToDoScreen extends StatefulWidget {
   @override
@@ -11,6 +15,7 @@ class _ToDoScreenState extends State<ToDoScreen> {
   TextEditingController todoTitleController = TextEditingController();
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -29,81 +34,90 @@ class _ToDoScreenState extends State<ToDoScreen> {
         ),
     ),
       SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(15),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-                Container(
-                  margin: EdgeInsets.all(15),
-                  padding: EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.5),
-                      borderRadius: BorderRadius.circular(20)
-                  ),
-                  child: const Text(
-                    'All My To-Dos',
-                    style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white
-                    ),
-                  ),
-              ),
-              const Divider(),
-              const SizedBox(height: 15),
-              ListView.separated(
-                separatorBuilder: (context, index) => Divider(color: Colors.white70),
-                shrinkWrap: true,
-                  itemCount: 5,
-                itemBuilder: (context, index) {
-                  return Dismissible(
-                      key: Key(index.toString()),
-                      background: Container(
-                        padding: EdgeInsets.only(left: 20),
-                        alignment: Alignment.centerLeft,
-                        child: Icon(
-                          Icons.delete,
-                          color: Colors.white,),
-                        color: Colors.red[300],
+        child: StreamBuilder<List<CreateToDo>>(
+          stream: DatabaseService().listToDos(),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return Loading();
+            }
+            List<CreateToDo>? todos = snapshot.data;
+            return Padding(
+              padding: const EdgeInsets.all(15),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                    Container(
+                      margin: EdgeInsets.all(15),
+                      padding: EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.5),
+                          borderRadius: BorderRadius.circular(20)
                       ),
-                      onDismissed: (direction) {
-                        print('removed'!);
-                      },
-                      child: ListTile(
-                        onTap:(){
-                          setState(() {
-                            isComplete = !isComplete;
-                          });
-                          },
-                        leading: Container(
-                          padding: EdgeInsets.all(2),
-                          height: 30,
-                          width: 30,
-                          decoration: BoxDecoration(
-                              color: Theme.of(context).primaryColor.withOpacity(0.5),
-                              shape: BoxShape.circle
-                          ),
-                          child: isComplete
-                              ? Icon(
-                            Icons.check,
-                            color: Colors.white,
-                          )
-                              : Container(),
+                      child: const Text(
+                        'All Your To-Dos',
+                        style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white
                         ),
-                        title: const Text('To-Do title',
-                          style: TextStyle(
-                            fontSize: 15,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
                       ),
-                    ),
+                  ),
+                  const Divider(),
+                  const SizedBox(height: 15),
+                  ListView.separated(
+                    separatorBuilder: (context, index) => Divider(color: Colors.white70),
+                    shrinkWrap: true,
+                      itemCount: todos!.length,
+                    itemBuilder: (context, index) {
+                      return Dismissible(
+                          key: Key(todos[index].title!),
+                          background: Container(
+                            padding: EdgeInsets.only(left: 20),
+                            alignment: Alignment.centerLeft,
+                            child: Icon(
+                              Icons.delete,
+                              color: Colors.white,),
+                            color: Colors.red[300],
+                          ),
+                          onDismissed: (direction) async {
+                            await DatabaseService()
+                                .removeToDo(todos[index].uid);
+                          },
+                          child: ListTile(
+                            onTap:(){
+                              DatabaseService().completeTask(todos[index].uid);
+                              },
+                            leading: Container(
+                              padding: EdgeInsets.all(2),
+                              height: 30,
+                              width: 30,
+                              decoration: BoxDecoration(
+                                  color: Theme.of(context).primaryColor.withOpacity(0.5),
+                                  shape: BoxShape.circle,
+                              ),
+                              child: todos[index].isComplete!
+                                  ? Icon(
+                                Icons.check,
+                                color: Colors.white,
+                              )
+                                  : Container(),
+                            ),
+                            title: Text(
+                              todos[index].title!,
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      )
+                      );
+                    },
                   )
-                  );
-                },
+                ]
               )
-            ]
-          )
+            );
+          }
         ),
       ),
       ]
