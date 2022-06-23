@@ -1,3 +1,4 @@
+import 'package:AquaFocus/screens/signin_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:AquaFocus/reusable_widgets/reusable_widget.dart';
@@ -65,7 +66,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       .then((value) {
                     print("Created new account");
                     Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => HomeScreen()));
+                        MaterialPageRoute(builder: (context) => SignInScreen()));
                   }).onError((error, stackTrace) {
                     print("Error ${error.toString()}");
                   });
