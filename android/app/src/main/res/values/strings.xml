@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AquaFocus</string>
+    <string name="facebook_app_id">753977875727295</string>
+    <string name="fb_login_protocol_scheme">fb753977875727295</string>
+    <string name="facebook_client_token">29e8b9135b28ae26cad37ecfcd798adb</string>
+</resources>

@@ -1,4 +1,4 @@
-import 'package:AquaFocus/screens/focus_timer_screen.dart';
+import 'package:AquaFocus/screens/FocusTimer/focus_timer_screen.dart';
 import 'package:flutter/material.dart';
 
 class FocusTimer extends StatelessWidget {
