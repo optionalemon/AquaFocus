@@ -49,11 +49,8 @@ class _SignInScreenState extends State<SignInScreen> {
                 ),
                 forgetPassword(context),
                 firebaseButton(context, "Log In", () {
-                  FirebaseAuth.instance
-                      .signInWithEmailAndPassword(
-                          email: _emailTextController.text,
-                          password: _passwordTextController.text)
-                      .then((value) {
+                  FirebaseServices()
+                      .signInWithEmail(_emailTextController.text, _passwordTextController.text)..then((value) {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -162,7 +159,12 @@ class _SignInScreenState extends State<SignInScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
           buildSocialBtn(
-            () => print('Login with Facebook'),
+            () async {
+              await FirebaseServices().signInWithFacebook();
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(
+                    builder: (context) => const HomeScreen()));
+            },
             const AssetImage(
               'assets/images/facebook.jpg',
             ),

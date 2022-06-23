@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "/Users/xiaoying/Desktop/AquaFocus/build/app/intermediates/incremental/mergeDebugResources/merged.dir/values-watch-v20/values-watch-v20.xml",
+            "outputFile": "/Users/xuyi/Documents/AquaFocus/build/app/intermediates/incremental/mergeDebugResources/merged.dir/values-watch-v20/values-watch-v20.xml",
             "map": [
                 {
-                    "source": "/Users/xiaoying/.gradle/caches/transforms-2/files-2.1/933009813afddbd11cc84c781f3e35e5/jetified-play-services-auth-20.0.1/res/values-watch-v20/values.xml",
+                    "source": "/Users/xuyi/.gradle/caches/transforms-2/files-2.1/933009813afddbd11cc84c781f3e35e5/jetified-play-services-auth-20.0.1/res/values-watch-v20/values.xml",
                     "from": {
                         "startLines": "4,5,6,7,8,9,10,11",
                         "startColumns": "0,0,0,0,0,0,0,0",
@@ -18,6 +18,25 @@
                         "startOffsets": "55,134,214,293,372,463,544,635",
                         "endColumns": "78,79,78,78,90,80,90,79",
                         "endOffsets": "129,209,288,367,458,539,630,710"
+                    }
+                },
+                {
+                    "source": "/Users/xuyi/.gradle/caches/transforms-2/files-2.1/9e53b7a080a9cb3cc52fc3d2469b61ab/appcompat-1.1.0/res/values-watch-v20/values-watch-v20.xml",
+                    "from": {
+                        "startLines": "2,5,8",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "55,214,385",
+                        "endLines": "4,7,10",
+                        "endColumns": "12,12,12",
+                        "endOffsets": "209,380,553"
+                    },
+                    "to": {
+                        "startLines": "10,13,16",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "715,874,1045",
+                        "endLines": "12,15,18",
+                        "endColumns": "12,12,12",
+                        "endOffsets": "869,1040,1213"
                     }
                 }
             ]

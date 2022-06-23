@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "/Users/xiaoying/Desktop/AquaFocus/build/google_sign_in_android/intermediates/res/merged/debug/values-en-rAU/values-en-rAU.xml",
+            "outputFile": "/Users/xuyi/Documents/AquaFocus/build/google_sign_in_android/intermediates/incremental/mergeDebugResources/merged.dir/values-en-rAU/values-en-rAU.xml",
             "map": [
                 {
-                    "source": "/Users/xiaoying/.gradle/caches/transforms-2/files-2.1/875654acb8fd75501dc33efa1bebb479/core-1.6.0/res/values-en-rAU/values-en-rAU.xml",
+                    "source": "/Users/xuyi/.gradle/caches/transforms-2/files-2.1/875654acb8fd75501dc33efa1bebb479/core-1.6.0/res/values-en-rAU/values-en-rAU.xml",
                     "from": {
                         "startLines": "2",
                         "startColumns": "4",
@@ -16,10 +16,10 @@
             ]
         },
         {
-            "outputFile": "/Users/xiaoying/Desktop/AquaFocus/build/google_sign_in_android/intermediates/incremental/mergeDebugResources/merged.dir/values-en-rAU/values-en-rAU.xml",
+            "outputFile": "/Users/xuyi/Documents/AquaFocus/build/google_sign_in_android/intermediates/res/merged/debug/values-en-rAU/values-en-rAU.xml",
             "map": [
                 {
-                    "source": "/Users/xiaoying/.gradle/caches/transforms-2/files-2.1/875654acb8fd75501dc33efa1bebb479/core-1.6.0/res/values-en-rAU/values-en-rAU.xml",
+                    "source": "/Users/xuyi/.gradle/caches/transforms-2/files-2.1/875654acb8fd75501dc33efa1bebb479/core-1.6.0/res/values-en-rAU/values-en-rAU.xml",
                     "from": {
                         "startLines": "2",
                         "startColumns": "4",
