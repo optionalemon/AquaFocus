@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="default_web_client_id" translatable="false">241365465719-oi2cvn1dhur8b4ofsqilc791voesnb1c.apps.googleusercontent.com</string>
+    <string name="gcm_defaultSenderId" translatable="false">241365465719</string>
+    <string name="google_api_key" translatable="false">AIzaSyCy2N43mAXXcVhtjD2d9IkIruDetAu8Jic</string>
+    <string name="google_app_id" translatable="false">1:241365465719:android:3c5669cc86f2194a1ea472</string>
+    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyCy2N43mAXXcVhtjD2d9IkIruDetAu8Jic</string>
+    <string name="google_storage_bucket" translatable="false">aquafocus-f1ef5.appspot.com</string>
+    <string name="project_id" translatable="false">aquafocus-f1ef5</string>
+</resources>
