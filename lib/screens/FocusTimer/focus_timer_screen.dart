@@ -1,4 +1,4 @@
-import 'package:AquaFocus/screens/FocusTimer/countdown_screen.dart';
+import 'package:AquaFocus/screens/FocusTimer/CountDown/countdown_screen.dart';
 import 'package:AquaFocus/screens/FocusTimer/countup_screen.dart';
 import 'package:AquaFocus/screens/FocusTimer/exam_screen.dart';
 import 'package:flutter/material.dart';
