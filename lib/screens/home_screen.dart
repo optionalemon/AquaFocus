@@ -119,7 +119,7 @@ class NavigationDrawer extends StatelessWidget {
     if (currUser != null) {
       return currUser!.email;
     } else {
-      return "Email Unavailable";
+      return "Annoymous user";
     }
   }
 
