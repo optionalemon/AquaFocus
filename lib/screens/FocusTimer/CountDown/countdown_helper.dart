@@ -12,6 +12,6 @@ class CountDownHelper {
     String minutesStr = (minutes).toString().padLeft(2, '0');
     String secondsStr = (seconds % 60).toString().padLeft(2, '0');
 
-    return [hoursStr,minutesStr,secondsStr];
+    return [hoursStr, minutesStr, secondsStr];
   }
 }
