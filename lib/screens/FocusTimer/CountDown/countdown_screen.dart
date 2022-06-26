@@ -27,7 +27,7 @@ class _CountDownScreenState extends State<CountDownScreen> {
     timer = Timer.periodic(Duration(seconds: 1), (_) => setCountDown());
   }
 
-  void stopTimer() {
+  void stopTimer(bool isComplete) {
     hvStarted = false;
     duration = initialDur;
     timer!.cancel();
@@ -37,8 +37,8 @@ class _CountDownScreenState extends State<CountDownScreen> {
     final reduceSecondsBy = 1;
     setState(() {
       final seconds = duration.inSeconds - reduceSecondsBy;
-      if (seconds < 0) {
-        stopTimer();
+      if (duration.inSeconds == 0 && hvStarted) {
+        timer!.cancel();
       } else {
         duration = Duration(seconds: seconds);
       }
@@ -138,7 +138,13 @@ class _CountDownScreenState extends State<CountDownScreen> {
                     ],
                   ),
                   _countDownButtons(),
-                  hvStarted?Container():Text("Must be more than 10 minutes~",style: TextStyle(color: Color.fromARGB(255, 255, 255, 255)),),
+                  hvStarted
+                      ? Container()
+                      : Text(
+                          "Must be more than 10 seconds~",
+                          style: TextStyle(
+                              color: Color.fromARGB(255, 255, 255, 255)),
+                        ),
                 ],
               ),
             ),
@@ -150,36 +156,44 @@ class _CountDownScreenState extends State<CountDownScreen> {
     return Column(
       children: [
         SizedBox(height: MediaQuery.of(context).size.height * 0.024),
-        hvStarted 
+        hvStarted
             ? _startedDisplay()
-            : duration.inMinutes >= 10? CountDownButtons(text: "Start!", 
-            press: () => startTimer()) 
-            : CountDownButtons(text: "Start!", 
-            press: null),
+            : duration.inSeconds >= 10
+                ? CountDownButtons(text: "Start!", press: () => startTimer())
+                : CountDownButtons(text: "Start!", press: null),
       ],
     );
   }
 
   _startedDisplay() {
     return Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-                CountDownButtons(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          duration.inSeconds != 0
+              ? CountDownButtons(
                   text: 'Cancel',
                   press: () {
                     showDialog(
                         context: context, builder: (_) => _cancelTaskDialog());
                   },
                 )
-              ]);
+              : CountDownButtons(
+                  text: 'Done',
+                  press: () {
+                    showDialog(
+                        context: context,
+                        builder: (_) => _completeTaskDialog());
+                  },
+                )
+        ]);
   }
 
   _cancelTaskDialog() {
     return AlertDialog(
         title: const Text("Are you sure to cancel?"),
-        content:
-            Text("Money will not be earned. You cannot rescue the creatures :("),
+        content: Text(
+            "Money will not be earned. You cannot rescue the creatures :("),
         actions: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -193,7 +207,7 @@ class _CountDownScreenState extends State<CountDownScreen> {
               ElevatedButton(
                 onPressed: () {
                   setState(() {
-                    stopTimer();
+                    stopTimer(false);
                   });
                   Navigator.pop(context);
                   showDialog(
@@ -218,11 +232,16 @@ class _CountDownScreenState extends State<CountDownScreen> {
   }
 
   _completeTaskDialog() {
+    List totalTime = CountDownHelper().timeString(initialDur.inSeconds);
     return AlertDialog(
       title: const Text("Congrats!"),
+      content: Text("You have finished ${totalTime[0]} hours ${totalTime[1]} minutes and ${totalTime[2]} seconds" ),
       actions: [
         ElevatedButton(
           onPressed: () {
+            setState(() {
+              stopTimer(true);
+            });
             Navigator.pop(context);
           },
           child: Text("Back"),
