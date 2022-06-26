@@ -11,8 +11,8 @@ class CountDownScreen extends StatefulWidget {
 }
 
 class _CountDownScreenState extends State<CountDownScreen> {
-  Duration duration = const Duration(seconds: 30); //TODO intake
-  Duration initialDur = const Duration(seconds: 30); //TODO intake
+  Duration duration = Duration(seconds: 1500);
+  Duration initialDur = Duration(seconds: 1500);
   Timer? timer;
   bool hvStarted = false;
 
@@ -23,6 +23,7 @@ class _CountDownScreenState extends State<CountDownScreen> {
 
   void startTimer() {
     hvStarted = true;
+    initialDur = duration;
     timer = Timer.periodic(Duration(seconds: 1), (_) => setCountDown());
   }
 
@@ -47,7 +48,7 @@ class _CountDownScreenState extends State<CountDownScreen> {
   @override
   Widget build(BuildContext context) {
     Size screenSize = MediaQuery.of(context).size;
-    List currTime = CountDownHelper().timeString(duration.inSeconds);
+    List currTimeStr = CountDownHelper().timeString(duration.inSeconds);
     return Container(
         constraints: const BoxConstraints.expand(),
         decoration: const BoxDecoration(
@@ -58,30 +59,86 @@ class _CountDownScreenState extends State<CountDownScreen> {
         ),
         child: Column(
           children: [
-            SizedBox(height: screenSize.height * 0.15),
+            SizedBox(height: screenSize.height * 0.1),
             Container(
               child: Column(
                 children: [
+                  SizedBox(height: screenSize.height * 0.05),
                   Image.asset(
                     'assets/images/hourglass.png',
                     height: screenSize.height * 0.35,
                   ),
-                  SizedBox(height: screenSize.height * 0.05),
+                  hvStarted
+                      ? SizedBox(height: screenSize.height * 0.05)
+                      : Container(),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      buildTimeCard(currTime[0], 'HOURS'),
-                      const SizedBox(
-                        width: 8,
-                      ),
-                      buildTimeCard(currTime[1], 'MINUTES'),
-                      const SizedBox(
-                        width: 8,
-                      ),
-                      buildTimeCard(currTime[2], 'SECONDS'),
+                      buildTimeCard(currTimeStr[0], 'HOURS'),
+                      hvStarted
+                          ? Container()
+                          : RotatedBox(
+                              quarterTurns: 3,
+                              child: Slider(
+                                value: duration.inHours.toDouble(),
+                                onChanged: (newHour) {
+                                  setState(() {
+                                    duration = Duration(
+                                        hours: newHour.toInt(),
+                                        minutes: duration.inMinutes -
+                                            duration.inHours * 60,
+                                        seconds: duration.inSeconds -
+                                            duration.inMinutes * 60);
+                                  });
+                                },
+                                min: 0,
+                                max: 5,
+                                divisions: 5,
+                              )),
+                      buildTimeCard(currTimeStr[1], 'MINUTES'),
+                      hvStarted
+                          ? Container()
+                          : RotatedBox(
+                              quarterTurns: 3,
+                              child: Slider(
+                                value: duration.inMinutes.toDouble() -
+                                    duration.inHours * 60,
+                                onChanged: (newMinutes) {
+                                  setState(() {
+                                    duration = Duration(
+                                        hours: duration.inHours,
+                                        minutes: newMinutes.toInt(),
+                                        seconds: duration.inSeconds -
+                                            duration.inMinutes * 60);
+                                  });
+                                },
+                                min: 0,
+                                max: 59,
+                              )),
+                      buildTimeCard(currTimeStr[2], 'SECONDS'),
+                      hvStarted
+                          ? Container()
+                          : RotatedBox(
+                              quarterTurns: 3,
+                              child: Slider(
+                                value: duration.inSeconds.toDouble() -
+                                    duration.inMinutes * 60,
+                                onChanged: (newSeconds) {
+                                  setState(() {
+                                    duration = Duration(
+                                        hours: duration.inHours,
+                                        minutes: duration.inMinutes -
+                                            duration.inHours * 60,
+                                        seconds: newSeconds.toInt());
+                                  });
+                                },
+                                min: 0,
+                                max: 59,
+                              )),
                     ],
                   ),
                   _countDownButtons(),
+                  hvStarted?Container():Text("Must be more than 10 minutes~",style: TextStyle(color: Color.fromARGB(255, 255, 255, 255)),),
                 ],
               ),
             ),
@@ -93,32 +150,36 @@ class _CountDownScreenState extends State<CountDownScreen> {
     return Column(
       children: [
         SizedBox(height: MediaQuery.of(context).size.height * 0.024),
-        hvStarted
+        hvStarted 
             ? _startedDisplay()
-            : CountDownButtons(text: "Start!", press: () => startTimer()),
+            : duration.inMinutes >= 10? CountDownButtons(text: "Start!", 
+            press: () => startTimer()) 
+            : CountDownButtons(text: "Start!", 
+            press: null),
       ],
     );
   }
 
   _startedDisplay() {
     return Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          CountDownButtons(
-            text: 'Cancel',
-            press: () {
-              showDialog(context: context, builder: (_) => _cancelTaskDialog());
-            },
-          )
-        ]);
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+                CountDownButtons(
+                  text: 'Cancel',
+                  press: () {
+                    showDialog(
+                        context: context, builder: (_) => _cancelTaskDialog());
+                  },
+                )
+              ]);
   }
 
   _cancelTaskDialog() {
     return AlertDialog(
         title: const Text("Are you sure to cancel?"),
         content:
-            Text("No money will be earned. You cannot rescue the creatures :("),
+            Text("Money will not be earned. You cannot rescue the creatures :("),
         actions: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -138,7 +199,7 @@ class _CountDownScreenState extends State<CountDownScreen> {
                   showDialog(
                       context: context,
                       builder: (_) => AlertDialog(
-                            title: Text("You task have been cancelled"),
+                            title: Text("Your task has been cancelled"),
                             actions: [
                               ElevatedButton(
                                 onPressed: () {
@@ -174,7 +235,7 @@ class _CountDownScreenState extends State<CountDownScreen> {
     return Column(
       children: [
         Container(
-          padding: EdgeInsets.all(8),
+          padding: hvStarted ? EdgeInsets.all(8) : EdgeInsets.all(1),
           decoration: BoxDecoration(
             color: Color.fromARGB(172, 255, 255, 255),
             borderRadius: BorderRadius.circular(20),
@@ -184,7 +245,7 @@ class _CountDownScreenState extends State<CountDownScreen> {
             style: TextStyle(
               fontWeight: FontWeight.bold,
               color: Colors.blue,
-              fontSize: 72,
+              fontSize: 60,
             ),
           ),
         ),

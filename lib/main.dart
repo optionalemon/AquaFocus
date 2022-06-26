@@ -53,7 +53,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
               fontFamily: 'Alata',
               primarySwatch: Colors.blue,
             ),
-            home: const HomeScreen(),
+            home: const SignInScreen(),
           );
         });
   }
