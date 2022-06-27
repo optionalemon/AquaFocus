@@ -10,8 +10,7 @@ class FirebaseServices {
   bool profileImage = false;
 
   signInWithEmail(String email, String pwd) {
-    return FirebaseAuth.instance
-        .signInWithEmailAndPassword(email: email, password: pwd);
+    return _auth.signInWithEmailAndPassword(email: email, password: pwd);
   }
 
   signInWithGoogle() async {

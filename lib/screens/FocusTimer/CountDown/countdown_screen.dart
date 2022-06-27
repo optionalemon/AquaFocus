@@ -259,15 +259,18 @@ class _CountDownScreenState extends State<CountDownScreen> {
             color: Color.fromARGB(172, 255, 255, 255),
             borderRadius: BorderRadius.circular(20),
           ),
-          child: Text(
-            time,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.blue,
-              fontSize: 60,
+          child: Center(
+            child: Text(
+              time,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.blue,
+                fontSize: 60,
+              ),
             ),
           ),
         ),
+        SizedBox( height: 15),
         Text(
           title,
           style: TextStyle(color: Colors.white),

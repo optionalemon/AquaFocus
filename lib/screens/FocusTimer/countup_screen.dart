@@ -63,7 +63,9 @@ class _CountUpScreenState extends State<CountUpScreen> {
             SizedBox(height: screenSize.height * 0.05),
             Row(mainAxisAlignment: MainAxisAlignment.center, children: [
           buildTimeCard(currTimeStr[0], 'HOURS'),
+          SizedBox(width: 8),
           buildTimeCard(currTimeStr[1], 'MINUTES'),
+              SizedBox(width: 8),
           buildTimeCard(currTimeStr[2], 'SECONDS'),
             ]),
             _countUpButtons(),
@@ -97,6 +99,7 @@ class _CountUpScreenState extends State<CountUpScreen> {
             ),
           ),
         ),
+        SizedBox( height: 15),
         Text(
           title,
           style: TextStyle(color: Colors.white),
