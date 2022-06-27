@@ -51,7 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     Expanded(child: HabitTracker()),
                   ]),
             ),
-            Row(children: [Expanded(child: FunFact())])
+            //Row(children: [Expanded(child: FunFact())])
           ],
         ))
       ]),
@@ -77,6 +77,28 @@ class _HomeScreenState extends State<HomeScreen> {
               color: Colors.white, fontSize: 26, fontWeight: FontWeight.bold),
         )
       ]),
+      actions: [Container(
+        padding: EdgeInsets.all(10),
+        margin: EdgeInsets.only(right: 20),
+        decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.5),
+            borderRadius: BorderRadius.circular(25)
+        ),
+        child: Row(
+            children: <Widget>[Image.asset(
+              'assets/icons/money.png',
+            ),
+          SizedBox( width: 6),
+          const Text(
+            '180',//TODO
+            style: TextStyle(
+              fontSize: 20,
+            ),
+          ),
+        ]
+        )
+      ),
+      ],
     );
   }
 }

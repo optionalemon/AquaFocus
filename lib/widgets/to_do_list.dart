@@ -1,4 +1,6 @@
+import 'package:AquaFocus/services/database_services.dart';
 import 'package:flutter/material.dart';
+import 'package:AquaFocus/model/todo.dart';
 
 import '../screens/to_do_screen.dart';
 
@@ -30,24 +32,34 @@ class ToDo extends StatelessWidget {
               const SizedBox(
                 width: 15
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  Text('My To-Do',
-                  style: TextStyle(
-                    fontSize: 25,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  )
-                  ),
-                  SizedBox(height: 10),
-                  Text(' \n1. Orbital mission control\n \n2. Technical Interview Workshop\n \n3. Go for a run',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.normal,
-                        color: Colors.white,
-                      ))
-                ]
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('My To-Do',
+                    style: TextStyle(
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    )
+                    ),
+                    SizedBox(height: 10),
+    //ListView.separated(
+    //separatorBuilder: (context, index) => Divider(color: Colors.white70),
+    //shrinkWrap: true,
+    //itemCount: todos!.length,
+    //itemBuilder: (context, index) {}
+                    Text(
+                        //DatabaseService().listToDos().toString(),
+                        ' \n1. Orbital mission control\n \n2. Technical Interview Workshop\n \n3. Go for a run',//TODO
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.normal,
+                          color: Colors.white,
+                        ))
+                  ]
+                ),
               )
             ],
         ),

@@ -105,7 +105,7 @@ class _FocusTimerScreenState extends State<FocusTimerScreen> {
           child: pressed[index]
               ? IconButton(
                   icon: Icon(icon,size:30),
-                  color: Colors.black,
+                  color: Colors.white,
                   onPressed: () {
                     setState(() {
                       currentIndex = index;
@@ -118,7 +118,7 @@ class _FocusTimerScreenState extends State<FocusTimerScreen> {
                 )
               : IconButton(
                   icon: Icon(icon),
-                  color: Colors.white,
+                  color: Colors.blueAccent,
                   onPressed: () {
                     setState(() {
                       currentIndex = index;
