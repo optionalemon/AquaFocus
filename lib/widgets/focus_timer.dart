@@ -14,12 +14,13 @@ class FocusTimer extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          SizedBox( height: 80),
           Container(
             padding: EdgeInsets.all(5),
             child: const Icon(
               Icons.access_alarm,
               color: Colors.white,
-              size: 30,
+              size: 38,
             ),
           ),
           const SizedBox(
@@ -39,13 +40,13 @@ class FocusTimer extends StatelessWidget {
           const Text(
             'Start focusing!',
             style: TextStyle(
-            fontSize: 14,
+            fontSize: 16,
             fontWeight: FontWeight.normal,
             color: Colors.white,
             )
           ),
           const SizedBox(
-              height: 15
+              height: 20
           ),
           ElevatedButton(
             onPressed: () { Navigator.push(

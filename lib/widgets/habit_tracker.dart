@@ -15,12 +15,13 @@ class HabitTracker extends StatelessWidget {
         child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              SizedBox( height: 80),
               Container(
                 padding: EdgeInsets.all(5),
                 child: const Icon(
                   Icons.auto_graph,
                   color: Colors.white,
-                  size: 30,
+                  size: 38,
                 ),
               ),
               const SizedBox(
@@ -40,13 +41,13 @@ class HabitTracker extends StatelessWidget {
               const Text(
                   'Build new habits!',
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 16,
                     fontWeight: FontWeight.normal,
                     color: Colors.white,
                   )
               ),
               const SizedBox(
-                  height: 15
+                  height: 20
               ),
               ElevatedButton(
                 onPressed: () { Navigator.push(
