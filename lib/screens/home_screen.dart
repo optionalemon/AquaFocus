@@ -148,7 +148,7 @@ class NavigationDrawer extends StatelessWidget {
   }
 
   getProfilePhoto() {
-    if (currUser != null) {
+    if (currUser != null && currUser!.photoURL != null) {
       return currUser!.photoURL;
     } else {
       return "https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png";
