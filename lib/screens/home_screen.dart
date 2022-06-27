@@ -87,12 +87,14 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Row(
             children: <Widget>[Image.asset(
               'assets/icons/money.png',
+              height: 25,
+              width: 25,
             ),
           SizedBox( width: 6),
           const Text(
             '180',//TODO
             style: TextStyle(
-              fontSize: 20,
+              fontSize: 15,
             ),
           ),
         ]
