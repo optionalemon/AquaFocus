@@ -1,5 +1,6 @@
 import 'package:AquaFocus/loading.dart';
 import 'package:AquaFocus/model/state.dart';
+import 'package:AquaFocus/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:AquaFocus/screens/signin_screen.dart';
 import 'package:firebase_core/firebase_core.dart';

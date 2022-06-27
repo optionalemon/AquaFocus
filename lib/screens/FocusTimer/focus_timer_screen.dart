@@ -1,6 +1,6 @@
-import 'package:AquaFocus/screens/FocusTimer/countdown_screen.dart';
+import 'package:AquaFocus/screens/FocusTimer/CountDown/countdown_screen.dart';
 import 'package:AquaFocus/screens/FocusTimer/countup_screen.dart';
-import 'package:AquaFocus/screens/FocusTimer/exam_screen.dart';
+import 'package:AquaFocus/screens/FocusTimer/lock_screen.dart';
 import 'package:flutter/material.dart';
 
 class FocusTimerScreen extends StatefulWidget {
@@ -85,7 +85,7 @@ class _FocusTimerScreenState extends State<FocusTimerScreen> {
                   SizedBox(
                     width: 10,
                   ),
-                  Text("Exam Mode",
+                  Text("Lock Mode",
                       style: TextStyle(
                           color: Colors.white70, fontWeight: FontWeight.w500)),
                 ]))
@@ -105,7 +105,7 @@ class _FocusTimerScreenState extends State<FocusTimerScreen> {
           child: pressed[index]
               ? IconButton(
                   icon: Icon(icon,size:30),
-                  color: Colors.black,
+                  color: Colors.white,
                   onPressed: () {
                     setState(() {
                       currentIndex = index;
@@ -118,7 +118,7 @@ class _FocusTimerScreenState extends State<FocusTimerScreen> {
                 )
               : IconButton(
                   icon: Icon(icon),
-                  color: Colors.white,
+                  color: Colors.blueAccent,
                   onPressed: () {
                     setState(() {
                       currentIndex = index;

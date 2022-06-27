@@ -50,7 +50,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 forgetPassword(context),
                 firebaseButton(context, "Log In", () {
                   FirebaseServices()
-                      .signInWithEmail(_emailTextController.text, _passwordTextController.text)..then((value) {
+                      .signInWithEmail(_emailTextController.text, _passwordTextController.text).then((value) {
                     Navigator.push(
                         context,
                         MaterialPageRoute(

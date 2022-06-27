@@ -22,7 +22,7 @@ class ItemCard extends StatelessWidget {
             child: Container(
               padding: EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: marLife.color,
+                color: marLife.color.withOpacity(0.7),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Image.asset(marLife.image),
