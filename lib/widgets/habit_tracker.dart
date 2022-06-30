@@ -1,4 +1,5 @@
 import 'package:AquaFocus/model/habit_tracker_model.dart';
+import 'package:AquaFocus/screens/habit_tracker_pages/view_board.dart';
 import 'package:AquaFocus/screens/habit_tracker_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -52,8 +53,7 @@ class HabitTracker extends StatelessWidget {
               ElevatedButton(
                 onPressed: () { Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => HabitTrackerScreen('Habit Board'
-                    ),
+                    MaterialPageRoute(builder: (context) => ViewBoardPage(),
                     )
                 );
                 },
