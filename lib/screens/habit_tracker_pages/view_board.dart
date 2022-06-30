@@ -229,27 +229,7 @@ class _ViewBoardPageState extends State<ViewBoardPage> {
                           ),
                         ),
                         calendarBuilders: CalendarBuilders(
-                            defaultBuilder: (context, date, events) {
-                              return Padding(
-                                padding: const EdgeInsets.all(5.0),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color:
-                                    state.selectedBoard!.isDateChecked(date)
-                                        ? Colors.lightGreenAccent.withOpacity(0.7)
-                                        : Colors.transparent,
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                        '${date.day}',
-                                        style: TextStyle(
-                                            color: Colors.white)
-                                    ),
-                                  ),
-                                ),
-                              );
-                            },
+
                           selectedBuilder: (context, date, events) => Container(
                               margin: const EdgeInsets.all(4.0),
                               alignment: Alignment.center,
