@@ -38,7 +38,7 @@ dependencies:
   cloud_firestore: ^3.1.17
   flutter_svg: ^1.1.0
   flutter_bloc: ^8.0.1
-  table_calendar: ^2.3.3
+  table_calendar: ^3.0.6
   json_serializable: ^6.2.0
   build_runner: ^2.1.11
   path_provider: ^2.0.11
