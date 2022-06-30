@@ -38,24 +38,18 @@ class _SignInScreenState extends State<SignInScreen> {
                   height: 10,
                 ),
                 reusableTextField("Enter Email Address", Icons.person_outline,
-                    false, _emailTextController),
+                    false, _emailTextController, null, (_) => setState(() {})),
                 const SizedBox(
                   height: 20,
                 ),
                 reusableTextField("Enter Password", Icons.lock_outline, true,
-                    _passwordTextController),
+                    _passwordTextController, null, (_) => setState(() {})),
                 const SizedBox(
                   height: 5,
                 ),
                 forgetPassword(context),
                 firebaseButton(context, "Log In", () {
-                  FirebaseServices()
-                      .signInWithEmail(_emailTextController.text, _passwordTextController.text).then((value) {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const HomeScreen()));
-                  });
+                  _signin();
                 }),
                 signUpOption(),
                 buildSignInWithText(),
@@ -66,6 +60,20 @@ class _SignInScreenState extends State<SignInScreen> {
         ),
       ),
     );
+  }
+
+  _signin() async {
+    try {
+      await FirebaseServices()
+          .signInWithEmail(
+              _emailTextController.text, _passwordTextController.text);
+        Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => const HomeScreen()));
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Invalid Password or/and Email'),
+      ));
+    }
   }
 
   Row signUpOption() {
@@ -160,8 +168,7 @@ class _SignInScreenState extends State<SignInScreen> {
             () async {
               await FirebaseServices().signInWithFacebook();
               Navigator.pushReplacement(context,
-                  MaterialPageRoute(
-                    builder: (context) => const HomeScreen()));
+                  MaterialPageRoute(builder: (context) => const HomeScreen()));
             },
             const AssetImage(
               'assets/images/facebook.jpg',

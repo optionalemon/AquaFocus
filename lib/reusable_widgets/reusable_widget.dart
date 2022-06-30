@@ -10,11 +10,12 @@ Image logoWidget(String imageName) {
 }
 
 TextField reusableTextField(String text, IconData icon, bool isPasswordType,
-    TextEditingController controller) {
+    TextEditingController controller, String? _errorText, Function(String) _onChanged) {
   return TextField(
     controller: controller,
     obscureText: isPasswordType,
     enableSuggestions: !isPasswordType,
+    onChanged: _onChanged,
     autocorrect: !isPasswordType,
     cursorColor: Colors.white,
     style: TextStyle(color: Colors.white.withOpacity(0.9)),
@@ -24,6 +25,7 @@ TextField reusableTextField(String text, IconData icon, bool isPasswordType,
         color: Colors.white70,
       ),
       labelText: text,
+      errorText: _errorText,
       labelStyle: TextStyle(color: Colors.white.withOpacity(0.9)),
       filled: true,
       floatingLabelBehavior: FloatingLabelBehavior.never,

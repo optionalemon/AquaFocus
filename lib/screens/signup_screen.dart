@@ -1,3 +1,4 @@
+import 'package:AquaFocus/model/app_user.dart';
 import 'package:AquaFocus/screens/signin_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +16,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
   TextEditingController _passwordTextController = TextEditingController();
   TextEditingController _emailTextController = TextEditingController();
   TextEditingController _userNameTextController = TextEditingController();
+  TextEditingController _passwordAgainTextController = TextEditingController();
+
+  final auth = FirebaseAuth.instance;
+  var _text = '';
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,36 +50,104 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   height: 20,
                 ),
                 reusableTextField("Enter UserName", Icons.person_outline, false,
-                    _userNameTextController),
+                    _userNameTextController, _userErrorText,(_) => setState(() {})),
                 const SizedBox(
                   height: 20,
                 ),
                 reusableTextField("Enter Email Id", Icons.email_outlined, false,
-                    _emailTextController),
+                    _emailTextController, _emailErrorText,(text) => setState(() => _text)),
                 const SizedBox(
                   height: 20,
                 ),
                 reusableTextField("Enter Password", Icons.lock_outlined, true,
-                    _passwordTextController),
+                    _passwordTextController, _passwordErrorText,(text) => setState(() => _text)),
+                const SizedBox(
+                  height: 20,
+                ),
+                reusableTextField("Confirm Password", Icons.lock_outlined, true,
+                    _passwordAgainTextController, _passwordAgainErrorText,(text) => setState(() => _text)),
                 const SizedBox(
                   height: 20,
                 ),
                 firebaseButton(context, "Sign Up", () {
-                  FirebaseAuth.instance
-                      .createUserWithEmailAndPassword(
-                          email: _emailTextController.text,
-                          password: _passwordTextController.text)
-                      .then((value) {
-                    print("Created new account");
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => SignInScreen()));
-                  }).onError((error, stackTrace) {
-                    print("Error ${error.toString()}");
-                  });
+                  _emailErrorText == null &&
+                          _passwordErrorText == null &&
+                          _userErrorText == null
+                      ? (_passwordAgainTextController.text == _passwordTextController.text? _register() : ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text("Passwords do not match"),
+                      )))
+                      : null;
                 })
               ],
             ),
           ))),
     );
+  }
+
+  _register() async {
+    try {
+      await auth.createUserWithEmailAndPassword(email: _emailTextController.text,password: _passwordTextController.text);
+      Navigator.push(context,MaterialPageRoute(builder: (context) => SignInScreen()));
+      
+    } on FirebaseAuthException catch (e) {
+      if (e.code == "invalid-email") {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("Invalid email"),
+        ));
+      } else if (e.code == "weak-password") {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("weak password: should be at least 6 characters"),
+        ));
+      } else if (e.code == "email-already-in-use") {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("You have already registered with this email"),
+        ));
+      }
+    }
+  }
+
+  String? get _userErrorText {
+    final text = _userNameTextController.value.text;
+    if (text.isEmpty) {
+      return 'Can\'t be empty';
+    }
+    if (text.length < 6) {
+      return 'Too short, username must be at least 6 characters';
+    }
+    // return null if the text is valid
+    return null;
+  }
+
+  String? get _emailErrorText {
+    final text = _emailTextController.value.text;
+    if (text.isEmpty) {
+      return 'Can\'t be empty';
+    }
+    // return null if the text is valid
+    return null;
+  }
+
+  String? get _passwordErrorText {
+    final text = _passwordTextController.value.text;
+    if (text.isEmpty) {
+      return 'Can\'t be empty';
+    }
+    if (text.length < 6) {
+      return 'Too short, password must be at least 6 characters';
+    }
+    // return null if the text is valid
+    return null;
+  }
+
+    String? get _passwordAgainErrorText {
+    final text = _passwordAgainTextController.value.text;
+    if (text.isEmpty) {
+      return 'Can\'t be empty';
+    }
+    if (text.length < 6) {
+      return 'Too short, password must be at least 6 characters';
+    }
+    // return null if the text is valid
+    return null;
   }
 }
