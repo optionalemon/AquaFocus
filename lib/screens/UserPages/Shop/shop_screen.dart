@@ -1,5 +1,4 @@
 import 'package:AquaFocus/model/marine_creature.dart';
-import 'package:AquaFocus/screens/UserPages/Shop/categories.dart';
 import 'package:AquaFocus/screens/UserPages/Shop/details_screen.dart';
 import 'package:AquaFocus/screens/UserPages/Shop/item_card.dart';
 import 'package:flutter/foundation.dart';
@@ -32,7 +31,7 @@ class _ShopScreenState extends State<ShopScreen> {
           SafeArea(
               child: Column(
             children: [
-              Categories(),
+              SizedBox(height: MediaQuery.of(context).size.height * 0.05,),
               Expanded(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
