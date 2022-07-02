@@ -1,9 +1,10 @@
 import 'package:AquaFocus/loading.dart';
 import 'package:AquaFocus/services/database_services.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:AquaFocus/model/todo.dart';
-
+import 'package:intl/intl.dart';
 
 class ToDoScreen extends StatefulWidget {
   @override
@@ -12,10 +13,10 @@ class ToDoScreen extends StatefulWidget {
 
 class _ToDoScreenState extends State<ToDoScreen> {
   bool isComplete = false; //just for now
+  DateTime? chosenDateTime;
   TextEditingController todoTitleController = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -32,7 +33,7 @@ class _ToDoScreenState extends State<ToDoScreen> {
             fit: BoxFit.cover,
           ),
         ),
-    ),
+      ),
       SafeArea(
         child: StreamBuilder<List<CreateToDo>>(
           stream: DatabaseService().listToDos(),
@@ -65,55 +66,67 @@ class _ToDoScreenState extends State<ToDoScreen> {
                   const Divider(),
                   const SizedBox(height: 15),
                   ListView.separated(
-                    separatorBuilder: (context, index) => Divider(color: Colors.white70),
-                    shrinkWrap: true,
+                      separatorBuilder: (context, index) => Divider(color: Colors.white70),
+                      shrinkWrap: true,
                       itemCount: todos!.length,
-                    itemBuilder: (context, index) {
-                      return Dismissible(
-                          key: Key(todos[index].title!),
-                          background: Container(
-                            padding: EdgeInsets.only(left: 20),
-                            alignment: Alignment.centerLeft,
-                            child: Icon(
-                              Icons.delete,
-                              color: Colors.white,),
-                            color: Colors.red[300],
-                          ),
-                          onDismissed: (direction) async {
-                            await DatabaseService()
-                                .removeToDo(todos[index].uid);
-                          },
-                          child: ListTile(
-                            onTap:(){
-                              DatabaseService().completeTask(todos[index].uid);
+                      itemBuilder: (context, index) {
+                        return Dismissible(
+                            key: UniqueKey(),
+                            background: Container(
+                              padding: EdgeInsets.only(left: 20),
+                              alignment: Alignment.centerLeft,
+                              child: Icon(
+                                Icons.delete,
+                                color: Colors.white,),
+                              color: Colors.red[300],
+                            ),
+                            onDismissed: (direction) async {
+                              await DatabaseService()
+                                  .removeToDo(todos[index].uid);
+                            },
+                            child: ListTile(
+                              onTap:(){
+                                DatabaseService().completeTask(todos[index].uid);
                               },
-                            leading: Container(
-                              padding: EdgeInsets.all(2),
-                              height: 30,
-                              width: 30,
-                              decoration: BoxDecoration(
+                              leading: Container(
+                                padding: EdgeInsets.all(2),
+                                height: 30,
+                                width: 30,
+                                decoration: BoxDecoration(
                                   color: Theme.of(context).primaryColor.withOpacity(0.5),
                                   shape: BoxShape.circle,
+                                ),
+                                child: todos[index].isComplete!
+                                    ? Icon(
+                                  Icons.check,
+                                  color: Colors.white,
+                                )
+                                    : Container(),
                               ),
-                              child: todos[index].isComplete!
-                                  ? Icon(
-                                Icons.check,
-                                color: Colors.white,
-                              )
-                                  : Container(),
-                            ),
-                            title: Text(
-                              todos[index].title!,
-                              style: TextStyle(
-                                fontSize: 15,
-                                color: Colors.white,
-                                fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      )
-                      );
-                    },
-                  )
+                              title: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                Text( todos[index].title!,
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                Text(chosenDateTime != null
+                                ? DateFormat.yMMMMd('en_US').add_jm().format(chosenDateTime!)
+                                : 'No deadline added',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w300,
+                                ),),
+                              ]),
+                            )
+                        );
+                      },
+                    )
                 ]
               )
             );
@@ -173,6 +186,54 @@ class _ToDoScreenState extends State<ToDoScreen> {
                       border: InputBorder.none,
                     ),
                   ),
+                  Divider(),
+                  Row(mainAxisAlignment: MainAxisAlignment.center,
+                      children: [Text(chosenDateTime != null
+                          ? DateFormat.yMd().format(chosenDateTime!)
+                          : "No deadline added",
+                          style: TextStyle(color: Colors.white))] ),
+                  SizedBox(height: 15),
+                  SizedBox(
+                    height: 40,
+                    child: MaterialButton(
+                      child: Text(
+                        "Add a deadline",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      color: Colors.white.withOpacity(0.5),
+                      onPressed: () {
+                        showModalBottomSheet(
+                            context: context,
+                            builder: (BuildContext builder) {
+                              return Container(
+                                  height: MediaQuery.of(context).copyWith().size.height * 0.25,
+                                  child: CupertinoTheme(
+                                    data: CupertinoThemeData(
+                                      textTheme: CupertinoTextThemeData(
+                                        dateTimePickerTextStyle: TextStyle(color: Colors.black, fontSize: 18),
+                                      ),
+                                    ),
+                                    child: CupertinoDatePicker(
+                                      backgroundColor: Colors.cyan.withOpacity(0.7),
+                                      mode: CupertinoDatePickerMode.dateAndTime,
+                                      onDateTimeChanged: (value) {
+                                        chosenDateTime = value;
+                                        print(chosenDateTime);
+                                      },
+                                      initialDateTime: DateTime.now(),
+                                      minimumYear: 2000,
+                                      maximumYear: 3000,
+                                    ),
+                                  )
+                              );
+                            });
+                      },
+                    ),
+                  ),
+
                   SizedBox(height: 20),
                   SizedBox(
                     width: MediaQuery.of(context).size.width,
@@ -185,8 +246,10 @@ class _ToDoScreenState extends State<ToDoScreen> {
                       color: Colors.lightBlue.withOpacity(0.8),
                       textColor: Colors.white,
                       onPressed: () async {
-                        if (todoTitleController.text.isNotEmpty) {
-                          await DatabaseService().createNewToDo(todoTitleController.text.trim());
+                        if (todoTitleController.text.isNotEmpty && chosenDateTime != null) {
+                          await DatabaseService().createNewToDo(todoTitleController.text.trim(),
+                              //chosenDateTime!
+                          );
                           Navigator.pop(context);
                         }
                       },
