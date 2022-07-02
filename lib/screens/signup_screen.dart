@@ -3,7 +3,7 @@ import 'package:AquaFocus/screens/signin_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:AquaFocus/reusable_widgets/reusable_widget.dart';
-import 'package:AquaFocus/screens/home_screen.dart';
+import 'package:AquaFocus/services/database_services.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({Key? key}) : super(key: key);
@@ -49,23 +49,43 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 const SizedBox(
                   height: 20,
                 ),
-                reusableTextField("Enter UserName", Icons.person_outline, false,
-                    _userNameTextController, _userErrorText,(_) => setState(() {})),
+                reusableTextField(
+                    "Enter UserName",
+                    Icons.person_outline,
+                    false,
+                    _userNameTextController,
+                    _userErrorText,
+                    (_) => setState(() {})),
                 const SizedBox(
                   height: 20,
                 ),
-                reusableTextField("Enter Email Id", Icons.email_outlined, false,
-                    _emailTextController, _emailErrorText,(text) => setState(() => _text)),
+                reusableTextField(
+                    "Enter Email Id",
+                    Icons.email_outlined,
+                    false,
+                    _emailTextController,
+                    _emailErrorText,
+                    (text) => setState(() => _text)),
                 const SizedBox(
                   height: 20,
                 ),
-                reusableTextField("Enter Password", Icons.lock_outlined, true,
-                    _passwordTextController, _passwordErrorText,(text) => setState(() => _text)),
+                reusableTextField(
+                    "Enter Password",
+                    Icons.lock_outlined,
+                    true,
+                    _passwordTextController,
+                    _passwordErrorText,
+                    (text) => setState(() => _text)),
                 const SizedBox(
                   height: 20,
                 ),
-                reusableTextField("Confirm Password", Icons.lock_outlined, true,
-                    _passwordAgainTextController, _passwordAgainErrorText,(text) => setState(() => _text)),
+                reusableTextField(
+                    "Confirm Password",
+                    Icons.lock_outlined,
+                    true,
+                    _passwordAgainTextController,
+                    _passwordAgainErrorText,
+                    (text) => setState(() => _text)),
                 const SizedBox(
                   height: 20,
                 ),
@@ -73,9 +93,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   _emailErrorText == null &&
                           _passwordErrorText == null &&
                           _userErrorText == null
-                      ? (_passwordAgainTextController.text == _passwordTextController.text? _register() : ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                        content: Text("Passwords do not match"),
-                      )))
+                      ? (_passwordAgainTextController.text ==
+                              _passwordTextController.text
+                          ? _register()
+                          : ScaffoldMessenger.of(context)
+                              .showSnackBar(const SnackBar(
+                              content: Text("Passwords do not match"),
+                            )))
                       : null;
                 })
               ],
@@ -86,9 +110,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   _register() async {
     try {
-      await auth.createUserWithEmailAndPassword(email: _emailTextController.text,password: _passwordTextController.text);
-      Navigator.push(context,MaterialPageRoute(builder: (context) => SignInScreen()));
-      
+      final newUser = await auth.createUserWithEmailAndPassword(
+          email: _emailTextController.text,
+          password: _passwordTextController.text);
+      AppUser appUser = AppUser(
+          email: _emailTextController.text,
+          userName: _userNameTextController.text);
+      DatabaseService().addUser(appUser, newUser.user!.uid);
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => SignInScreen()));
     } on FirebaseAuthException catch (e) {
       if (e.code == "invalid-email") {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -111,8 +141,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
     if (text.isEmpty) {
       return 'Can\'t be empty';
     }
-    if (text.length < 6) {
-      return 'Too short, username must be at least 6 characters';
+    if (text.length < 4) {
+      return 'Too short, username must be at least 4 characters';
+    }
+    if (text.length > 10) {
+      return 'Too long, username must be less than 10 characters';
     }
     // return null if the text is valid
     return null;
@@ -139,7 +172,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return null;
   }
 
-    String? get _passwordAgainErrorText {
+  String? get _passwordAgainErrorText {
     final text = _passwordAgainTextController.value.text;
     if (text.isEmpty) {
       return 'Can\'t be empty';

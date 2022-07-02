@@ -1,11 +1,19 @@
 import 'package:AquaFocus/model/marine_creature.dart';
 import 'package:AquaFocus/screens/UserPages/Shop/shop_screen.dart';
-import 'package:AquaFocus/screens/home_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:AquaFocus/services/database_services.dart';
 
 class DetailScreen extends StatelessWidget {
-  const DetailScreen({Key? key, required this.marLife}) : super(key: key);
+  const DetailScreen(
+      {Key? key,
+      required this.marLife,
+      required this.isBought,
+      required this.updateState})
+      : super(key: key);
   final MarineCreatures marLife;
+  final bool isBought;
+  final updateState;
 
   @override
   Widget build(BuildContext context) {
@@ -17,6 +25,8 @@ class DetailScreen extends StatelessWidget {
       ),
       body: DetailsBody(
         marLife: marLife,
+        isBought: isBought,
+        updateState: updateState,
       ),
     );
   }
@@ -24,7 +34,14 @@ class DetailScreen extends StatelessWidget {
 
 class DetailsBody extends StatelessWidget {
   final MarineCreatures marLife;
-  const DetailsBody({Key? key, required this.marLife}) : super(key: key);
+  final bool isBought;
+  final updateState;
+  const DetailsBody(
+      {Key? key,
+      required this.marLife,
+      required this.isBought,
+      required this.updateState})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -70,17 +87,26 @@ class DetailsBody extends StatelessWidget {
                                     RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(18.0),
                                 ))),
-                            child: const Text(
-                              "BUY NOW",
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
+                            child: isBought
+                                ? const Text(
+                                    "Owned",
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : const Text(
+                                    "BUY NOW",
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
                             onPressed: () {
-                              showAlertDialog(context);
-                            }, //TODO - user bought this fish, this is in user data, next time it will be shown as owned and unclickable
+                              isBought ? null : _purchase(context);
+                            },
                           ),
                         )
                       ],
@@ -145,37 +171,52 @@ class DetailsBody extends StatelessWidget {
     ));
   }
 
-      showAlertDialog(BuildContext context) {
-      // set up the buttons
-      Widget okButton = TextButton(
-        child: const Text("Ok"),
-        onPressed: () {
-          Navigator.of(context).pop();
-          Navigator.of(context).pop();
-        },
-      );
-
-      // set up the AlertDialog
-      AlertDialog alert = AlertDialog(
-        title: const Text("You have purchased successfully!",textAlign: TextAlign.center,),
-        content: SizedBox(
-          height: 125,
-          child: Column(
-            children: [
-            Image.asset(marLife.image,width:100,height: 100),
-            Text(marLife.type)
-          ]),
-        ),
-        actions: [
-          okButton,
-        ],
-      );
-      // show the dialog
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return alert;
-        },
-      );
+  _purchase(context) async {
+    bool hasEnough = await DatabaseService().hasEnoughMoney(marLife.price);
+    if (hasEnough) {
+      DatabaseService().addMoney(-marLife.price);
+      DatabaseService()
+          .addMarLives(FirebaseAuth.instance.currentUser!.uid, marLife.id);
+      updateState;
+      showAlertDialog(context, "You have purchased successfully!");
+    } else {
+      showAlertDialog(context, "You don't have enough fish coin :(");
     }
+  }
+
+  showAlertDialog(BuildContext context, String message) {
+    // set up the buttons
+    Widget okButton = TextButton(
+      child: const Text("Ok"),
+      onPressed: () {
+        Navigator.of(context).pop();
+        Navigator.of(context).pop();
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text(
+        message,
+        textAlign: TextAlign.center,
+      ),
+      content: SizedBox(
+        height: 125,
+        child: Column(children: [
+          Image.asset(marLife.image, width: 100, height: 100),
+          Text(marLife.type)
+        ]),
+      ),
+      actions: [
+        okButton,
+      ],
+    );
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
 }

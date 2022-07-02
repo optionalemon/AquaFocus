@@ -6,6 +6,9 @@ import 'package:AquaFocus/screens/home_screen.dart';
 import 'package:AquaFocus/screens/signup_screen.dart';
 import 'package:flutter/material.dart';
 
+final FirebaseAuth auth = FirebaseAuth.instance;
+late User? user;
+
 class SignInScreen extends StatefulWidget {
   const SignInScreen({Key? key}) : super(key: key);
 
@@ -14,6 +17,12 @@ class SignInScreen extends StatefulWidget {
 }
 
 class _SignInScreenState extends State<SignInScreen> {
+  @override
+  void initState() {
+    auth.userChanges().listen((event) => setState(() => user = event));
+    super.initState();
+  }
+
   TextEditingController _passwordTextController = TextEditingController();
   TextEditingController _emailTextController = TextEditingController();
   @override
@@ -64,11 +73,11 @@ class _SignInScreenState extends State<SignInScreen> {
 
   _signin() async {
     try {
-      await FirebaseServices()
-          .signInWithEmail(
-              _emailTextController.text, _passwordTextController.text);
-        Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => const HomeScreen()));
+      await FirebaseServices().signInWithEmail(
+          _emailTextController.text, _passwordTextController.text);
+
+      Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => HomeScreen()));
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text('Invalid Password or/and Email'),
@@ -168,7 +177,7 @@ class _SignInScreenState extends State<SignInScreen> {
             () async {
               await FirebaseServices().signInWithFacebook();
               Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) => const HomeScreen()));
+                  MaterialPageRoute(builder: (context) => HomeScreen()));
             },
             const AssetImage(
               'assets/images/facebook.jpg',
@@ -178,7 +187,7 @@ class _SignInScreenState extends State<SignInScreen> {
             () async {
               await FirebaseServices().signInWithGoogle();
               Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) => const HomeScreen()));
+                  MaterialPageRoute(builder: (context) => HomeScreen()));
             },
             const AssetImage(
               'assets/images/google.jpg',
