@@ -203,33 +203,17 @@ class _ViewBoardPageState extends State<ViewBoardPage> {
                             setState(() => _calendarFormat = format);
                           }
                         },
+                          calendarStyle: CalendarStyle(
+                            weekendTextStyle: TextStyle(color: Colors.white60),
+                            outsideTextStyle: TextStyle(color: Colors.grey),
+                            defaultTextStyle: TextStyle(color: Colors.white),
+                            markerDecoration: BoxDecoration(shape: BoxShape.circle, color: Colors.blue[800]),
+                          ),
                         daysOfWeekStyle: DaysOfWeekStyle(
                           weekendStyle: TextStyle(color: Colors.cyanAccent),
                           weekdayStyle: TextStyle(color: Colors.cyanAccent),
                         ),
-                        headerStyle: HeaderStyle(
-                          titleTextStyle: TextStyle(
-                            color: Colors. white,
-                            fontSize: 16,
-                          ),
-                          formatButtonTextStyle:TextStyle().copyWith(color: Colors.white, fontSize: 15.0),
-                          formatButtonDecoration: BoxDecoration(
-                            color: Colors.cyanAccent[400]?.withOpacity(0.5),
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                          leftChevronIcon: Icon(
-                            Icons.chevron_left,
-                            color: Colors.white,
-                            size: 20,
-                          ),
-                          rightChevronIcon: Icon(
-                            Icons.chevron_right,
-                            color: Colors.white,
-                            size: 20,
-                          ),
-                        ),
                         calendarBuilders: CalendarBuilders(
-
                           selectedBuilder: (context, date, events) => Container(
                               margin: const EdgeInsets.all(4.0),
                               alignment: Alignment.center,
@@ -252,8 +236,8 @@ class _ViewBoardPageState extends State<ViewBoardPage> {
                                 date.day.toString(),
                                 style: TextStyle(color: Colors.white),
                               )),
+                          )
                         ),
-                      ),
                   const SizedBox(height: 8.0),
                   Expanded(
                     child: ValueListenableBuilder<List<Event>>(
