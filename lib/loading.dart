@@ -6,9 +6,21 @@ class Loading extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: CircularProgressIndicator(),
-      )
+      body: Stack(children: <Widget>[
+    Container(
+        constraints: const BoxConstraints.expand(),
+      decoration: const BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage('assets/images/mainscreen.png'),
+          fit: BoxFit.cover,
+        ),
+      ),
+    ),
+        Center(
+          child: CircularProgressIndicator(),
+        )
+      ]
+    )
     );
   }
 }
