@@ -1,29 +1,47 @@
-import 'package:AquaFocus/assets/fish_icon_icons.dart';
 import 'package:AquaFocus/screens/UserPages/aquarium_screen.dart';
 import 'package:AquaFocus/screens/UserPages/setting_screen.dart';
 import 'package:AquaFocus/screens/UserPages/Shop/shop_screen.dart';
 import 'package:AquaFocus/screens/UserPages/statistics_screen.dart';
-import 'package:AquaFocus/services/firebase_services.dart';
 import 'package:AquaFocus/widgets/focus_timer.dart';
 import 'package:AquaFocus/widgets/habit_tracker.dart';
 import 'package:AquaFocus/widgets/to_do_list.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:AquaFocus/screens/signin_screen.dart';
-
-import '../widgets/fun_fact.dart';
+import 'package:AquaFocus/services/database_services.dart';
+import 'package:AquaFocus/loading.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  User? user;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  int fishMoney = 0;
+  late String name;
+  bool loading = true;
+
+  Future<void> getNameAndMoney() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      name = await DatabaseService().getUserName(user.uid);
+      fishMoney = await DatabaseService().getMoney();
+    }
+    setState(() {
+      loading = false;
+    });
+  }
+
+  @override
+  void initState() {
+    getNameAndMoney();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return loading? const Loading() : Scaffold(
       extendBodyBehindAppBar: true,
       appBar: _buildAppBar(),
       drawer: NavigationDrawer(),
@@ -71,35 +89,36 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Image.asset('assets/icons/AquaFocus_icon.png')),
         ),
         const SizedBox(width: 10),
-        const Text(
-          'Hello :)',
-          style: TextStyle(
-              color: Colors.white, fontSize: 26, fontWeight: FontWeight.bold),
+        FittedBox(
+          fit: BoxFit.fitWidth,
+          child: Text(
+            'Hello $name :)',
+            style: TextStyle(
+                color: Colors.white, fontWeight: FontWeight.bold),
+          ),
         )
       ]),
-      actions: [Container(
-        padding: EdgeInsets.all(10),
-        margin: EdgeInsets.only(right: 20),
-        decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.5),
-            borderRadius: BorderRadius.circular(25)
-        ),
-        child: Row(
-            children: <Widget>[Image.asset(
-              'assets/icons/money.png',
-              height: 25,
-              width: 25,
-            ),
-          SizedBox( width: 6),
-          const Text(
-            '180',//TODO
-            style: TextStyle(
-              fontSize: 15,
-            ),
-          ),
-        ]
-        )
-      ),
+      actions: [
+        Container(
+            padding: EdgeInsets.all(10),
+            margin: EdgeInsets.only(right: 20),
+            decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.5),
+                borderRadius: BorderRadius.circular(25)),
+            child: Row(children: <Widget>[
+              Image.asset(
+                'assets/icons/money.png',
+                height: 25,
+                width: 25,
+              ),
+              SizedBox(width: 6),
+              Text(
+                '$fishMoney',
+                style: TextStyle(
+                  fontSize: 15,
+                ),
+              ),
+            ])),
       ],
     );
   }
@@ -134,7 +153,7 @@ class NavigationDrawer extends StatelessWidget {
             backgroundImage: NetworkImage(getProfilePhoto()),
           ),
           Padding(padding: EdgeInsets.all(8.0)),
-          Text(getEmail(),style: TextStyle(fontSize: 15,color: Colors.white)),
+          Text(getEmail(), style: TextStyle(fontSize: 15, color: Colors.white)),
           Padding(padding: EdgeInsets.all(8.0)),
         ],
       ));
@@ -253,13 +272,7 @@ showAlertDialog(BuildContext context) {
     child: const Text("Continue"),
     onPressed: () {
       Navigator.of(context).pop();
-      FirebaseServices().signOut();
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) {
-          return const SignInScreen();
-        }),
-      );
+      
     },
   );
   // set up the AlertDialog

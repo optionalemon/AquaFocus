@@ -1,11 +1,20 @@
 class AppUser {
   String uid = '';
   String email = '';
-  List<String> marLives = ['1']; //default having clownfish
-  int fishMoney = 180;
+  String userName = '';
+  List<int> marLives = []; 
+  int fishMoney = 0;
 
   AppUser({
     required this.email,
+    required this.userName,
   });
 
+  void setEmail(String email) {
+    this.email = email;
+  }
+
+  void setuserName(String userName) {
+    this.userName = userName;
+  }
 }

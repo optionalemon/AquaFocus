@@ -1,6 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:AquaFocus/model/app_user.dart';
+import 'package:AquaFocus/services/database_services.dart';
+import 'package:AquaFocus/screens/signin_screen.dart';
 
 class FirebaseServices {
   final _auth = FirebaseAuth.instance;
@@ -18,16 +21,22 @@ class FirebaseServices {
       final GoogleSignInAccount? googleSignInAccount =
           await _googleSignIn.signIn();
       if (googleSignInAccount != null) {
+        String googleEmail = googleSignInAccount.email;
         final GoogleSignInAuthentication googleSignInAuthentication =
             await googleSignInAccount.authentication;
         final AuthCredential authCredential = GoogleAuthProvider.credential(
             accessToken: googleSignInAuthentication.accessToken,
             idToken: googleSignInAuthentication.idToken);
-        await _auth.signInWithCredential(authCredential);
+        final UserCredential authResult =
+            await _auth.signInWithCredential(authCredential);
+
+        if (authResult.additionalUserInfo!.isNewUser) {
+          AppUser appUser = AppUser(email: googleEmail, userName: "default");
+          DatabaseService().addUser(appUser, user!.uid);
+        }
       }
-    } on FirebaseAuthException catch (e) {
-      print(e.message);
-      throw e;
+    } on FirebaseAuthException {
+      rethrow;
     }
   }
 
@@ -37,14 +46,21 @@ class FirebaseServices {
       final LoginResult loginResult = await _facebookSignIn.login(
         permissions: ['email', 'public_profile'],
       );
-
       // Create a credential from the access token
       final OAuthCredential facebookAuthCredential =
           FacebookAuthProvider.credential(loginResult.accessToken!.token);
 
       final userData = await _facebookSignIn.getUserData();
 
-      // Once signed in, return the UserCredential
+      final UserCredential authResult =
+          await _auth.signInWithCredential(facebookAuthCredential);
+      final facebookEmail = userData["email"];
+
+      if (authResult.additionalUserInfo!.isNewUser) {
+      AppUser appUser = AppUser(email: facebookEmail, userName: "default");
+      DatabaseService().addUser(appUser, user!.uid);
+      }
+
       return FirebaseAuth.instance.signInWithCredential(facebookAuthCredential);
     } on FirebaseAuthException catch (e) {
       print(e.message);

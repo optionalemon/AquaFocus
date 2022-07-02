@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 class ItemCard extends StatelessWidget {
   final MarineCreatures marLife;
   final VoidCallback press;
+  final bool isBought;
 
   const ItemCard({
     Key? key,
     required this.marLife,
     required this.press,
+    required this.isBought,
   }) : super(key: key);
 
   @override
@@ -32,10 +34,12 @@ class ItemCard extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 20 / 4),
             child: Text(
               marLife.type,
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
             ),
           ),
-          Row(
+          isBought? 
+            Text("Owned", style: TextStyle(color: Colors.white))
+           : Row(
             children: [
               Image.asset(
                 "assets/icons/money.png",
