@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 
-Image logoWidget(String imageName) {
+Image logoWidget(String imageName, Size size) {
   return Image.asset(
     imageName,
     fit: BoxFit.fitWidth,
-    width: 205,
-    height: 250,
+    height: size.height * 0.3,
   );
 }
 
@@ -44,7 +43,7 @@ Container firebaseButton(
     BuildContext context, String title, Function onTap) {
   return Container(
     width: MediaQuery.of(context).size.width,
-    height: 50,
+    height: MediaQuery.of(context).size.height * 0.07,
     margin: const EdgeInsets.fromLTRB(0, 10, 0, 20),
     decoration: BoxDecoration(borderRadius: BorderRadius.circular(90)),
     child: ElevatedButton(

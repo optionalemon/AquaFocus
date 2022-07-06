@@ -38,14 +38,17 @@ class _ResetPasswordState extends State<ResetPassword> {
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: const Text(
           "Reset Password",
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          style: TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
       body: Container(
@@ -61,8 +64,8 @@ class _ResetPasswordState extends State<ResetPassword> {
             padding: EdgeInsets.fromLTRB(20, 120, 20, 0),
             child: Column(
               children: <Widget>[
-                const SizedBox(
-                  height: 20,
+              SizedBox(
+                  height: size.height*0.02,
                 ),
                 reusableTextField(
                     "Enter Email Id",
@@ -71,8 +74,8 @@ class _ResetPasswordState extends State<ResetPassword> {
                     _emailTextController,
                     _emailErrorText,
                     (_) => setState(() {})),
-                const SizedBox(
-                  height: 20,
+                SizedBox(
+                  height: size.height*0.02,
                 ),
                 firebaseButton(context, "Reset Password", () {
                   _emailErrorText == null ? _resetPass() : null;
