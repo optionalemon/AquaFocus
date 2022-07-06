@@ -1,12 +1,16 @@
 import 'package:AquaFocus/model/marine_creature.dart';
 import 'package:AquaFocus/screens/UserPages/Shop/details_screen.dart';
 import 'package:AquaFocus/screens/UserPages/Shop/item_card.dart';
+import 'package:AquaFocus/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:AquaFocus/services/database_services.dart';
 import 'package:AquaFocus/loading.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class ShopScreen extends StatefulWidget {
+  Function _updateHomeScreen;
+  ShopScreen(this._updateHomeScreen);
+
   @override
   State<ShopScreen> createState() => _ShopScreenState();
 }
@@ -23,6 +27,7 @@ class _ShopScreenState extends State<ShopScreen> {
     setState(() {
       marLives.add(newLife);
       fishMoney = fishMoney - cost;
+      widget._updateHomeScreen(fishMoney);
     });
   }
 
@@ -45,7 +50,7 @@ class _ShopScreenState extends State<ShopScreen> {
 
   @override
   Widget build(BuildContext context) {
-     Size size = MediaQuery.of(context).size;
+    Size size = MediaQuery.of(context).size;
     return loading
         ? const Loading()
         : Scaffold(
@@ -56,7 +61,11 @@ class _ShopScreenState extends State<ShopScreen> {
               actions: [
                 Container(
                     padding: EdgeInsets.all(size.width * 0.02),
-                    margin: EdgeInsets.only(right: size.width * 0.03, top: size.height*0.01, bottom:size.height*0.01,),
+                    margin: EdgeInsets.only(
+                      right: size.width * 0.05,
+                      top: size.height * 0.01,
+                      bottom: size.height * 0.01,
+                    ),
                     decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.5),
                         borderRadius: BorderRadius.circular(25)),
@@ -90,7 +99,8 @@ class _ShopScreenState extends State<ShopScreen> {
                   ),
                   Expanded(
                       child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: size.width * 0.03),
+                    padding:
+                        EdgeInsets.symmetric(horizontal: size.width * 0.03),
                     child: GridView.builder(
                         itemCount: marinesCreatures.length,
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -107,7 +117,7 @@ class _ShopScreenState extends State<ShopScreen> {
                                       builder: (context) => DetailScreen(
                                             marLife: marinesCreatures[index],
                                             isBought: marLives.contains(index),
-                                            updateState: _update,
+                                            updateShopState: _update,
                                           ))),
                             )),
                   ))

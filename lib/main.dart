@@ -10,7 +10,7 @@ import 'firebase_options.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
-    name: 'name-here',
+    name: 'AquaFocus',
     options: DefaultFirebaseOptions.currentPlatform,
   );
   runApp(BlocProvider(
@@ -51,7 +51,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
               fontFamily: 'Alata',
               primarySwatch: Colors.blue,
             ),
-            home:const SignInScreen(),
+            home:SignInScreen(),
           );
         });
   }

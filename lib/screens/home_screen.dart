@@ -2,6 +2,8 @@ import 'package:AquaFocus/screens/UserPages/aquarium_screen.dart';
 import 'package:AquaFocus/screens/UserPages/setting_screen.dart';
 import 'package:AquaFocus/screens/UserPages/Shop/shop_screen.dart';
 import 'package:AquaFocus/screens/UserPages/statistics_screen.dart';
+import 'package:AquaFocus/screens/signin_screen.dart';
+import 'package:AquaFocus/services/firebase_services.dart';
 import 'package:AquaFocus/widgets/focus_timer.dart';
 import 'package:AquaFocus/widgets/habit_tracker.dart';
 import 'package:AquaFocus/widgets/tasks_today.dart';
@@ -23,6 +25,12 @@ class _HomeScreenState extends State<HomeScreen> {
   late String name;
   bool loading = true;
 
+  _updateHomeScreen(int newMoney) {
+    setState(() {
+      fishMoney = newMoney;
+    });
+  }
+
   Future<void> getNameAndMoney() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
@@ -42,81 +50,83 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return loading? const Loading() : Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: _buildAppBar(),
-      drawer: NavigationDrawer(),
-      body: Stack(children: <Widget>[
-        Container(
-          constraints: const BoxConstraints.expand(),
-          decoration: const BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage('assets/images/mainscreen.png'),
-              fit: BoxFit.cover,
-            ),
-          ),
-        ),
-        SafeArea(
-            child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Tasks(),
-            Expanded(
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(child: FocusTimer()),
-                  ]),
-            ),
-            //Row(children: [Expanded(child: FunFact())])
-          ],
-        ))
-      ]),
-    );
+    return loading
+        ? const Loading()
+        : Scaffold(
+            resizeToAvoidBottomInset: false,
+            extendBodyBehindAppBar: true,
+            appBar: _buildAppBar(MediaQuery.of(context).size),
+            drawer: NavigationDrawer(updateHomeScreen: _updateHomeScreen),
+            body: Stack(children: <Widget>[
+              Container(
+                constraints: const BoxConstraints.expand(),
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('assets/images/mainscreen.png'),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              SafeArea(
+                  child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Tasks(),
+                  Expanded(
+                    child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(child: FocusTimer()),
+                        ]),
+                  ),
+                  //Row(children: [Expanded(child: FunFact())])
+                ],
+              ))
+            ]),
+          );
   }
 
-  AppBar _buildAppBar() {
+  AppBar _buildAppBar(Size size) {
     return AppBar(
       backgroundColor: Colors.transparent,
       elevation: 0,
       title: Row(children: [
         Container(
-          height: 40,
-          width: 40,
+          height: size.height * 0.05,
+          width: size.width * 0.1,
           child: ClipRRect(
               borderRadius: BorderRadius.circular(10),
               child: Image.asset('assets/icons/AquaFocus_icon.png')),
         ),
-        const SizedBox(width: 10),
+        SizedBox(width: size.width * 0.025),
         FittedBox(
           fit: BoxFit.fitWidth,
           child: Text(
             'Hello $name :)',
-            style: TextStyle(
-                color: Colors.white, fontWeight: FontWeight.bold),
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           ),
         )
       ]),
       actions: [
         Container(
-            padding: EdgeInsets.all(10),
-            margin: EdgeInsets.only(right: 20),
+            padding: EdgeInsets.all(size.width * 0.02),
+            margin: EdgeInsets.only(
+              right: size.width * 0.05,
+              top: size.height * 0.01,
+              bottom: size.height * 0.01,
+            ),
             decoration: BoxDecoration(
                 color: Colors.white.withOpacity(0.5),
                 borderRadius: BorderRadius.circular(25)),
             child: Row(children: <Widget>[
               Image.asset(
                 'assets/icons/money.png',
-                height: 25,
-                width: 25,
+                height: size.height * 0.035,
               ),
-              SizedBox(width: 6),
+              SizedBox(width: size.width * 0.02),
               Text(
                 '$fishMoney',
-                style: TextStyle(
-                  fontSize: 15,
-                ),
               ),
             ])),
       ],
@@ -125,38 +135,48 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 class NavigationDrawer extends StatelessWidget {
-  NavigationDrawer({Key? key}) : super(key: key);
+  NavigationDrawer({required this.updateHomeScreen, Key? key})
+      : super(key: key);
   final currUser = FirebaseAuth.instance.currentUser;
+  final updateHomeScreen;
 
   @override
-  Widget build(BuildContext context) => Container(
-      width: 210,
-      child: Drawer(
-          child: SingleChildScrollView(
-        child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              buildHeader(context),
-              buildMenuItem(context),
-            ]),
-      )));
+  Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+    return Container(
+        width: size.width * 0.55,
+        child: Drawer(
+            child: SingleChildScrollView(
+          child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                buildHeader(context),
+                buildMenuItem(context),
+              ]),
+        )));
+  }
 
-  Widget buildHeader(BuildContext context) => Container(
-      color: Colors.blue.shade700,
-      padding: EdgeInsets.only(
-        top: MediaQuery.of(context).padding.top,
-      ),
-      child: Column(
-        children: [
-          CircleAvatar(
-            radius: 52,
-            backgroundImage: NetworkImage(getProfilePhoto()),
-          ),
-          Padding(padding: EdgeInsets.all(8.0)),
-          Text(getEmail(), style: TextStyle(fontSize: 15, color: Colors.white)),
-          Padding(padding: EdgeInsets.all(8.0)),
-        ],
-      ));
+  Widget buildHeader(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+    return Container(
+        color: Colors.blue.shade700,
+        padding: EdgeInsets.only(
+          top: MediaQuery.of(context).padding.top,
+        ),
+        child: Column(
+          children: [
+            CircleAvatar(
+              radius: size.height * 0.067,
+              backgroundImage: NetworkImage(getProfilePhoto()),
+            ),
+            Padding(padding: EdgeInsets.all(size.height * 0.01)),
+            Text(getEmail(),
+                style: TextStyle(
+                    fontSize: size.height * 0.02, color: Colors.white)),
+            Padding(padding: EdgeInsets.all(size.height * 0.01)),
+          ],
+        ));
+  }
 
   getEmail() {
     if (currUser != null) {
@@ -174,90 +194,96 @@ class NavigationDrawer extends StatelessWidget {
     }
   }
 
-  Widget buildMenuItem(BuildContext context) => Container(
-      padding: const EdgeInsets.all(24),
-      child: Wrap(
-        runSpacing: 16,
-        children: [
-          ListTile(
-            leading: const Icon(
-              Icons.waves,
-              size: 20,
-              color: Colors.blue,
+  Widget buildMenuItem(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+    return Container(
+        padding: EdgeInsets.all(size.height * 0.03),
+        child: Wrap(
+          runSpacing: size.height * 0.02,
+          children: [
+            ListTile(
+              leading: Icon(
+                Icons.waves,
+                size: size.height * 0.025,
+                color: Colors.blue,
+              ),
+              title: Text(
+                "Aquarium",
+                style:
+                    TextStyle(fontSize: size.height * 0.02, color: Colors.blue),
+              ),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => AquariumScreen()));
+              },
             ),
-            title: const Text(
-              "Aquarium",
-              style: TextStyle(fontSize: 15, color: Colors.blue),
+            ListTile(
+              leading: Icon(
+                Icons.store,
+                size: size.height * 0.025,
+                color: Colors.blue,
+              ),
+              title: Text(
+                "Shop",
+                style:
+                    TextStyle(fontSize: size.height * 0.02, color: Colors.blue),
+              ),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => ShopScreen(updateHomeScreen)));
+              },
             ),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => AquariumScreen()));
-            },
-          ),
-          ListTile(
-            leading: const Icon(
-              Icons.store,
-              size: 20,
-              color: Colors.blue,
+            ListTile(
+              leading: Icon(
+                Icons.grade,
+                size: size.height * 0.025,
+                color: Colors.blue,
+              ),
+              title: Text(
+                "Statistics",
+                style:
+                    TextStyle(fontSize: size.height * 0.02, color: Colors.blue),
+              ),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => StatisticsScreen()));
+              },
             ),
-            title: const Text(
-              "Shop",
-              style: TextStyle(fontSize: 15, color: Colors.blue),
+            const Divider(color: Colors.black54),
+            ListTile(
+              leading: Icon(
+                Icons.settings,
+                size: size.height * 0.025,
+              ),
+              title: Text(
+                "Settings",
+                style: TextStyle(fontSize: size.height * 0.02),
+              ),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => SettingScreen()));
+              },
             ),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (context) => ShopScreen()));
-            },
-          ),
-          ListTile(
-            leading: const Icon(
-              Icons.grade,
-              size: 20,
-              color: Colors.blue,
-            ),
-            title: const Text(
-              "Statistics",
-              style: TextStyle(fontSize: 15, color: Colors.blue),
-            ),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => StatisticsScreen()));
-            },
-          ),
-          const Divider(color: Colors.black54),
-          ListTile(
-            leading: const Icon(
-              Icons.settings,
-              size: 20,
-            ),
-            title: const Text(
-              "Settings",
-              style: TextStyle(fontSize: 15),
-            ),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => SettingScreen()));
-            },
-          ),
-          ListTile(
-            leading: const Icon(
-              Icons.sensor_door_outlined,
-              size: 20,
-            ),
-            title: const Text(
-              "Log out",
-              style: TextStyle(fontSize: 15),
-            ),
-            onTap: () {
-              showAlertDialog(context);
-            },
-          )
-        ],
-      ));
+            ListTile(
+              leading: Icon(
+                Icons.sensor_door_outlined,
+                size: size.height * 0.025,
+              ),
+              title: Text(
+                "Log out",
+                style: TextStyle(fontSize: size.height * 0.02),
+              ),
+              onTap: () {
+                showAlertDialog(context);
+              },
+            )
+          ],
+        ));
+  }
 }
 
 showAlertDialog(BuildContext context) {
@@ -272,7 +298,9 @@ showAlertDialog(BuildContext context) {
     child: const Text("Continue"),
     onPressed: () {
       Navigator.of(context).pop();
-      
+      FirebaseServices().signOut();
+      Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const SignInScreen()));
     },
   );
   // set up the AlertDialog

@@ -32,6 +32,7 @@ class _FocusTimerScreenState extends State<FocusTimerScreen> {
 
 //bottom navigation bar
   _getNavBar(context) {
+    Size size = MediaQuery.of(context).size;
     return Stack(
       children: <Widget>[
         Positioned(
@@ -39,7 +40,7 @@ class _FocusTimerScreenState extends State<FocusTimerScreen> {
           child: ClipPath(
             clipper: NavBarClipper(),
             child: Container(
-              height: 60,
+              height: size.height * 0.075,
               width: MediaQuery.of(context).size.width,
               decoration: const BoxDecoration(
                   gradient: LinearGradient(
@@ -55,35 +56,35 @@ class _FocusTimerScreenState extends State<FocusTimerScreen> {
           ),
         ),
         Positioned(
-            bottom: 45,
-            width: MediaQuery.of(context).size.width,
+            bottom: size.height * 0.055,
+            width: size.width,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
                 _buildNavItem(Icons.access_time_filled, context, 0),
-                const SizedBox(width: 1),
+                SizedBox(width: size.width*0.0025),
                 _buildNavItem(Icons.access_time, context, 1),
-                const SizedBox(width: 1),
+                SizedBox(width: size.width*0.0025),
                 _buildNavItem(Icons.lock_clock, context, 2),
               ],
             )),
         Positioned(
-            bottom: 10,
+            bottom: size.height * 0.0125,
             width: MediaQuery.of(context).size.width,
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: const <Widget>[
+                children:  <Widget>[
                   Text("Countdown",
                       style: TextStyle(
                           color: Colors.white70, fontWeight: FontWeight.w500)),
                   SizedBox(
-                    width: 2,
+                    width: size.width*0.005,
                   ),
                   Text("Count Up  ",
                       style: TextStyle(
                           color: Colors.white70, fontWeight: FontWeight.w500)),
                   SizedBox(
-                    width: 10,
+                    width: size.width*0.025,
                   ),
                   Text("Lock Mode",
                       style: TextStyle(
@@ -94,6 +95,7 @@ class _FocusTimerScreenState extends State<FocusTimerScreen> {
   }
 
   Widget _buildNavItem(IconData icon, BuildContext context, int index) {
+    Size size = MediaQuery.of(context).size;
     return Material(
       color: Colors.transparent,
       child: Center(
@@ -104,7 +106,7 @@ class _FocusTimerScreenState extends State<FocusTimerScreen> {
           ),
           child: pressed[index]
               ? IconButton(
-                  icon: Icon(icon,size:30),
+                  icon: Icon(icon, size: size.height * 0.037),
                   color: Colors.white,
                   onPressed: () {
                     setState(() {

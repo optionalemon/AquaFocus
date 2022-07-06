@@ -9,11 +9,12 @@ class DetailScreen extends StatelessWidget {
       {Key? key,
       required this.marLife,
       required this.isBought,
-      required this.updateState})
+      required this.updateShopState
+      })
       : super(key: key);
   final MarineCreatures marLife;
   final bool isBought;
-  final updateState;
+  final updateShopState;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +27,7 @@ class DetailScreen extends StatelessWidget {
       body: DetailsBody(
         marLife: marLife,
         isBought: isBought,
-        updateState: updateState,
+        updateShopState: updateShopState,
       ),
     );
   }
@@ -35,12 +36,12 @@ class DetailScreen extends StatelessWidget {
 class DetailsBody extends StatelessWidget {
   final MarineCreatures marLife;
   final bool isBought;
-  final updateState;
+  final updateShopState;
   const DetailsBody(
       {Key? key,
       required this.marLife,
       required this.isBought,
-      required this.updateState})
+      required this.updateShopState})
       : super(key: key);
 
   @override
@@ -173,7 +174,7 @@ class DetailsBody extends StatelessWidget {
   _purchase(context) async {
     bool hasEnough = await DatabaseService().hasEnoughMoney(marLife.price);
     if (hasEnough) {
-      updateState(marLife.id,marLife.price);
+      updateShopState(marLife.id,marLife.price);
       DatabaseService().addMoney(-marLife.price);
       DatabaseService()
           .addMarLives(FirebaseAuth.instance.currentUser!.uid, marLife.id);
