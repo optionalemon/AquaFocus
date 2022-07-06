@@ -16,6 +16,16 @@ class _ShopScreenState extends State<ShopScreen> {
   bool loading = true;
   List marLives = [];
 
+  void _update(
+    int newLife,
+    int cost,
+  ) {
+    setState(() {
+      marLives.add(newLife);
+      fishMoney = fishMoney - cost;
+    });
+  }
+
   Future<void> getMarMoney() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
@@ -33,13 +43,9 @@ class _ShopScreenState extends State<ShopScreen> {
     super.initState();
   }
 
-  _updateState() {
-    loading = true;
-    getMarMoney();
-  }
-
   @override
   Widget build(BuildContext context) {
+     Size size = MediaQuery.of(context).size;
     return loading
         ? const Loading()
         : Scaffold(
@@ -49,23 +55,19 @@ class _ShopScreenState extends State<ShopScreen> {
               backgroundColor: Color.fromARGB(40, 0, 0, 0),
               actions: [
                 Container(
-                    padding: EdgeInsets.all(10),
-                    margin: EdgeInsets.only(right: 20),
+                    padding: EdgeInsets.all(size.width * 0.02),
+                    margin: EdgeInsets.only(right: size.width * 0.03, top: size.height*0.01, bottom:size.height*0.01,),
                     decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.5),
                         borderRadius: BorderRadius.circular(25)),
                     child: Row(children: <Widget>[
                       Image.asset(
                         'assets/icons/money.png',
-                        height: 25,
-                        width: 25,
+                        height: size.height * 0.035,
                       ),
-                      SizedBox(width: 6),
+                      SizedBox(width: size.width * 0.02),
                       Text(
                         '$fishMoney',
-                        style: TextStyle(
-                          fontSize: 15,
-                        ),
                       ),
                     ])),
               ],
@@ -84,17 +86,17 @@ class _ShopScreenState extends State<ShopScreen> {
                   child: Column(
                 children: [
                   SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.05,
+                    height: size.height * 0.05,
                   ),
                   Expanded(
                       child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    padding: EdgeInsets.symmetric(horizontal: size.width * 0.03),
                     child: GridView.builder(
                         itemCount: marinesCreatures.length,
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 2,
-                            mainAxisSpacing: 20,
-                            crossAxisSpacing: 20,
+                            mainAxisSpacing: size.width * 0.03,
+                            crossAxisSpacing: size.height * 0.03,
                             childAspectRatio: 0.75),
                         itemBuilder: (context, index) => ItemCard(
                               marLife: marinesCreatures[index],
@@ -105,7 +107,7 @@ class _ShopScreenState extends State<ShopScreen> {
                                       builder: (context) => DetailScreen(
                                             marLife: marinesCreatures[index],
                                             isBought: marLives.contains(index),
-                                            updateState: _updateState(),
+                                            updateState: _update,
                                           ))),
                             )),
                   ))

@@ -15,45 +15,52 @@ class ItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return GestureDetector(
       onTap: press,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
-            child: Container(
-              padding: EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: marLife.color.withOpacity(0.7),
-                borderRadius: BorderRadius.circular(16),
+            child: Align(
+              alignment: Alignment.center,
+              child: AspectRatio(
+                aspectRatio: 1,
+                child: Container(
+                  padding: EdgeInsets.all(size.width * 0.04),
+                  decoration: BoxDecoration(
+                    color: marLife.color.withOpacity(0.7),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Image.asset(marLife.image),
+                ),
               ),
-              child: Image.asset(marLife.image),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 20 / 4),
+            padding: EdgeInsets.symmetric(vertical: size.height * 0.025 / 4),
             child: Text(
               marLife.type,
-              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+              style:
+                  TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
             ),
           ),
-          isBought? 
-            Text("Owned", style: TextStyle(color: Colors.white))
-           : Row(
-            children: [
-              Image.asset(
-                "assets/icons/money.png",
-                height: 20,
-                width: 20,
-              ),
-              SizedBox(
-                width: 10,
-              ),
-              Text(marLife.price.toString(),
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold, color: Colors.white)),
-            ],
-          )
+          isBought
+              ? Text("Owned", style: TextStyle(color: Colors.white))
+              : Row(
+                  children: [
+                    Image.asset(
+                      "assets/icons/money.png",
+                      height: size.height * 0.025,
+                    ),
+                    SizedBox(
+                      width: size.width * 0.025,
+                    ),
+                    Text(marLife.price.toString(),
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, color: Colors.white)),
+                  ],
+                )
         ],
       ),
     );

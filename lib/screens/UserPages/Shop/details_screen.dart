@@ -56,8 +56,8 @@ class DetailsBody extends StatelessWidget {
               Container(
                 margin: EdgeInsets.only(top: size.height * 0.3),
                 padding: EdgeInsets.only(
-                    top: size.height * 0.12, left: 20, right: 20),
-                height: 500,
+                    top: size.height * 0.12, left: size.width * 0.05, right: size.width * 0.05),
+                height: size.height * 0.6,
                 decoration: const BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.only(
@@ -66,14 +66,14 @@ class DetailsBody extends StatelessWidget {
                     )),
                 child: Column(children: [
                   Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 20),
+                    padding: EdgeInsets.symmetric(vertical: size.height*0.025),
                     child: Text(
                       marLife.description,
-                      style: TextStyle(height: 2.0, fontSize: 17),
+                      style: TextStyle(height: size.height*0.002, fontSize: size.height*0.022),
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 20),
+                    padding: EdgeInsets.symmetric(vertical: size.height*0.025),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
@@ -88,18 +88,18 @@ class DetailsBody extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(18.0),
                                 ))),
                             child: isBought
-                                ? const Text(
-                                    "Owned",
+                                ? Text(
+                                    "OWNED",
                                     style: TextStyle(
-                                      fontSize: 20,
+                                      fontSize: size.height*0.025,
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white,
                                     ),
                                   )
-                                : const Text(
+                                : Text(
                                     "BUY NOW",
                                     style: TextStyle(
-                                      fontSize: 20,
+                                      fontSize: size.height*0.025,
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white,
                                     ),
@@ -115,7 +115,7 @@ class DetailsBody extends StatelessWidget {
                 ]),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: EdgeInsets.symmetric(horizontal: size.width*0.05),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -125,24 +125,23 @@ class DetailsBody extends StatelessWidget {
                           color: Colors.white, fontWeight: FontWeight.bold),
                     ),
                     SizedBox(
-                      height: 20,
+                      height: size.height*0.025,
                     ),
                     Row(
                       children: [
                         Text(
                           "Price: ",
-                          style: TextStyle(color: Colors.white, fontSize: 20),
+                          style: TextStyle(color: Colors.white, fontSize: size.height*0.025),
                         ),
                         SizedBox(
-                          width: 10,
+                          width: size.width * 0.025,
                         ),
                         Image.asset(
                           "assets/icons/money.png",
-                          height: 30,
-                          width: 30,
+                          height: size.height*0.035,
                         ),
                         SizedBox(
-                          width: 10,
+                          width: size.width*0.025,
                         ),
                         Text("${marLife.price}",
                             style: Theme.of(context)
@@ -152,7 +151,7 @@ class DetailsBody extends StatelessWidget {
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold)),
                         SizedBox(
-                          width: 20,
+                          width: size.width*0.05,
                         ),
                         Expanded(
                             child: Image.asset(
@@ -174,10 +173,11 @@ class DetailsBody extends StatelessWidget {
   _purchase(context) async {
     bool hasEnough = await DatabaseService().hasEnoughMoney(marLife.price);
     if (hasEnough) {
+      updateState(marLife.id,marLife.price);
       DatabaseService().addMoney(-marLife.price);
       DatabaseService()
           .addMarLives(FirebaseAuth.instance.currentUser!.uid, marLife.id);
-      updateState;
+      
       showAlertDialog(context, "You have purchased successfully!");
     } else {
       showAlertDialog(context, "You don't have enough fish coin :(");

@@ -23,14 +23,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: const Text(
           "Sign Up",
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          style: TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
       body: Container(
@@ -46,8 +49,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
             padding: EdgeInsets.fromLTRB(20, 120, 20, 0),
             child: Column(
               children: <Widget>[
-                const SizedBox(
-                  height: 20,
+                SizedBox(
+                  height: size.height*0.02,
                 ),
                 reusableTextField(
                     "Enter UserName",
@@ -56,8 +59,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     _userNameTextController,
                     _userErrorText,
                     (_) => setState(() {})),
-                const SizedBox(
-                  height: 20,
+                SizedBox(
+                  height: size.height*0.02,
                 ),
                 reusableTextField(
                     "Enter Email Id",
@@ -66,8 +69,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     _emailTextController,
                     _emailErrorText,
                     (text) => setState(() => _text)),
-                const SizedBox(
-                  height: 20,
+                SizedBox(
+                  height: size.height*0.02,
                 ),
                 reusableTextField(
                     "Enter Password",
@@ -76,8 +79,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     _passwordTextController,
                     _passwordErrorText,
                     (text) => setState(() => _text)),
-                const SizedBox(
-                  height: 20,
+                SizedBox(
+                  height: size.height*0.02,
                 ),
                 reusableTextField(
                     "Confirm Password",
@@ -86,8 +89,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     _passwordAgainTextController,
                     _passwordAgainErrorText,
                     (text) => setState(() => _text)),
-                const SizedBox(
-                  height: 20,
+                SizedBox(
+                  height: size.height*0.02,
                 ),
                 firebaseButton(context, "Sign Up", () {
                   _emailErrorText == null &&

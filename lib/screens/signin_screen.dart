@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:AquaFocus/reusable_widgets/reusable_widget.dart';
 import 'package:AquaFocus/screens/home_screen.dart';
 import 'package:AquaFocus/screens/signup_screen.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 final FirebaseAuth auth = FirebaseAuth.instance;
@@ -27,7 +28,10 @@ class _SignInScreenState extends State<SignInScreen> {
   TextEditingController _emailTextController = TextEditingController();
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Container(
         constraints: const BoxConstraints.expand(),
         decoration: const BoxDecoration(
@@ -39,30 +43,27 @@ class _SignInScreenState extends State<SignInScreen> {
         child: SingleChildScrollView(
           child: Padding(
             padding: EdgeInsets.fromLTRB(
-                20, MediaQuery.of(context).size.height * 0.1, 20, 0),
+                20, size.height * 0.1, 20, 0),
             child: Column(
               children: <Widget>[
-                logoWidget('assets/images/logo1.png'),
-                const SizedBox(
-                  height: 10,
+                logoWidget('assets/images/logo1.png',size),
+                SizedBox(
+                  height: size.height * 0.02,
                 ),
                 reusableTextField("Enter Email Address", Icons.person_outline,
                     false, _emailTextController, null, (_) => setState(() {})),
-                const SizedBox(
-                  height: 20,
+                SizedBox(
+                  height: size.height * 0.02,
                 ),
                 reusableTextField("Enter Password", Icons.lock_outline, true,
                     _passwordTextController, null, (_) => setState(() {})),
-                const SizedBox(
-                  height: 5,
-                ),
-                forgetPassword(context),
+                forgetPassword(size),
                 firebaseButton(context, "Log In", () {
                   _signin();
                 }),
                 signUpOption(),
-                buildSignInWithText(),
-                buildSocialBtnRow()
+                buildSignInWithText(size),
+                buildSocialBtnRow(size)
               ],
             ),
           ),
@@ -106,10 +107,10 @@ class _SignInScreenState extends State<SignInScreen> {
     );
   }
 
-  Widget forgetPassword(BuildContext context) {
+  Widget forgetPassword(Size size) {
     return Container(
-      width: MediaQuery.of(context).size.width,
-      height: 35,
+      width: size.width,
+      height: size.height * 0.05,
       alignment: Alignment.bottomRight,
       child: TextButton(
         child: const Text(
@@ -123,19 +124,19 @@ class _SignInScreenState extends State<SignInScreen> {
     );
   }
 
-  Widget buildSignInWithText() {
+  Widget buildSignInWithText(Size size) {
     return Column(
-      children: const <Widget>[
-        SizedBox(height: 10.0),
-        Text(
+      children: <Widget>[
+        SizedBox(height: size.height*0.01),
+        const Text(
           '- OR -',
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.w400,
           ),
         ),
-        SizedBox(height: 10.0),
-        Text(
+        SizedBox(height: size.height*0.01),
+        const Text(
           'Sign in with',
           style: TextStyle(color: Colors.white70),
         ),
@@ -143,12 +144,12 @@ class _SignInScreenState extends State<SignInScreen> {
     );
   }
 
-  Widget buildSocialBtn(VoidCallback pressed, AssetImage logo) {
+  Widget buildSocialBtn(VoidCallback pressed, AssetImage logo, Size size) {
     return GestureDetector(
       onTap: pressed,
       child: Container(
-        height: 50.0,
-        width: 50.0,
+        height: size.height*0.07,
+        width: size.height*0.07,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: Colors.white,
@@ -167,9 +168,9 @@ class _SignInScreenState extends State<SignInScreen> {
     );
   }
 
-  Widget buildSocialBtnRow() {
+  Widget buildSocialBtnRow(Size size) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10.0),
+      padding: EdgeInsets.symmetric(vertical: size.height*0.02),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
@@ -182,6 +183,7 @@ class _SignInScreenState extends State<SignInScreen> {
             const AssetImage(
               'assets/images/facebook.jpg',
             ),
+            size,
           ),
           buildSocialBtn(
             () async {
@@ -192,6 +194,7 @@ class _SignInScreenState extends State<SignInScreen> {
             const AssetImage(
               'assets/images/google.jpg',
             ),
+            size,
           ),
         ],
       ),

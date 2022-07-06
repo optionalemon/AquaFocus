@@ -1,5 +1,6 @@
 import 'package:AquaFocus/loading.dart';
 import 'package:AquaFocus/model/state.dart';
+import 'package:AquaFocus/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:AquaFocus/screens/signin_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -50,7 +51,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
               fontFamily: 'Alata',
               primarySwatch: Colors.blue,
             ),
-            home: const SignInScreen(),
+            home:const SignInScreen(),
           );
         });
   }
