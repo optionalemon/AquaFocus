@@ -4,6 +4,7 @@ import 'package:AquaFocus/screens/UserPages/Shop/shop_screen.dart';
 import 'package:AquaFocus/screens/UserPages/statistics_screen.dart';
 import 'package:AquaFocus/widgets/focus_timer.dart';
 import 'package:AquaFocus/widgets/habit_tracker.dart';
+import 'package:AquaFocus/widgets/tasks_today.dart';
 import 'package:AquaFocus/widgets/to_do_list.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -59,14 +60,13 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ToDo(),
+            Tasks(),
             Expanded(
               child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Expanded(child: FocusTimer()),
-                    Expanded(child: HabitTracker()),
                   ]),
             ),
             //Row(children: [Expanded(child: FunFact())])
