@@ -62,11 +62,11 @@ class _CountUpScreenState extends State<CountUpScreen> {
             ),
             SizedBox(height: screenSize.height * 0.05),
             Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-          buildTimeCard(currTimeStr[0], 'HOURS'),
-          SizedBox(width: 8),
-          buildTimeCard(currTimeStr[1], 'MINUTES'),
-              SizedBox(width: 8),
-          buildTimeCard(currTimeStr[2], 'SECONDS'),
+          buildTimeCard(currTimeStr[0], 'HOURS',screenSize),
+          SizedBox(width: screenSize.width * 0.02),
+          buildTimeCard(currTimeStr[1], 'MINUTES',screenSize),
+              SizedBox(width: screenSize.width * 0.02),
+          buildTimeCard(currTimeStr[2], 'SECONDS',screenSize)
             ]),
             _countUpButtons(),
             hvStarted && duration.inSeconds < 10
@@ -81,11 +81,11 @@ class _CountUpScreenState extends State<CountUpScreen> {
     );
   }
 
-  buildTimeCard(String time, String title) {
+  buildTimeCard(String time, String title, Size size) {
     return Column(
       children: [
         Container(
-          padding: EdgeInsets.all(8),
+          padding: EdgeInsets.all(size.width * 0.02),
           decoration: BoxDecoration(
             color: Color.fromARGB(172, 255, 255, 255),
             borderRadius: BorderRadius.circular(20),
@@ -95,11 +95,11 @@ class _CountUpScreenState extends State<CountUpScreen> {
             style: TextStyle(
               fontWeight: FontWeight.bold,
               color: Colors.blue,
-              fontSize: 60,
+              fontSize: size.height * 0.1,
             ),
           ),
         ),
-        SizedBox( height: 15),
+        SizedBox( height: size.height * 0.02),
         Text(
           title,
           style: TextStyle(color: Colors.white),
