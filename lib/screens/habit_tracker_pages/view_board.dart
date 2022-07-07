@@ -1,7 +1,7 @@
 import 'package:AquaFocus/model/habit_tracker_model.dart';
-import 'package:AquaFocus/model/habit_tracker_utils.dart';
+import 'package:AquaFocus/model/task_utils.dart';
 import 'package:AquaFocus/model/state.dart';
-import 'package:AquaFocus/screens/habit_tracker_pages/add_board.dart';
+import 'package:AquaFocus/screens/habit_tracker_pages/add_task.dart';
 import 'package:AquaFocus/screens/habit_tracker_pages/board.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -39,7 +39,7 @@ class _ViewBoardPageState extends State<ViewBoardPage> {
     super.initState();
 
     _selectedDays.add(_focusedDay.value);
-    _selectedEvents = ValueNotifier(_getEventsForDay(_focusedDay.value));
+    //_selectedEvents = ValueNotifier(_getEventsForDay(_focusedDay.value));
   }
 
   void dispose() {
@@ -51,23 +51,23 @@ class _ViewBoardPageState extends State<ViewBoardPage> {
   bool get canClearSelection =>
       _selectedDays.isNotEmpty || _rangeStart != null || _rangeEnd != null;
 
-  List<Event> _getEventsForDay(DateTime day) {
-    // Implementation example
-    return kEvents[day] ?? [];
-  }
+  // List<Event> _getEventsForDay(DateTime day) {
+  //   // Implementation example
+  //   return kEvents[day] ?? [];
+  // }
 
-  List<Event> _getEventsForDays(Iterable<DateTime> days) {
-    // Implementation example
-    // Note that days are in selection order (same applies to events)
-    return [
-      for (final d in days) ..._getEventsForDay(d),
-    ];
-  }
+  // List<Event> _getEventsForDays(Iterable<DateTime> days) {
+  //   // Implementation example
+  //   // Note that days are in selection order (same applies to events)
+  //   return [
+  //     for (final d in days) ..._getEventsForDay(d),
+  //   ];
+  // }
 
-  List<Event> _getEventsForRange(DateTime start, DateTime end) {
-    final days = daysInRange(start, end);
-    return _getEventsForDays(days);
-  }
+  // List<Event> _getEventsForRange(DateTime start, DateTime end) {
+  //   final days = daysInRange(start, end);
+  //   return _getEventsForDays(days);
+  // }
 
   void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
     setState(() {
@@ -83,7 +83,7 @@ class _ViewBoardPageState extends State<ViewBoardPage> {
       _rangeSelectionMode = RangeSelectionMode.toggledOff;
     });
 
-    _selectedEvents.value = _getEventsForDays(_selectedDays);
+    //_selectedEvents.value = _getEventsForDays(_selectedDays);
   }
 
   void _onRangeSelected(DateTime? start, DateTime? end, DateTime focusedDay) {
@@ -96,11 +96,11 @@ class _ViewBoardPageState extends State<ViewBoardPage> {
     });
 
     if (start != null && end != null) {
-      _selectedEvents.value = _getEventsForRange(start, end);
+      //_selectedEvents.value = _getEventsForRange(start, end);
     } else if (start != null) {
-      _selectedEvents.value = _getEventsForDay(start);
+      //_selectedEvents.value = _getEventsForDay(start);
     } else if (end != null) {
-      _selectedEvents.value = _getEventsForDay(end);
+      //_selectedEvents.value = _getEventsForDay(end);
     }
   }
 
@@ -112,14 +112,6 @@ class _ViewBoardPageState extends State<ViewBoardPage> {
           backgroundColor: Colors.transparent,
           elevation: 0,
           title: Text('Habit Board'),
-          actions: [
-            TextButton(
-                style: TextButton.styleFrom(
-                  primary: Colors.white,
-                ),
-                onPressed: () => Navigator.push(
-                    context, MaterialPageRoute(builder: (context) => AddBoardPage())),
-                child: Text('Add'))],
         ),
         body: Stack(children: <Widget>[
         Container(
@@ -194,7 +186,7 @@ class _ViewBoardPageState extends State<ViewBoardPage> {
                         selectedDayPredicate: (day) => _selectedDays.contains(day),
                         onDaySelected: _onDaySelected,
                         onRangeSelected: _onRangeSelected,
-                        eventLoader: _getEventsForDay,
+                        //eventLoader: _getEventsForDay,
                         startingDayOfWeek: StartingDayOfWeek.monday,
                         onCalendarCreated: (controller) => _pageController = controller,
                         onPageChanged: (focusedDay) => _focusedDay.value = focusedDay,
