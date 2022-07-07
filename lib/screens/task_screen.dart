@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'dart:collection';
+import 'package:AquaFocus/model/app_task.dart';
+import 'package:AquaFocus/services/task_firestore_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_helpers/firebase_helpers.dart';
 import 'package:intl/intl.dart';
 import 'package:AquaFocus/model/task_utils.dart';
 import 'package:AquaFocus/model/state.dart';
@@ -9,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:AquaFocus/screens/signin_screen.dart';
 
 class TaskScreen extends StatefulWidget {
   const TaskScreen({Key? key}) : super(key: key);
@@ -64,11 +68,11 @@ class _TaskScreenState extends State<TaskScreen> {
                         Colors.cyan.withOpacity(0.5),
                         Colors.white.withOpacity(0.5)
                       ]),
-                      boxShadow: <BoxShadow>[
+                      boxShadow: const <BoxShadow>[
                         BoxShadow(
                             color: Colors.black12,
                             blurRadius: 5,
-                            offset: new Offset(0.0, 5))
+                            offset: Offset(0.0, 5))
                       ]),
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -108,13 +112,14 @@ class _TaskScreenState extends State<TaskScreen> {
                               _focusedDay = focusedDay;
                             },
                             headerStyle: HeaderStyle(
-                              titleTextStyle: TextStyle(color: Colors.white),
+                              titleTextStyle:
+                                  const TextStyle(color: Colors.white),
                               formatButtonTextStyle:
-                                  TextStyle(color: Colors.white),
+                                  const TextStyle(color: Colors.white),
                               formatButtonDecoration: BoxDecoration(
                                 border: Border.all(color: Colors.white),
                                 borderRadius:
-                                    BorderRadius.all(Radius.circular(15)),
+                                    const BorderRadius.all(Radius.circular(15)),
                               ),
                               rightChevronIcon: Icon(Icons.chevron_right,
                                   color: Colors.white),
@@ -156,17 +161,45 @@ class _TaskScreenState extends State<TaskScreen> {
                                       child: Text(
                                         date.day.toString(),
                                         style: TextStyle(color: Colors.white),
-                                      )
+                                      )),
+                            )),
+                        StreamBuilder(
+                            stream: taskDBS.streamQueryList(args: [
+                              QueryArgsV2(
+                                "user_id",
+                                isEqualTo: user!.uid,
+                              )
+                            ]),
+                            builder:
+                                (BuildContext context, AsyncSnapshot snapshot) {
+                              if (!snapshot.hasData) {
+                                return 
+                                    const Align(
+                                      alignment: Alignment.center,
+                                      child: CircularProgressIndicator());
+                                
+                              } 
+                                final events = snapshot.data;
+                                return Expanded(
+                                  child: Scrollbar(
+                                    child: ListView.builder(
+                                        //shrinkWrap: true,
+                                        //physics: ScrollPhysics(),
+                                        itemCount: events.length,
+                                        itemBuilder:
+                                            (BuildContext context, int index) {
+                                          AppTask event = events[index];
+                                          return ListTile(
+                                            title: Text(event.title,
+                                            style: TextStyle(color: Colors.white),),
+                                          );
+                                        }),
                                   ),
-                            )
-                        )
-                      ]
-                  )
-              ),
+                                );              
+                            })
+                      ])),
             ),
-          ]
-          )
-      ),
+          ])),
       Padding(
           padding: EdgeInsets.all(MediaQuery.of(context).size.height * 0.05),
           child: Align(
@@ -177,15 +210,11 @@ class _TaskScreenState extends State<TaskScreen> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => AddEventPage(selectedDate: _selectedDay,)
-                        )
-                    );
-                  }
-                  )
-          )
-      )
-    ]
-    );
+                            builder: (context) => AddEventPage(
+                                  selectedDate: _selectedDay,
+                                )));
+                  })))
+    ]);
   }
 /*
 class _TaskScreenState extends State<TaskScreen> {
