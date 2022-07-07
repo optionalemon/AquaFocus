@@ -1,10 +1,13 @@
+import 'dart:async';
 import 'dart:collection';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
-import 'package:AquaFocus/model/habit_tracker_utils.dart';
+import 'package:AquaFocus/model/task_utils.dart';
 import 'package:AquaFocus/model/state.dart';
-import 'package:AquaFocus/screens/habit_tracker_pages/add_board.dart';
+import 'package:AquaFocus/screens/habit_tracker_pages/add_task.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class TaskScreen extends StatefulWidget {
@@ -14,6 +17,177 @@ class TaskScreen extends StatefulWidget {
   State<TaskScreen> createState() => _TaskScreenState();
 }
 
+class _TaskScreenState extends State<TaskScreen> {
+  CalendarFormat _calendarFormat = CalendarFormat.month;
+  DateTime _focusedDay = DateTime.now();
+  DateTime? _selectedDay;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  /*@override
+  void didChangeDependencies() {
+    context.read(pnProvider).init();
+    super.didChangeDependencies();
+  }*/
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(children: <Widget>[
+      Scaffold(
+          extendBodyBehindAppBar: true,
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            title: Text('Tasks'),
+          ),
+          body: Stack(children: <Widget>[
+            Container(
+              constraints: const BoxConstraints.expand(),
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/images/mainscreen.png'),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            SafeArea(
+              child: Container(
+                  margin: EdgeInsets.fromLTRB(10, 0, 10, 10),
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      gradient: LinearGradient(colors: [
+                        Colors.cyan.withOpacity(0.5),
+                        Colors.white.withOpacity(0.5)
+                      ]),
+                      boxShadow: <BoxShadow>[
+                        BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 5,
+                            offset: new Offset(0.0, 5))
+                      ]),
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        TableCalendar(
+                            firstDay: kFirstDay,
+                            lastDay: kLastDay,
+                            focusedDay: _focusedDay,
+                            calendarFormat: _calendarFormat,
+                            selectedDayPredicate: (day) {
+                              // Use `selectedDayPredicate` to determine which day is currently selected.
+                              // If this returns true, then `day` will be marked as selected.
+
+                              // Using `isSameDay` is recommended to disregard
+                              // the time-part of compared DateTime objects.
+                              return isSameDay(_selectedDay, day);
+                            },
+                            onDaySelected: (selectedDay, focusedDay) {
+                              if (!isSameDay(_selectedDay, selectedDay)) {
+                                // Call `setState()` when updating the selected day
+                                setState(() {
+                                  _selectedDay = selectedDay;
+                                  _focusedDay = focusedDay;
+                                });
+                              }
+                            },
+                            onFormatChanged: (format) {
+                              if (_calendarFormat != format) {
+                                // Call `setState()` when updating calendar format
+                                setState(() {
+                                  _calendarFormat = format;
+                                });
+                              }
+                            },
+                            onPageChanged: (focusedDay) {
+                              // No need to call `setState()` here
+                              _focusedDay = focusedDay;
+                            },
+                            headerStyle: HeaderStyle(
+                              titleTextStyle: TextStyle(color: Colors.white),
+                              formatButtonTextStyle:
+                                  TextStyle(color: Colors.white),
+                              formatButtonDecoration: BoxDecoration(
+                                border: Border.all(color: Colors.white),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(15)),
+                              ),
+                              rightChevronIcon: Icon(Icons.chevron_right,
+                                  color: Colors.white),
+                              leftChevronIcon:
+                                  Icon(Icons.chevron_left, color: Colors.white),
+                            ),
+                            calendarStyle: CalendarStyle(
+                              weekendTextStyle: TextStyle(color: Colors.white),
+                              outsideTextStyle: TextStyle(color: Colors.grey),
+                              defaultTextStyle: TextStyle(color: Colors.white),
+                              markerDecoration: BoxDecoration(
+                                  shape: BoxShape.circle, color: Colors.indigo),
+                            ),
+                            daysOfWeekStyle: DaysOfWeekStyle(
+                              weekendStyle: TextStyle(color: Colors.cyanAccent),
+                              weekdayStyle: TextStyle(color: Colors.cyanAccent),
+                            ),
+                            calendarBuilders: CalendarBuilders(
+                              selectedBuilder: (context, date, events) =>
+                                  Container(
+                                      margin: const EdgeInsets.all(4.0),
+                                      alignment: Alignment.center,
+                                      decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: Colors.lightGreenAccent
+                                              .withOpacity(0.7)),
+                                      child: Text(
+                                        date.day.toString(),
+                                        style: TextStyle(color: Colors.white),
+                                      )),
+                              todayBuilder: (context, date, events) =>
+                                  Container(
+                                      margin: const EdgeInsets.all(4.0),
+                                      alignment: Alignment.center,
+                                      decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: Colors.lightGreenAccent
+                                              .withOpacity(0.4)),
+                                      child: Text(
+                                        date.day.toString(),
+                                        style: TextStyle(color: Colors.white),
+                                      )
+                                  ),
+                            )
+                        )
+                      ]
+                  )
+              ),
+            ),
+          ]
+          )
+      ),
+      Padding(
+          padding: EdgeInsets.all(MediaQuery.of(context).size.height * 0.05),
+          child: Align(
+              alignment: Alignment.bottomCenter,
+              child: FloatingActionButton(
+                  child: Icon(Icons.add, color: Colors.white),
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => AddEventPage(selectedDate: _selectedDay,)
+                        )
+                    );
+                  }
+                  )
+          )
+      )
+    ]
+    );
+  }
+/*
 class _TaskScreenState extends State<TaskScreen> {
   late final PageController _pageController;
   late final ValueNotifier<List<Event>> _selectedEvents;
@@ -102,202 +276,216 @@ class _TaskScreenState extends State<TaskScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack (
-      children: <Widget> [
-        Scaffold(
-          extendBodyBehindAppBar: true,
-          appBar: AppBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            title: Text('Tasks'),
-            // actions: [
-            //   TextButton(
-            //       style: TextButton.styleFrom(
-            //         primary: Colors.white,
-            //       ),
-            //       onPressed: () => Navigator.push(
-            //           context, MaterialPageRoute(builder: (context) => AddBoardPage())),
-            //       child: Text('Add'))],
-          ),
-          body: Stack(children: <Widget>[
-            Container(
-              constraints: const BoxConstraints.expand(),
-              decoration: const BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('assets/images/mainscreen.png'),
-                  fit: BoxFit.cover,
-                ),
+    return Stack(
+        children: <Widget>[
+          Scaffold(
+              extendBodyBehindAppBar: true,
+              appBar: AppBar(
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+                title: Text('Tasks'),
               ),
-            ),
-            SafeArea(child: BlocBuilder<HabitBoardCubit, HabitBoardState>(
-                builder: (context, state) {
-                  return Container(
-                      margin: EdgeInsets.fromLTRB(10, 0, 10, 10),
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20),
-                          gradient: LinearGradient(colors: [Colors.cyan.withOpacity(0.5), Colors.white.withOpacity(0.5)]),
-                          boxShadow: <BoxShadow>[
-                            BoxShadow(
-                                color: Colors.black12,
-                                blurRadius: 5,
-                                offset: new Offset(0.0, 5)
-                            )
-                          ]
-                      ),
-                      child: Column(
-                        children: [
-                          ValueListenableBuilder<DateTime>(
-                            valueListenable: _focusedDay,
-                            builder: (context, value, _) {
-                              return _CalendarHeader(
-                                focusedDay: value,
-                                clearButtonVisible: canClearSelection,
-                                onTodayButtonTap: () {
-                                  setState(() => _focusedDay.value = DateTime.now());
-                                },
-                                onClearButtonTap: () {
-                                  setState(() {
-                                    _rangeStart = null;
-                                    _rangeEnd = null;
-                                    _selectedDays.clear();
-                                    _selectedEvents.value = [];
-                                  });
-                                },
-                                onLeftArrowTap: () {
-                                  _pageController.previousPage(
-                                    duration: Duration(milliseconds: 300),
-                                    curve: Curves.easeOut,
+              body: Stack(children: <Widget>[
+                Container(
+                  constraints: const BoxConstraints.expand(),
+                  decoration: const BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage('assets/images/mainscreen.png'),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+                SafeArea(child: BlocBuilder<HabitBoardCubit, HabitBoardState>(
+                    builder: (context, state) {
+                      return Container(
+                          margin: EdgeInsets.fromLTRB(10, 0, 10, 10),
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(20),
+                              gradient: LinearGradient(colors: [Colors.cyan
+                                  .withOpacity(0.5), Colors.white.withOpacity(
+                                  0.5)
+                              ]),
+                              boxShadow: <BoxShadow>[
+                                BoxShadow(
+                                    color: Colors.black12,
+                                    blurRadius: 5,
+                                    offset: new Offset(0.0, 5)
+                                )
+                              ]
+                          ),
+                          child: Column(
+                            children: [
+                              ValueListenableBuilder<DateTime>(
+                                valueListenable: _focusedDay,
+                                builder: (context, value, _) {
+                                  return _CalendarHeader(
+                                    focusedDay: value,
+                                    clearButtonVisible: canClearSelection,
+                                    onTodayButtonTap: () {
+                                      setState(() =>
+                                      _focusedDay.value = DateTime.now());
+                                    },
+                                    onClearButtonTap: () {
+                                      setState(() {
+                                        _rangeStart = null;
+                                        _rangeEnd = null;
+                                        _selectedDays.clear();
+                                        _selectedEvents.value = [];
+                                      });
+                                    },
+                                    onLeftArrowTap: () {
+                                      _pageController.previousPage(
+                                        duration: Duration(milliseconds: 300),
+                                        curve: Curves.easeOut,
+                                      );
+                                    },
+                                    onRightArrowTap: () {
+                                      _pageController.nextPage(
+                                        duration: Duration(milliseconds: 300),
+                                        curve: Curves.easeOut,
+                                      );
+                                    },
                                   );
                                 },
-                                onRightArrowTap: () {
-                                  _pageController.nextPage(
-                                    duration: Duration(milliseconds: 300),
-                                    curve: Curves.easeOut,
-                                  );
-                                },
-                              );
-                            },
-                          ),
-                          TableCalendar<Event>(
-                              firstDay: kFirstDay,
-                              lastDay: kLastDay,
-                              focusedDay: _focusedDay.value,
-                              headerVisible: false,
-                              rangeStartDay: _rangeStart,
-                              rangeEndDay: _rangeEnd,
-                              calendarFormat: _calendarFormat,
-                              rangeSelectionMode: _rangeSelectionMode,
-                              selectedDayPredicate: (day) => _selectedDays.contains(day),
-                              onDaySelected: _onDaySelected,
-                              onRangeSelected: _onRangeSelected,
-                              eventLoader: _getEventsForDay,
-                              startingDayOfWeek: StartingDayOfWeek.monday,
-                              onCalendarCreated: (controller) => _pageController = controller,
-                              onPageChanged: (focusedDay) => _focusedDay.value = focusedDay,
-                              onFormatChanged: (format) {
-                                if (_calendarFormat != format) {
-                                  setState(() => _calendarFormat = format);
-                                }
-                              },
-                              calendarStyle: CalendarStyle(
-                                weekendTextStyle: TextStyle(color: Colors.white60),
-                                outsideTextStyle: TextStyle(color: Colors.grey),
-                                defaultTextStyle: TextStyle(color: Colors.white),
-                                markerDecoration: BoxDecoration(shape: BoxShape.circle, color: Colors.blue[800]),
                               ),
-                              daysOfWeekStyle: DaysOfWeekStyle(
-                                weekendStyle: TextStyle(color: Colors.cyanAccent),
-                                weekdayStyle: TextStyle(color: Colors.cyanAccent),
+                              TableCalendar<Event>(
+                                  firstDay: kFirstDay,
+                                  lastDay: kLastDay,
+                                  focusedDay: _focusedDay.value,
+                                  headerVisible: false,
+                                  rangeStartDay: _rangeStart,
+                                  rangeEndDay: _rangeEnd,
+                                  calendarFormat: _calendarFormat,
+                                  rangeSelectionMode: _rangeSelectionMode,
+                                  // selectedDayPredicate: (day) =>
+                                  //     _selectedDays.contains(day),
+                                  selectedDayPredicate: (day) => _selectedDays.contains(day),
+                                  onDaySelected: _onDaySelected,
+                                    onRangeSelected: _onRangeSelected,
+                                    eventLoader: _getEventsForDay,
+                                    startingDayOfWeek: StartingDayOfWeek.monday,
+                                    onCalendarCreated: (controller) =>
+                                    _pageController = controller,
+                                    onPageChanged: (focusedDay) =>
+                                    _focusedDay.value = focusedDay,
+                                    onFormatChanged: (format) {
+                                    if (_calendarFormat != format) {
+                                    setState(() => _calendarFormat = format);
+                                    }
+                                    },
+                                    calendarStyle: CalendarStyle(
+                                    weekendTextStyle: TextStyle(
+                                    color: Colors.white),
+                                    outsideTextStyle: TextStyle(
+                                        color: Colors.grey),
+                                    defaultTextStyle: TextStyle(
+                                        color: Colors.white),
+                                    markerDecoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: Colors.indigo),
+                                  ),
+                                  daysOfWeekStyle: DaysOfWeekStyle(
+                                    weekendStyle: TextStyle(
+                                        color: Colors.cyanAccent),
+                                    weekdayStyle: TextStyle(
+                                        color: Colors.cyanAccent),
+                                  ),
+                                  calendarBuilders: CalendarBuilders(
+                                    selectedBuilder: (context, date, events) =>
+                                        Container(
+                                            margin: const EdgeInsets.all(4.0),
+                                            alignment: Alignment.center,
+                                            decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                color: Colors.lightGreenAccent
+                                                    .withOpacity(0.7)
+                                            ),
+                                            child: Text(
+                                              date.day.toString(),
+                                              style: TextStyle(
+                                                  color: Colors.white),
+                                            )),
+                                    todayBuilder: (context, date, events) =>
+                                        Container(
+                                            margin: const EdgeInsets.all(4.0),
+                                            alignment: Alignment.center,
+                                            decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                color: Colors.lightGreenAccent
+                                                    .withOpacity(0.4)
+                                            ),
+                                            child: Text(
+                                              date.day.toString(),
+                                              style: TextStyle(
+                                                  color: Colors.white),
+                                            )),
+                                  )
                               ),
-                              calendarBuilders: CalendarBuilders(
-                                selectedBuilder: (context, date, events) => Container(
-                                    margin: const EdgeInsets.all(4.0),
-                                    alignment: Alignment.center,
-                                    decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: Colors.lightGreenAccent.withOpacity(0.7)
-                                    ),
-                                    child: Text(
-                                      date.day.toString(),
-                                      style: TextStyle(color: Colors.white),
-                                    )),
-                                todayBuilder: (context, date, events) => Container(
-                                    margin: const EdgeInsets.all(4.0),
-                                    alignment: Alignment.center,
-                                    decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: Colors.lightGreenAccent.withOpacity(0.4)
-                                    ),
-                                    child: Text(
-                                      date.day.toString(),
-                                      style: TextStyle(color: Colors.white),
-                                    )),
-                              )
-                          ),
-                          const SizedBox(height: 8.0),
-                          Expanded(
-                            child: ValueListenableBuilder<List<Event>>(
-                              valueListenable: _selectedEvents,
-                              builder: (context, value, _) {
-                                return ListView.builder(
-                                  itemCount: value.length,
-                                  itemBuilder: (context, index) {
-                                    return Container(
-                                      margin: const EdgeInsets.symmetric(
-                                        horizontal: 12.0,
-                                        vertical: 4.0,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        border: Border.all(),
-                                        borderRadius: BorderRadius.circular(12.0),
-                                      ),
-                                      child: ListTile(
-                                        onTap: () => print('${value[index]}'),
-                                        title: Text('${value[index]}'),
-                                      ),
+                              const SizedBox(height: 8.0),
+                              Expanded(
+                                child: ValueListenableBuilder<List<Event>>(
+                                  valueListenable: _selectedEvents,
+                                  builder: (context, value, _) {
+                                    return ListView.builder(
+                                      itemCount: value.length,
+                                      itemBuilder: (context, index) {
+                                        return Container(
+                                          margin: const EdgeInsets.symmetric(
+                                            horizontal: 12.0,
+                                            vertical: 4.0,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            border: Border.all(),
+                                            borderRadius: BorderRadius.circular(
+                                                12.0),
+                                          ),
+                                          child: ListTile(
+                                            onTap: () =>
+                                                print('${value[index]}'),
+                                            title: Text('${value[index]}'),
+                                          ),
+                                        );
+                                      },
                                     );
                                   },
-                                );
-                              },
-                            ),
-                          ),],)
-                  );
-                }
-            ),
-            ),
-          ]
-          )
+                                ),
+                              ),
+                            ],)
+                      );
+                    }
+                ),
+                ),
+              ]
+              )
 
-      ),
-    Padding(
-      padding: EdgeInsets.all(MediaQuery.of(context).size.height * 0.05),
-      child: Align(
-      alignment: Alignment.bottomCenter,
-      child: ElevatedButton(
-        onPressed: () { Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => AddBoardPage())
-        );
-        },
-        style: ElevatedButton.styleFrom(
-            primary: Colors.blue.withOpacity(0.5),
-            onPrimary: Colors.white,
-            shadowColor: Colors.blueAccent,
-            elevation: 3,
-            padding: EdgeInsets.all(15),
-            shape: CircleBorder()),
-        child: const Icon(
-          Icons.add,
-          color: Colors.white,
-        ),
-      ),
-      ),
-    )]
+          ),
+          Padding(
+            padding: EdgeInsets.all(MediaQuery
+                .of(context)
+                .size
+                .height * 0.05),
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: FloatingActionButton(
+                  child: Icon(
+                      Icons.add,
+                    color: Colors.white),
+                onPressed: () { Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => AddEventPage())
+                );
+                },
+                ),
+            ),
+            ),
+        ]
     );
   }
-  }
+}
+
+
 
 class _CalendarHeader extends StatelessWidget {
   final DateTime focusedDay;
@@ -362,5 +550,6 @@ class _CalendarHeader extends StatelessWidget {
     );
   }
 }
+*/
 
-
+}
