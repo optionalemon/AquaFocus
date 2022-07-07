@@ -1,11 +1,13 @@
 import 'package:AquaFocus/loading.dart';
 import 'package:AquaFocus/model/state.dart';
-import 'package:AquaFocus/screens/home_screen.dart';
+import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:flutter_localizations/flutter_localizations.dart'; 
 import 'package:flutter/material.dart';
 import 'package:AquaFocus/screens/signin_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'firebase_options.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -46,6 +48,12 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           }
           return MaterialApp(
             debugShowCheckedModeBanner: false,
+            supportedLocales: const [Locale('en'),],
+            localizationsDelegates: [
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              FormBuilderLocalizations.delegate,
+      ],
             title: 'Aquafocus',
             theme: ThemeData(
               fontFamily: 'Alata',

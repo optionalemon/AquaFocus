@@ -1,14 +1,14 @@
 import 'dart:convert';
 
 class AppTask {
-  final String? title;
+  final String title;
   final String? id;
   final String? description;
   final DateTime? date;
   final String? userId;
 
   AppTask({
-    this.title,
+    this.title = "",
     this.id,
     this.description,
     this.date,
