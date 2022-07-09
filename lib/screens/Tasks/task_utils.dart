@@ -1,25 +1,35 @@
 import 'dart:collection';
+import 'package:firebase_helpers/firebase_helpers.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:AquaFocus/model/app_task.dart';
+import 'package:AquaFocus/services/task_firestore_service.dart';
 
-/// Example event class.
-class Event {
-  final String title;
+import '../signin_screen.dart';
 
-  Event(this.title);
-
-  @override
-  String toString() => this.title;
+/*
+_groupEvents(List<AppTask>? events) {
+  Map<DateTime, List<AppTask>> groupedEvents = {};
+  if (events != null) {
+    for (var event in events) {
+      DateTime date =
+          DateTime.utc(event.date.year, event.date.month, event.date.day, 12);
+      if (groupedEvents[date] == null) groupedEvents[date] = [];
+      groupedEvents[date]!.add(event);
+    } 
+  }
+  return groupedEvents;
 }
 
-/// Example events.
-///
-/// Using a [LinkedHashMap] is highly recommended if you decide to use a map.
-final kEvents = LinkedHashMap<DateTime, List<Event>>(
+
+final _kEventSource = _groupEvents(eventList);
+
+final kEvents = LinkedHashMap<DateTime, List<AppTask>>(
   equals: isSameDay,
   hashCode: getHashCode,
 )..addAll(_kEventSource);
 
-final _kEventSource = Map.fromIterable(List.generate(50, (index) => index),
+
+Map.fromIterable(List.generate(50, (index) => index),
     key: (item) => DateTime.utc(kFirstDay.year, kFirstDay.month, item * 5),
     value: (item) => List.generate(
         item % 4 + 1, (index) => Event('Event $item | ${index + 1}')))
@@ -29,6 +39,7 @@ final _kEventSource = Map.fromIterable(List.generate(50, (index) => index),
       Event('Today\'s Event 2'),
     ],
   });
+  */
 
 int getHashCode(DateTime key) {
   return key.day * 1000000 + key.month * 10000 + key.year;
@@ -39,7 +50,7 @@ List<DateTime> daysInRange(DateTime first, DateTime last) {
   final dayCount = last.difference(first).inDays + 1;
   return List.generate(
     dayCount,
-        (index) => DateTime.utc(first.year, first.month, first.day + index),
+    (index) => DateTime.utc(first.year, first.month, first.day + index),
   );
 }
 

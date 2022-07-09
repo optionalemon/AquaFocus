@@ -1,5 +1,5 @@
 import 'package:AquaFocus/model/habit_tracker_model.dart';
-import 'package:AquaFocus/model/task_utils.dart';
+import 'package:AquaFocus/screens/Tasks/task_utils.dart';
 import 'package:AquaFocus/model/state.dart';
 import 'package:AquaFocus/screens/Tasks/add_task.dart';
 import 'package:AquaFocus/screens/habit_tracker_pages/board.dart';
@@ -9,6 +9,7 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'dart:collection';
+import 'package:AquaFocus/model/app_task.dart';
 
 class ViewBoardPage extends StatefulWidget {
   
@@ -20,7 +21,7 @@ class ViewBoardPage extends StatefulWidget {
 
 class _ViewBoardPageState extends State<ViewBoardPage> {
   late final PageController _pageController;
-  late final ValueNotifier<List<Event>> _selectedEvents;
+  late final ValueNotifier<List<AppTask>> _selectedEvents;
   final ValueNotifier<DateTime> _focusedDay = ValueNotifier(DateTime.now());
 
   // Using a `LinkedHashSet` is recommended due to equality comparison override
@@ -174,7 +175,7 @@ class _ViewBoardPageState extends State<ViewBoardPage> {
                           );
                         },
                       ),
-                      TableCalendar<Event>(
+                      TableCalendar<AppTask>(
                         firstDay: kFirstDay,
                         lastDay: kLastDay,
                         focusedDay: _focusedDay.value,
@@ -232,7 +233,7 @@ class _ViewBoardPageState extends State<ViewBoardPage> {
                         ),
                   const SizedBox(height: 8.0),
                   Expanded(
-                    child: ValueListenableBuilder<List<Event>>(
+                    child: ValueListenableBuilder<List<AppTask>>(
                       valueListenable: _selectedEvents,
                       builder: (context, value, _) {
                         return ListView.builder(
