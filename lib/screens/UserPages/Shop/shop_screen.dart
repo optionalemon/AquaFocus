@@ -8,7 +8,7 @@ import 'package:AquaFocus/loading.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class ShopScreen extends StatefulWidget {
-  Function _updateHomeScreen;
+  final Function _updateHomeScreen;
   ShopScreen(this._updateHomeScreen);
 
   @override

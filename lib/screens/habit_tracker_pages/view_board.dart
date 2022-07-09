@@ -1,7 +1,7 @@
 import 'package:AquaFocus/model/habit_tracker_model.dart';
 import 'package:AquaFocus/model/task_utils.dart';
 import 'package:AquaFocus/model/state.dart';
-import 'package:AquaFocus/screens/habit_tracker_pages/add_task.dart';
+import 'package:AquaFocus/screens/Tasks/add_task.dart';
 import 'package:AquaFocus/screens/habit_tracker_pages/board.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
