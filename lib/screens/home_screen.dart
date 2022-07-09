@@ -289,7 +289,7 @@ class NavigationDrawer extends StatelessWidget {
 showAlertDialog(BuildContext context) {
   // set up the buttons
   Widget cancelButton = TextButton(
-    child: const Text("Cancel"),
+    child: const Text("Cancel",style: TextStyle(color: Colors.grey)),
     onPressed: () {
       Navigator.of(context).pop();
     },

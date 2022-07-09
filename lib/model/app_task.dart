@@ -2,18 +2,18 @@ import 'dart:convert';
 
 class AppTask {
   final String title;
-  final String? id;
+  final String id;
   final String? description;
-  final DateTime? date;
+  final DateTime date;
   final String? userId;
 
   AppTask({
     this.title = "",
-    this.id,
+    this.id = "",
     this.description,
-    this.date,
+    DateTime? date,
     this.userId,
-  });
+  }): this.date = date?? DateTime(1970);
 
   AppTask copyWith({
     String? title,
@@ -36,7 +36,7 @@ class AppTask {
       'title': title,
       'id': id,
       'description': description,
-      'date': date!.millisecondsSinceEpoch,
+      'date': date.millisecondsSinceEpoch,
       'userId': userId,
     };
   }

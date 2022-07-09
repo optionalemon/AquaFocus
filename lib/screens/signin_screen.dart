@@ -42,11 +42,10 @@ class _SignInScreenState extends State<SignInScreen> {
         ),
         child: SingleChildScrollView(
           child: Padding(
-            padding: EdgeInsets.fromLTRB(
-                20, size.height * 0.1, 20, 0),
+            padding: EdgeInsets.fromLTRB(20, size.height * 0.1, 20, 0),
             child: Column(
               children: <Widget>[
-                logoWidget('assets/images/logo1.png',size),
+                logoWidget('assets/images/logo1.png', size),
                 SizedBox(
                   height: size.height * 0.02,
                 ),
@@ -127,7 +126,7 @@ class _SignInScreenState extends State<SignInScreen> {
   Widget buildSignInWithText(Size size) {
     return Column(
       children: <Widget>[
-        SizedBox(height: size.height*0.01),
+        SizedBox(height: size.height * 0.01),
         const Text(
           '- OR -',
           style: TextStyle(
@@ -135,7 +134,7 @@ class _SignInScreenState extends State<SignInScreen> {
             fontWeight: FontWeight.w400,
           ),
         ),
-        SizedBox(height: size.height*0.01),
+        SizedBox(height: size.height * 0.01),
         const Text(
           'Sign in with',
           style: TextStyle(color: Colors.white70),
@@ -148,8 +147,8 @@ class _SignInScreenState extends State<SignInScreen> {
     return GestureDetector(
       onTap: pressed,
       child: Container(
-        height: size.height*0.07,
-        width: size.height*0.07,
+        height: size.height * 0.07,
+        width: size.height * 0.07,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: Colors.white,
@@ -170,7 +169,7 @@ class _SignInScreenState extends State<SignInScreen> {
 
   Widget buildSocialBtnRow(Size size) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: size.height*0.02),
+      padding: EdgeInsets.symmetric(vertical: size.height * 0.02),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[

@@ -57,8 +57,8 @@ class FirebaseServices {
       final facebookEmail = userData["email"];
 
       if (authResult.additionalUserInfo!.isNewUser) {
-      AppUser appUser = AppUser(email: facebookEmail, userName: "default");
-      DatabaseService().addUser(appUser, user!.uid);
+        AppUser appUser = AppUser(email: facebookEmail, userName: "default");
+        DatabaseService().addUser(appUser, user!.uid);
       }
 
       return FirebaseAuth.instance.signInWithCredential(facebookAuthCredential);

@@ -1,5 +1,6 @@
 import 'package:AquaFocus/loading.dart';
 import 'package:AquaFocus/model/state.dart';
+import 'package:AquaFocus/screens/Tasks/task_screen.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:flutter_localizations/flutter_localizations.dart'; 
 import 'package:flutter/material.dart';
@@ -54,6 +55,10 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
               GlobalWidgetsLocalizations.delegate,
               FormBuilderLocalizations.delegate,
       ],
+            initialRoute: '/',
+            routes: {
+              '/task': (context) => TaskScreen(),
+            },
             title: 'Aquafocus',
             theme: ThemeData(
               fontFamily: 'Alata',
