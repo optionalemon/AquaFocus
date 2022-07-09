@@ -3,11 +3,12 @@ import 'package:AquaFocus/screens/Tasks/task_details.dart';
 import 'package:AquaFocus/services/task_firestore_service.dart';
 import 'package:firebase_helpers/firebase_helpers.dart';
 import 'package:intl/intl.dart';
-import 'package:AquaFocus/model/task_utils.dart';
+import 'package:AquaFocus/screens/Tasks/task_utils.dart';
 import 'package:AquaFocus/screens/Tasks/add_task.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:AquaFocus/screens/signin_screen.dart';
+import 'dart:collection';
 
 class TaskScreen extends StatefulWidget {
   const TaskScreen({Key? key}) : super(key: key);
@@ -17,13 +18,103 @@ class TaskScreen extends StatefulWidget {
 }
 
 class _TaskScreenState extends State<TaskScreen> {
+  late final ValueNotifier<List<AppTask>> _selectedEvents;
+  RangeSelectionMode _rangeSelectionMode = RangeSelectionMode.toggledOff;
   CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
+  DateTime? _rangeStart;
+  DateTime? _rangeEnd;
+  List<AppTask> eventList = [];
+  LinkedHashMap<DateTime, List<AppTask>> kEvents =
+      LinkedHashMap<DateTime, List<AppTask>>();
 
   @override
   void initState() {
     super.initState();
+    _selectedDay = _focusedDay;
+    _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay!));
+    
+  }
+
+  @override
+  void dispose() {
+    _selectedEvents.dispose();
+    super.dispose();
+  }
+
+  groupEvents(List<AppTask>? events) {
+    Map<DateTime, List<AppTask>> groupedEvents = {};
+    if (events != null) {
+      for (var event in events) {
+        DateTime date =
+            DateTime.utc(event.date.year, event.date.month, event.date.day, 12);
+        if (groupedEvents[date] == null) groupedEvents[date] = [];
+        groupedEvents[date]!.add(event);
+      }
+    }
+    return groupedEvents;
+  }
+
+  _getEvents(DateTime day) async {
+    eventList = await taskDBS.getQueryList(args: [
+      QueryArgsV2(
+        "user_id",
+        isEqualTo: user!.uid,
+      ),
+    ]);
+  }
+
+  List<AppTask> _getEventsForDay(DateTime day) {
+    _getEvents(day);
+    Map<DateTime, List<AppTask>> groupedEvents = groupEvents(eventList);
+    kEvents = LinkedHashMap<DateTime, List<AppTask>>(
+      equals: isSameDay,
+      hashCode: getHashCode,
+    )..addAll(groupedEvents);
+    return kEvents[day] ?? [];
+  }
+
+  List<AppTask> _getEventsForRange(DateTime start, DateTime end) {
+    // Implementation example
+    final days = daysInRange(start, end);
+
+    return [
+      for (final d in days) ..._getEventsForDay(d),
+    ];
+  }
+
+  void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
+    if (!isSameDay(_selectedDay, selectedDay)) {
+      setState(() {
+        _selectedDay = selectedDay;
+        _focusedDay = focusedDay;
+        _rangeStart = null; // Important to clean those
+        _rangeEnd = null;
+        _rangeSelectionMode = RangeSelectionMode.toggledOff;
+      });
+
+      _selectedEvents.value = _getEventsForDay(selectedDay);
+    }
+  }
+
+  void _onRangeSelected(DateTime? start, DateTime? end, DateTime focusedDay) {
+    setState(() {
+      _selectedDay = null;
+      _focusedDay = focusedDay;
+      _rangeStart = start;
+      _rangeEnd = end;
+      _rangeSelectionMode = RangeSelectionMode.toggledOn;
+    });
+
+    // `start` or `end` could be null
+    if (start != null && end != null) {
+      _selectedEvents.value = _getEventsForRange(start, end);
+    } else if (start != null) {
+      _selectedEvents.value = _getEventsForDay(start);
+    } else if (end != null) {
+      _selectedEvents.value = _getEventsForDay(end);
+    }
   }
 
   /*@override
@@ -77,23 +168,16 @@ class _TaskScreenState extends State<TaskScreen> {
                             lastDay: kLastDay,
                             focusedDay: _focusedDay,
                             calendarFormat: _calendarFormat,
+                            rangeSelectionMode: _rangeSelectionMode,
+                            eventLoader: _getEventsForDay,
+                            startingDayOfWeek: StartingDayOfWeek.monday,
+                            rangeStartDay: _rangeStart,
+                            rangeEndDay: _rangeEnd,
+                            onRangeSelected: _onRangeSelected,
                             selectedDayPredicate: (day) {
-                              // Use `selectedDayPredicate` to determine which day is currently selected.
-                              // If this returns true, then `day` will be marked as selected.
-
-                              // Using `isSameDay` is recommended to disregard
-                              // the time-part of compared DateTime objects.
                               return isSameDay(_selectedDay, day);
                             },
-                            onDaySelected: (selectedDay, focusedDay) {
-                              if (!isSameDay(_selectedDay, selectedDay)) {
-                                // Call `setState()` when updating the selected day
-                                setState(() {
-                                  _selectedDay = selectedDay;
-                                  _focusedDay = focusedDay;
-                                });
-                              }
-                            },
+                            onDaySelected: _onDaySelected,
                             onFormatChanged: (format) {
                               if (_calendarFormat != format) {
                                 // Call `setState()` when updating calendar format
@@ -103,7 +187,6 @@ class _TaskScreenState extends State<TaskScreen> {
                               }
                             },
                             onPageChanged: (focusedDay) {
-                              // No need to call `setState()` here
                               _focusedDay = focusedDay;
                             },
                             headerStyle: HeaderStyle(
@@ -123,7 +206,8 @@ class _TaskScreenState extends State<TaskScreen> {
                             ),
                             calendarStyle: CalendarStyle(
                               weekendTextStyle: TextStyle(color: Colors.white),
-                              outsideTextStyle: TextStyle(color: Colors.grey),
+                              outsideTextStyle: TextStyle(
+                                  color: Color.fromARGB(255, 196, 196, 196)),
                               defaultTextStyle: TextStyle(color: Colors.white),
                               markerDecoration: BoxDecoration(
                                   shape: BoxShape.circle, color: Colors.indigo),
@@ -158,67 +242,62 @@ class _TaskScreenState extends State<TaskScreen> {
                                         style: TextStyle(color: Colors.white),
                                       )),
                             )),
-                        StreamBuilder(
-                            stream: taskDBS.streamQueryList(args: [
-                              QueryArgsV2(
-                                "user_id",
-                                isEqualTo: user!.uid,
-                              )
-                            ]),
-                            builder:
-                                (BuildContext context, AsyncSnapshot snapshot) {
-                              if (!snapshot.hasData) {
-                                return const Align(
-                                    alignment: Alignment.center,
-                                    child: CircularProgressIndicator());
-                              }
-                              final events = snapshot.data;
-                              return Expanded(
+                              Expanded(
                                 child: Scrollbar(
-                                  child: ListView.builder(
-                                      //shrinkWrap: true,
-                                      //physics: ScrollPhysics(),
-                                      itemCount: events.length,
-                                      itemBuilder:
-                                          (BuildContext context, int index) {
-                                        AppTask event = events[index];
-                                        return ListTile(
-                                          onTap: () {
-                                            Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        TaskDetails(event)));
-                                          },
-                                          title: Text(
-                                            event.title,
-                                            style:
-                                                TextStyle(color: Colors.white),
-                                          ),
-                                          subtitle: Text(
-                                            DateFormat('EEEE,dd MMMM, yyyy')
-                                                .format(event.date),
-                                            style:
-                                                TextStyle(color: Colors.white),
-                                          ),
-                                          trailing: IconButton(
-                                            icon: Icon(Icons.edit, color: Colors.white,),
-                                            onPressed: () {
-                                              Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => AddEventPage(
-                                  selectedDate:event.date,
-                                  task: event,
-                                  updateTaskDetails: () {},
-                                )));
-                                            },
-                                          )
-                                        );
+                                  child: ValueListenableBuilder<List<AppTask>>(
+                                      valueListenable: _selectedEvents,
+                                      builder: (context, value, _) {
+                                        return ListView.builder(
+                                            itemCount: value.length,
+                                            itemBuilder: (BuildContext context,
+                                                int index) {
+                                              AppTask event = value[index];
+                                              return ListTile(
+                                                  onTap: () {
+                                                    Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                TaskDetails(
+                                                                    event)));
+                                                  },
+                                                  title: Text(
+                                                    event.title,
+                                                    style: TextStyle(
+                                                        color: Colors.white),
+                                                  ),
+                                                  subtitle: Text(
+                                                    DateFormat(
+                                                            'EEEE, dd MMMM, yyyy')
+                                                        .format(event.date),
+                                                    style: TextStyle(
+                                                        color: Colors.white),
+                                                  ),
+                                                  trailing: IconButton(
+                                                    icon: Icon(
+                                                      Icons.edit,
+                                                      color: Colors.white,
+                                                    ),
+                                                    onPressed: () {
+                                                      Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                              builder: (context) =>
+                                                                  AddEventPage(
+                                                                    selectedDate:
+                                                                        event
+                                                                            .date,
+                                                                    task: event,
+                                                                    updateTaskDetails:
+                                                                        () {},
+                                                                  )));
+                                                    },
+                                                  ));
+                                            });
                                       }),
                                 ),
-                              );
-                            })
+                              )
+                            
                       ])),
             ),
           ])),

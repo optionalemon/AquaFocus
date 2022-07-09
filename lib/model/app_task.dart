@@ -6,6 +6,7 @@ class AppTask {
   final String? description;
   final DateTime date;
   final String? userId;
+  final bool isCompleted;
 
   AppTask({
     this.title = "",
@@ -13,6 +14,7 @@ class AppTask {
     this.description,
     DateTime? date,
     this.userId,
+    this.isCompleted = false,
   }): this.date = date?? DateTime(1970);
 
   AppTask copyWith({
@@ -21,6 +23,7 @@ class AppTask {
     String? description,
     DateTime? date,
     String? userId,
+    bool? isCompleted,
   }) {
     return AppTask(
       title: title ?? this.title,
@@ -28,6 +31,7 @@ class AppTask {
       description: description ?? this.description,
       date: date ?? this.date,
       userId: userId ?? this.userId,
+      isCompleted: isCompleted ?? this.isCompleted,
     );
   }
 
@@ -38,6 +42,7 @@ class AppTask {
       'description': description,
       'date': date.millisecondsSinceEpoch,
       'userId': userId,
+      'isCompleted': isCompleted,
     };
   }
 
@@ -50,6 +55,7 @@ class AppTask {
       description: map['description'],
       date: DateTime.fromMillisecondsSinceEpoch(map['date']),
       userId: map['userId'],
+      isCompleted: map['isCompleted'],
     );
   }
   static AppTask? fromDS(String id, Map<String, dynamic> data) {
@@ -61,6 +67,7 @@ class AppTask {
       description: data['description'],
       date: DateTime.fromMillisecondsSinceEpoch(data['date']),
       userId: data['user_id'],
+      isCompleted: data['isCompleted'],
     );
   }
 
@@ -92,6 +99,6 @@ class AppTask {
     id.hashCode ^
     description.hashCode ^
     date.hashCode ^
-    userId.hashCode;
+    userId.hashCode ^ isCompleted.hashCode;
   }
 }
