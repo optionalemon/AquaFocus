@@ -64,7 +64,7 @@ class _CountDownScreenState extends State<CountDownScreen> {
               children: [
                 SizedBox(height: size.height * 0.05),
                 Image.asset(
-                  'assets/images/hourglass.png',
+                  'assets/images/timer.png',
                   height: size.height * 0.35,
                 ),
                 hvStarted
