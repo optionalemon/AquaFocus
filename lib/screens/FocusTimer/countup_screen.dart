@@ -57,7 +57,7 @@ class _CountUpScreenState extends State<CountUpScreen> {
           Column(children: [
             SizedBox(height: screenSize.height * 0.05),
             Image.asset(
-          'assets/images/hourglass.png',
+          'assets/images/timer.png',
           height: screenSize.height * 0.35,
             ),
             SizedBox(height: screenSize.height * 0.05),
