@@ -25,6 +25,7 @@ class Onboarding extends StatelessWidget {
                 options: CarouselOptions(
                   height: height,
                   viewportFraction: 1.0,
+                  enableInfiniteScroll: false,
                   enlargeCenterPage: false,
                 ),
                 items: imgList
