@@ -21,4 +21,5 @@ List<MarineCreatures> marinesCreatures = [
   MarineCreatures(id: 2, image: "assets/images/whale.png", type: "Orca", price: 150, description: "Largest member of the dolphin family found in all oceans.", color: Color.fromARGB(255, 70, 70, 70)),
   MarineCreatures(id: 3, image: "assets/images/Turtle.png", type: "Turtle", price: 200, description: "a Madagascar big-headed turtle found outside protected areas.", color: Color.fromARGB(255, 76, 175, 116)),
   MarineCreatures(id: 4, image: "assets/images/axolotl.png", type: "Axolotl", price: 250, description: "Usually found in Mexico freshwater lakes and ponds, critically endangered due to urbanisation and water pollution in Mexico.", color: Color.fromARGB(255, 236, 143, 147)),
+  MarineCreatures(id: 5, image: "assets/images/MantaRay.png", type: "Manta Ray", price: 300, description: "I may look hazardous but I only have 300 tiny teeth that cannot penetrate human skin.", color: Color.fromARGB(255, 162, 162, 162)),
 ];

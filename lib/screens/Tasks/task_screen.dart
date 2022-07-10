@@ -1,3 +1,4 @@
+import 'package:AquaFocus/loading.dart';
 import 'package:AquaFocus/model/app_task.dart';
 import 'package:AquaFocus/screens/Tasks/task_details.dart';
 import 'package:AquaFocus/services/task_firestore_service.dart';
@@ -18,23 +19,22 @@ class TaskScreen extends StatefulWidget {
 }
 
 class _TaskScreenState extends State<TaskScreen> {
-  late final ValueNotifier<List<AppTask>> _selectedEvents;
+  late ValueNotifier<List<AppTask>> _selectedEvents;
   RangeSelectionMode _rangeSelectionMode = RangeSelectionMode.toggledOff;
   CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
   DateTime? _rangeStart;
   DateTime? _rangeEnd;
-  List<AppTask> eventList = [];
   LinkedHashMap<DateTime, List<AppTask>> kEvents =
       LinkedHashMap<DateTime, List<AppTask>>();
+  List<AppTask> eventList = [];
+  bool loading = true;
 
   @override
   void initState() {
     super.initState();
-    _selectedDay = _focusedDay;
-    _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay!));
-    
+    _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay));
   }
 
   @override
@@ -56,23 +56,27 @@ class _TaskScreenState extends State<TaskScreen> {
     return groupedEvents;
   }
 
-  _getEvents(DateTime day) async {
+  _getEvents() async {
     eventList = await taskDBS.getQueryList(args: [
       QueryArgsV2(
         "user_id",
         isEqualTo: user!.uid,
       ),
     ]);
+    if (!mounted) return;
+    setState(() {
+      loading = false;
+    });
   }
 
-  List<AppTask> _getEventsForDay(DateTime day) {
-    _getEvents(day);
+  List<AppTask> _getEventsForDay(DateTime? day) {
+    _getEvents();
     Map<DateTime, List<AppTask>> groupedEvents = groupEvents(eventList);
     kEvents = LinkedHashMap<DateTime, List<AppTask>>(
       equals: isSameDay,
       hashCode: getHashCode,
     )..addAll(groupedEvents);
-    return kEvents[day] ?? [];
+    return day == null ? [] : (kEvents[day] ?? []);
   }
 
   List<AppTask> _getEventsForRange(DateTime start, DateTime end) {
@@ -86,6 +90,7 @@ class _TaskScreenState extends State<TaskScreen> {
 
   void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
     if (!isSameDay(_selectedDay, selectedDay)) {
+      if (!mounted) return;
       setState(() {
         _selectedDay = selectedDay;
         _focusedDay = focusedDay;
@@ -99,8 +104,9 @@ class _TaskScreenState extends State<TaskScreen> {
   }
 
   void _onRangeSelected(DateTime? start, DateTime? end, DateTime focusedDay) {
+    if (!mounted) return;
     setState(() {
-      _selectedDay = null;
+      _selectedDay = focusedDay;
       _focusedDay = focusedDay;
       _rangeStart = start;
       _rangeEnd = end;
@@ -125,123 +131,133 @@ class _TaskScreenState extends State<TaskScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(children: <Widget>[
-      Scaffold(
-          extendBodyBehindAppBar: true,
-          appBar: AppBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            title: Text('Tasks'),
-          ),
-          body: Stack(children: <Widget>[
-            Container(
-              constraints: const BoxConstraints.expand(),
-              decoration: const BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('assets/images/mainscreen.png'),
-                  fit: BoxFit.cover,
+    return loading
+        ? const Loading()
+        : Stack(children: <Widget>[
+            Scaffold(
+                extendBodyBehindAppBar: true,
+                appBar: AppBar(
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
+                  title: Text('Tasks'),
                 ),
-              ),
-            ),
-            SafeArea(
-              child: Container(
-                  margin: EdgeInsets.fromLTRB(10, 0, 10, 10),
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                      gradient: LinearGradient(colors: [
-                        Colors.cyan.withOpacity(0.5),
-                        Colors.white.withOpacity(0.5)
-                      ]),
-                      boxShadow: const <BoxShadow>[
-                        BoxShadow(
-                            color: Colors.black12,
-                            blurRadius: 5,
-                            offset: Offset(0.0, 5))
-                      ]),
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        TableCalendar(
-                            firstDay: kFirstDay,
-                            lastDay: kLastDay,
-                            focusedDay: _focusedDay,
-                            calendarFormat: _calendarFormat,
-                            rangeSelectionMode: _rangeSelectionMode,
-                            eventLoader: _getEventsForDay,
-                            startingDayOfWeek: StartingDayOfWeek.monday,
-                            rangeStartDay: _rangeStart,
-                            rangeEndDay: _rangeEnd,
-                            onRangeSelected: _onRangeSelected,
-                            selectedDayPredicate: (day) {
-                              return isSameDay(_selectedDay, day);
-                            },
-                            onDaySelected: _onDaySelected,
-                            onFormatChanged: (format) {
-                              if (_calendarFormat != format) {
-                                // Call `setState()` when updating calendar format
-                                setState(() {
-                                  _calendarFormat = format;
-                                });
-                              }
-                            },
-                            onPageChanged: (focusedDay) {
-                              _focusedDay = focusedDay;
-                            },
-                            headerStyle: HeaderStyle(
-                              titleTextStyle:
-                                  const TextStyle(color: Colors.white),
-                              formatButtonTextStyle:
-                                  const TextStyle(color: Colors.white),
-                              formatButtonDecoration: BoxDecoration(
-                                border: Border.all(color: Colors.white),
-                                borderRadius:
-                                    const BorderRadius.all(Radius.circular(15)),
-                              ),
-                              rightChevronIcon: Icon(Icons.chevron_right,
-                                  color: Colors.white),
-                              leftChevronIcon:
-                                  Icon(Icons.chevron_left, color: Colors.white),
-                            ),
-                            calendarStyle: CalendarStyle(
-                              weekendTextStyle: TextStyle(color: Colors.white),
-                              outsideTextStyle: TextStyle(
-                                  color: Color.fromARGB(255, 196, 196, 196)),
-                              defaultTextStyle: TextStyle(color: Colors.white),
-                              markerDecoration: BoxDecoration(
-                                  shape: BoxShape.circle, color: Colors.indigo),
-                            ),
-                            daysOfWeekStyle: DaysOfWeekStyle(
-                              weekendStyle: TextStyle(color: Colors.cyanAccent),
-                              weekdayStyle: TextStyle(color: Colors.cyanAccent),
-                            ),
-                            calendarBuilders: CalendarBuilders(
-                              selectedBuilder: (context, date, events) =>
-                                  Container(
-                                      margin: const EdgeInsets.all(4.0),
-                                      alignment: Alignment.center,
-                                      decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          color: Colors.lightGreenAccent
-                                              .withOpacity(0.7)),
-                                      child: Text(
-                                        date.day.toString(),
-                                        style: TextStyle(color: Colors.white),
-                                      )),
-                              todayBuilder: (context, date, events) =>
-                                  Container(
-                                      margin: const EdgeInsets.all(4.0),
-                                      alignment: Alignment.center,
-                                      decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          color: Colors.lightGreenAccent
-                                              .withOpacity(0.4)),
-                                      child: Text(
-                                        date.day.toString(),
-                                        style: TextStyle(color: Colors.white),
-                                      )),
-                            )),
+                body: Stack(children: <Widget>[
+                  Container(
+                    constraints: const BoxConstraints.expand(),
+                    decoration: const BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage('assets/images/mainscreen.png'),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                  SafeArea(
+                    child: Container(
+                        margin: EdgeInsets.fromLTRB(10, 0, 10, 10),
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20),
+                            gradient: LinearGradient(colors: [
+                              Colors.cyan.withOpacity(0.5),
+                              Colors.white.withOpacity(0.5)
+                            ]),
+                            boxShadow: const <BoxShadow>[
+                              BoxShadow(
+                                  color: Colors.black12,
+                                  blurRadius: 5,
+                                  offset: Offset(0.0, 5))
+                            ]),
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              TableCalendar(
+                                  firstDay: kFirstDay,
+                                  lastDay: kLastDay,
+                                  focusedDay: _focusedDay,
+                                  calendarFormat: _calendarFormat,
+                                  rangeSelectionMode: _rangeSelectionMode,
+                                  eventLoader: _getEventsForDay,
+                                  startingDayOfWeek: StartingDayOfWeek.monday,
+                                  rangeStartDay: _rangeStart,
+                                  rangeEndDay: _rangeEnd,
+                                  onRangeSelected: _onRangeSelected,
+                                  selectedDayPredicate: (day) {
+                                    return isSameDay(_selectedDay, day);
+                                  },
+                                  onDaySelected: _onDaySelected,
+                                  onFormatChanged: (format) {
+                                    if (_calendarFormat != format) {
+                                      if (!mounted) return;
+                                      setState(() {
+                                        _calendarFormat = format;
+                                      });
+                                    }
+                                  },
+                                  onPageChanged: (focusedDay) {
+                                    _focusedDay = focusedDay;
+                                  },
+                                  headerStyle: HeaderStyle(
+                                    titleTextStyle:
+                                        const TextStyle(color: Colors.white),
+                                    formatButtonTextStyle:
+                                        const TextStyle(color: Colors.white),
+                                    formatButtonDecoration: BoxDecoration(
+                                      border: Border.all(color: Colors.white),
+                                      borderRadius: const BorderRadius.all(
+                                          Radius.circular(15)),
+                                    ),
+                                    rightChevronIcon: Icon(Icons.chevron_right,
+                                        color: Colors.white),
+                                    leftChevronIcon: Icon(Icons.chevron_left,
+                                        color: Colors.white),
+                                  ),
+                                  calendarStyle: CalendarStyle(
+                                    weekendTextStyle:
+                                        TextStyle(color: Colors.white),
+                                    outsideTextStyle: TextStyle(
+                                        color:
+                                            Color.fromARGB(255, 196, 196, 196)),
+                                    defaultTextStyle:
+                                        TextStyle(color: Colors.white),
+                                    markerDecoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: Colors.indigo),
+                                  ),
+                                  daysOfWeekStyle: DaysOfWeekStyle(
+                                    weekendStyle:
+                                        TextStyle(color: Colors.cyanAccent),
+                                    weekdayStyle:
+                                        TextStyle(color: Colors.cyanAccent),
+                                  ),
+                                  calendarBuilders: CalendarBuilders(
+                                    selectedBuilder: (context, date, events) =>
+                                        Container(
+                                            margin: const EdgeInsets.all(4.0),
+                                            alignment: Alignment.center,
+                                            decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                color: Colors.lightGreenAccent
+                                                    .withOpacity(0.7)),
+                                            child: Text(
+                                              date.day.toString(),
+                                              style: TextStyle(
+                                                  color: Colors.white),
+                                            )),
+                                    todayBuilder: (context, date, events) =>
+                                        Container(
+                                            margin: const EdgeInsets.all(4.0),
+                                            alignment: Alignment.center,
+                                            decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                color: Colors.lightGreenAccent
+                                                    .withOpacity(0.4)),
+                                            child: Text(
+                                              date.day.toString(),
+                                              style: TextStyle(
+                                                  color: Colors.white),
+                                            )),
+                                  )),
                               Expanded(
                                 child: Scrollbar(
                                   child: ValueListenableBuilder<List<AppTask>>(
@@ -297,26 +313,26 @@ class _TaskScreenState extends State<TaskScreen> {
                                       }),
                                 ),
                               )
-                            
-                      ])),
-            ),
-          ])),
-      Padding(
-          padding: EdgeInsets.all(MediaQuery.of(context).size.height * 0.05),
-          child: Align(
-              alignment: Alignment.bottomCenter,
-              child: FloatingActionButton(
-                  child: Icon(Icons.add, color: Colors.white),
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => AddEventPage(
-                                  selectedDate: _selectedDay,
-                                  updateTaskDetails: () {},
-                                )));
-                  })))
-    ]);
+                            ])),
+                  ),
+                ])),
+            Padding(
+                padding:
+                    EdgeInsets.all(MediaQuery.of(context).size.height * 0.05),
+                child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: FloatingActionButton(
+                        child: Icon(Icons.add, color: Colors.white),
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => AddEventPage(
+                                        selectedDate: _selectedDay,
+                                        updateTaskDetails: () {},
+                                      )));
+                        })))
+          ]);
   }
 /*
 class _TaskScreenState extends State<TaskScreen> {
