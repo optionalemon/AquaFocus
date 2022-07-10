@@ -1,3 +1,4 @@
+import 'package:AquaFocus/screens/Onboarding/Onboarding.dart';
 import 'package:AquaFocus/screens/reset_password.dart';
 import 'package:AquaFocus/services/firebase_services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -77,7 +78,10 @@ class _SignInScreenState extends State<SignInScreen> {
           _emailTextController.text, _passwordTextController.text);
 
       Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => HomeScreen()));
+          MaterialPageRoute(builder: (context) =>
+              //HomeScreen()
+            Onboarding()
+          ));
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text('Invalid Password or/and Email'),
@@ -177,7 +181,10 @@ class _SignInScreenState extends State<SignInScreen> {
             () async {
               await FirebaseServices().signInWithFacebook();
               Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) => HomeScreen()));
+                  MaterialPageRoute(builder: (context) =>
+                      //HomeScreen()
+                  Onboarding()
+                  ));
             },
             const AssetImage(
               'assets/images/facebook.jpg',
@@ -188,7 +195,10 @@ class _SignInScreenState extends State<SignInScreen> {
             () async {
               await FirebaseServices().signInWithGoogle();
               Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) => HomeScreen()));
+                  MaterialPageRoute(builder: (context) =>
+                      //HomeScreen()
+                  Onboarding()
+                  ));
             },
             const AssetImage(
               'assets/images/google.jpg',
