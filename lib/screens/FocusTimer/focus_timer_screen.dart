@@ -4,7 +4,8 @@ import 'package:AquaFocus/screens/FocusTimer/lock_screen.dart';
 import 'package:flutter/material.dart';
 
 class FocusTimerScreen extends StatefulWidget {
-  const FocusTimerScreen({Key? key}) : super(key: key);
+  final Function _updateHomeScreen;
+  FocusTimerScreen(this._updateHomeScreen);
 
   @override
   State<FocusTimerScreen> createState() => _FocusTimerScreenState();
@@ -12,8 +13,13 @@ class FocusTimerScreen extends StatefulWidget {
 
 class _FocusTimerScreenState extends State<FocusTimerScreen> {
   int currentIndex = 0;
-  final screens = [CountDownScreen(), CountUpScreen(), ExamScreen()];
+  late final screens;
   final pressed = [true, false, false];
+
+  @override
+void initState() {
+  screens = [CountDownScreen(widget._updateHomeScreen), CountUpScreen(widget._updateHomeScreen), ExamScreen(widget._updateHomeScreen)];
+}
 
   @override
   Widget build(BuildContext context) {

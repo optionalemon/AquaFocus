@@ -1,10 +1,14 @@
-import 'package:AquaFocus/screens/FocusTimer/CountDown/countdown_buttons.dart';
+import 'package:AquaFocus/reusable_widgets/reusable_widget.dart';
 import 'package:AquaFocus/screens/FocusTimer/CountDown/countdown_helper.dart';
 import 'package:AquaFocus/services/database_services.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
 class CountUpScreen extends StatefulWidget {
+  final Function _updateHomeScreen;
+  CountUpScreen(this._updateHomeScreen);
+
   @override
   State<CountUpScreen> createState() => _CountUpScreenState();
 }
@@ -13,10 +17,23 @@ class _CountUpScreenState extends State<CountUpScreen> {
   Duration duration = Duration(seconds: 0);
   Timer? timer;
   bool hvStarted = false;
+  int fishMoney = 0;
+  bool loading = true;
+
+  Future<void> getMarMoney() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      fishMoney = await DatabaseService().getMoney();
+    }
+    setState(() {
+      loading = false;
+    });
+  }
 
   @override
   void initState() {
     super.initState();
+    getMarMoney();
   }
 
   void startTimer() {
@@ -57,24 +74,24 @@ class _CountUpScreenState extends State<CountUpScreen> {
           Column(children: [
             SizedBox(height: screenSize.height * 0.05),
             Image.asset(
-          'assets/images/timer.png',
-          height: screenSize.height * 0.35,
+              'assets/images/hourglass.png',
+              height: screenSize.height * 0.3,
             ),
             SizedBox(height: screenSize.height * 0.05),
             Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-          buildTimeCard(currTimeStr[0], 'HOURS',screenSize),
-          SizedBox(width: screenSize.width * 0.02),
-          buildTimeCard(currTimeStr[1], 'MINUTES',screenSize),
+              buildTimeCard(currTimeStr[0], 'HOURS', screenSize),
               SizedBox(width: screenSize.width * 0.02),
-          buildTimeCard(currTimeStr[2], 'SECONDS',screenSize)
+              buildTimeCard(currTimeStr[1], 'MINUTES', screenSize),
+              SizedBox(width: screenSize.width * 0.02),
+              buildTimeCard(currTimeStr[2], 'SECONDS', screenSize)
             ]),
             _countUpButtons(),
             hvStarted && duration.inSeconds < 10
-            ? Text(
-                "Must be more than 10 seconds",
-                style: TextStyle(color: Color.fromARGB(255, 255, 255, 255)),
-              )
-            : Container(),
+                ? Text(
+                    "Must be more than 10 seconds",
+                    style: TextStyle(color: Color.fromARGB(255, 255, 255, 255)),
+                  )
+                : Container(),
           ]),
         ],
       ),
@@ -99,7 +116,7 @@ class _CountUpScreenState extends State<CountUpScreen> {
             ),
           ),
         ),
-        SizedBox( height: size.height * 0.02),
+        SizedBox(height: size.height * 0.02),
         Text(
           title,
           style: TextStyle(color: Colors.white),
@@ -111,10 +128,9 @@ class _CountUpScreenState extends State<CountUpScreen> {
   _countUpButtons() {
     return Column(
       children: [
-        SizedBox(height: MediaQuery.of(context).size.height * 0.024),
         hvStarted
             ? _startedDisplay()
-            : CountDownButtons(text: "Start!", press: () => startTimer()),
+            : firebaseButton(context, "Start", () => startTimer()),
       ],
     );
   }
@@ -124,29 +140,60 @@ class _CountUpScreenState extends State<CountUpScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          CountDownButtons(
-            text: duration.inSeconds >= 10 ? 'Done' : 'Cancel', 
-            press: () {
+          firebaseButton(
+            context,
+            duration.inSeconds >= 10 ? 'Done' : 'Cancel',
+            () {
               showDialog(
                   context: context,
                   builder: (_) => duration.inSeconds >= 10
                       ? _completeTaskDialog()
                       : _cancelTaskDialog());
+              setState(() {
+                timer!.cancel();
+              });
             },
           )
         ]);
   }
 
   _completeTaskDialog() {
+    List totalTime = CountDownHelper().timeString(duration.inSeconds);
+    int moneyEarned = int.parse(totalTime[1]) + int.parse(totalTime[0]) * 60;
+    DatabaseService().addMoney(moneyEarned);
+    fishMoney += moneyEarned;
+    Size size = MediaQuery.of(context).size;
+
     return AlertDialog(
-      title: const Text("Congrats!"),
+      title: const Text("Congrats! You have earned"),
+      content: SizedBox(
+        height: size.height * 0.035,
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset(
+                  'assets/icons/money.png',
+                  height: size.height * 0.035,
+                ),
+                SizedBox(width: size.width * 0.02),
+                Text(
+                  '$moneyEarned',
+                ),
+              ],
+            )
+          ],
+        ),
+      ),
       actions: [
         ElevatedButton(
           onPressed: () {
+            Navigator.pop(context);
             setState(() {
+              widget._updateHomeScreen(fishMoney);
               stopTimer(true);
             });
-            Navigator.pop(context);    
           },
           child: Text("Back"),
         ),
@@ -166,8 +213,9 @@ class _CountUpScreenState extends State<CountUpScreen> {
               ElevatedButton(
                 onPressed: () {
                   Navigator.pop(context);
+                  startTimer();
                 },
-                child: Text("Cancel"),
+                child: Text("No"),
               ),
               ElevatedButton(
                 onPressed: () {

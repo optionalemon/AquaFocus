@@ -48,6 +48,7 @@ dependencies:
   intl: ^0.17.0
   uuid: ^3.0.6
   carousel_slider: ^4.1.1
+  shared_preferences: ^2.0.15
 
   flutter_localizations:
     sdk: flutter

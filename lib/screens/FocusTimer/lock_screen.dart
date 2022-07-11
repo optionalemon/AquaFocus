@@ -2,6 +2,9 @@ import 'package:AquaFocus/services/database_services.dart';
 import 'package:flutter/material.dart';
 
 class ExamScreen extends StatefulWidget {
+  final Function _updateHomeScreen;
+  ExamScreen(this._updateHomeScreen);
+
   @override
   State<ExamScreen> createState() => _ExamScreenState();
 }

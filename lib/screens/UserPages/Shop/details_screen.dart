@@ -9,8 +9,7 @@ class DetailScreen extends StatelessWidget {
       {Key? key,
       required this.marLife,
       required this.isBought,
-      required this.updateShopState
-      })
+      required this.updateShopState})
       : super(key: key);
   final MarineCreatures marLife;
   final bool isBought;
@@ -57,7 +56,9 @@ class DetailsBody extends StatelessWidget {
               Container(
                 margin: EdgeInsets.only(top: size.height * 0.3),
                 padding: EdgeInsets.only(
-                    top: size.height * 0.12, left: size.width * 0.05, right: size.width * 0.05),
+                    top: size.height * 0.12,
+                    left: size.width * 0.05,
+                    right: size.width * 0.05),
                 height: size.height * 0.6,
                 decoration: const BoxDecoration(
                     color: Colors.white,
@@ -67,14 +68,18 @@ class DetailsBody extends StatelessWidget {
                     )),
                 child: Column(children: [
                   Padding(
-                    padding: EdgeInsets.symmetric(vertical: size.height*0.025),
+                    padding:
+                        EdgeInsets.symmetric(vertical: size.height * 0.025),
                     child: Text(
                       marLife.description,
-                      style: TextStyle(height: size.height*0.002, fontSize: size.height*0.022),
+                      style: TextStyle(
+                          height: size.height * 0.002,
+                          fontSize: size.height * 0.022),
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.symmetric(vertical: size.height*0.025),
+                    padding:
+                        EdgeInsets.symmetric(vertical: size.height * 0.025),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
@@ -92,7 +97,7 @@ class DetailsBody extends StatelessWidget {
                                 ? Text(
                                     "OWNED",
                                     style: TextStyle(
-                                      fontSize: size.height*0.025,
+                                      fontSize: size.height * 0.025,
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white,
                                     ),
@@ -100,7 +105,7 @@ class DetailsBody extends StatelessWidget {
                                 : Text(
                                     "BUY NOW",
                                     style: TextStyle(
-                                      fontSize: size.height*0.025,
+                                      fontSize: size.height * 0.025,
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white,
                                     ),
@@ -116,7 +121,7 @@ class DetailsBody extends StatelessWidget {
                 ]),
               ),
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: size.width*0.05),
+                padding: EdgeInsets.symmetric(horizontal: size.width * 0.05),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -126,23 +131,25 @@ class DetailsBody extends StatelessWidget {
                           color: Colors.white, fontWeight: FontWeight.bold),
                     ),
                     SizedBox(
-                      height: size.height*0.025,
+                      height: size.height * 0.025,
                     ),
                     Row(
                       children: [
                         Text(
                           "Price: ",
-                          style: TextStyle(color: Colors.white, fontSize: size.height*0.025),
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: size.height * 0.025),
                         ),
                         SizedBox(
                           width: size.width * 0.025,
                         ),
                         Image.asset(
                           "assets/icons/money.png",
-                          height: size.height*0.035,
+                          height: size.height * 0.035,
                         ),
                         SizedBox(
-                          width: size.width*0.025,
+                          width: size.width * 0.025,
                         ),
                         Text("${marLife.price}",
                             style: Theme.of(context)
@@ -152,7 +159,7 @@ class DetailsBody extends StatelessWidget {
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold)),
                         SizedBox(
-                          width: size.width*0.05,
+                          width: size.width * 0.05,
                         ),
                         Expanded(
                             child: Image.asset(
@@ -174,11 +181,11 @@ class DetailsBody extends StatelessWidget {
   _purchase(context) async {
     bool hasEnough = await DatabaseService().hasEnoughMoney(marLife.price);
     if (hasEnough) {
-      updateShopState(marLife.id,marLife.price);
+      updateShopState(marLife.id, marLife.price);
       DatabaseService().addMoney(-marLife.price);
       DatabaseService()
           .addMarLives(FirebaseAuth.instance.currentUser!.uid, marLife.id);
-      
+
       showAlertDialog(context, "You have purchased successfully!");
     } else {
       showAlertDialog(context, "You don't have enough fish coin :(");
@@ -186,6 +193,7 @@ class DetailsBody extends StatelessWidget {
   }
 
   showAlertDialog(BuildContext context, String message) {
+    Size size = MediaQuery.of(context).size;
     // set up the buttons
     Widget okButton = TextButton(
       child: const Text("Ok"),
@@ -202,9 +210,9 @@ class DetailsBody extends StatelessWidget {
         textAlign: TextAlign.center,
       ),
       content: SizedBox(
-        height: 125,
+        height: size.height * 0.16,
         child: Column(children: [
-          Image.asset(marLife.image, width: 100, height: 100),
+          Image.asset(marLife.image, width: size.width*0.25, height: size.height*0.125),
           Text(marLife.type)
         ]),
       ),
