@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:AquaFocus/model/app_user.dart';
@@ -68,13 +70,59 @@ class FirebaseServices {
     }
   }
 
-  deleteAccount() {
-    _auth.currentUser!.delete();
+  deleteAccount(BuildContext context) async {
+    bool step1 = true;
+    bool step2 = false;
+    bool step3 = false;
+    bool step4 = false;
+    while (true) {
+      if (step1) {
+        //delete user info in the database
+        await FirebaseFirestore.instance
+            .collection('tasks')
+            .where('userId', isEqualTo: _auth.currentUser!.uid)
+            .get()
+            .then((querySnapshot) => {querySnapshot.docs.forEach((element) {element.reference.delete();})});
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(_auth.currentUser!.uid)
+            .delete();
+
+        step1 = false;
+        step2 = true;
+      }
+
+      if (step2) {
+        //delete user
+        _auth.currentUser!.delete();
+        step2 = false;
+        step3 = true;
+      }
+
+      if (step3) {
+        await FirebaseAuth.instance.signOut();
+        step3 = false;
+        step4 = true;
+      }
+
+      if (step4) {
+        //go to sign up log in page
+        await Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => SignInScreen()
+            ));
+        step4 = false;
+      }
+
+      if (!step1 && !step2 && !step3 && !step4) {
+        break;
+      }
+    }
   }
 
-  signOut() async {
-    await _auth.signOut();
-    await _facebookSignIn.logOut();
-    await _googleSignIn.signOut();
-  }
+    signOut() async {
+      await _auth.signOut();
+      await _facebookSignIn.logOut();
+      await _googleSignIn.signOut();
+    }
+
 }
