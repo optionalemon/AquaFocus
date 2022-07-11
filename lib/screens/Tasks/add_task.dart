@@ -134,7 +134,7 @@ class _AddEventPageState extends State<AddEventPage> {
                   data['date'] =
                       (data['date'] as DateTime).millisecondsSinceEpoch;
                   if (widget.task == null) {
-                    data['user_id'] = user!.uid;
+                    data['userId'] = user!.uid;
                     data['id'] = Uuid().v1();
                     await taskDBS.create(data);
                   } else {

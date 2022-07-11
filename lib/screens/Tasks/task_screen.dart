@@ -59,7 +59,7 @@ class _TaskScreenState extends State<TaskScreen> {
   _getEvents() async {
     eventList = await taskDBS.getQueryList(args: [
       QueryArgsV2(
-        "user_id",
+        "userId",
         isEqualTo: user!.uid,
       ),
     ]);
