@@ -136,6 +136,7 @@ class _AddEventPageState extends State<AddEventPage> {
                   if (widget.task == null) {
                     data['userId'] = user!.uid;
                     data['id'] = Uuid().v1();
+                    data['isCompleted'] = false;
                     await taskDBS.create(data);
                   } else {
                     //edit and update
