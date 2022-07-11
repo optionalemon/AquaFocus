@@ -1,4 +1,5 @@
 import 'package:AquaFocus/screens/home_screen.dart';
+import 'package:AquaFocus/screens/signin_screen.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 
@@ -52,7 +53,7 @@ class Onboarding extends StatelessWidget {
             ),
             onPressed: (){
               Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (context) => HomeScreen()));
+                  MaterialPageRoute(builder: (context) => SignInScreen()));
             },
             child: const Text('          '),
           )

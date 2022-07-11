@@ -68,6 +68,10 @@ class FirebaseServices {
     }
   }
 
+  deleteAccount() {
+    _auth.currentUser!.delete();
+  }
+
   signOut() async {
     await _auth.signOut();
     await _facebookSignIn.logOut();

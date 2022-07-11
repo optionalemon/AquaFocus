@@ -78,10 +78,7 @@ class _SignInScreenState extends State<SignInScreen> {
           _emailTextController.text, _passwordTextController.text);
 
       Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) =>
-              //HomeScreen()
-            Onboarding()
-          ));
+          MaterialPageRoute(builder: (context) => HomeScreen()));
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text('Invalid Password or/and Email'),
@@ -181,10 +178,7 @@ class _SignInScreenState extends State<SignInScreen> {
             () async {
               await FirebaseServices().signInWithFacebook();
               Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) =>
-                      //HomeScreen()
-                  Onboarding()
-                  ));
+                  MaterialPageRoute(builder: (context) => HomeScreen()));
             },
             const AssetImage(
               'assets/images/facebook.jpg',
@@ -194,11 +188,12 @@ class _SignInScreenState extends State<SignInScreen> {
           buildSocialBtn(
             () async {
               await FirebaseServices().signInWithGoogle();
-              Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) =>
-                      //HomeScreen()
-                  Onboarding()
-                  ));
+              Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          //HomeScreen()
+                          HomeScreen()));
             },
             const AssetImage(
               'assets/images/google.jpg',

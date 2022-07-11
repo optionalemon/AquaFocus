@@ -1,14 +1,21 @@
 import 'package:AquaFocus/screens/FocusTimer/focus_timer_screen.dart';
+import 'package:AquaFocus/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 
 class FocusTimer extends StatelessWidget {
+  const FocusTimer({Key? key,
+      required this.updateHomeState,
+      })
+      : super(key: key);
+      final updateHomeState;
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return GestureDetector(
       onTap: () {
         Navigator.push(context,MaterialPageRoute(
-            builder: (context) => FocusTimerScreen()));
+            builder: (context) => FocusTimerScreen(updateHomeState)));
       },
       child: Container(
           margin: EdgeInsets.all(size.width * 0.04),

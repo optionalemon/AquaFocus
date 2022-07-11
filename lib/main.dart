@@ -1,17 +1,22 @@
 import 'package:AquaFocus/loading.dart';
 import 'package:AquaFocus/model/state.dart';
-import 'package:AquaFocus/screens/Tasks/task_screen.dart';
+import 'package:AquaFocus/screens/Onboarding/Onboarding.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:flutter_localizations/flutter_localizations.dart'; 
 import 'package:flutter/material.dart';
 import 'package:AquaFocus/screens/signin_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_options.dart';
 
-
+int? initScreen;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  SharedPreferences preferences = await SharedPreferences.getInstance();
+  initScreen =  await preferences.getInt('initScreen');
+  await preferences.setInt('initScreen', 1); 
+
   await Firebase.initializeApp(
     name: 'AquaFocus',
     options: DefaultFirebaseOptions.currentPlatform,
@@ -55,16 +60,17 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
               GlobalWidgetsLocalizations.delegate,
               FormBuilderLocalizations.delegate,
       ],
-            initialRoute: '/',
-            routes: {
-              '/task': (context) => TaskScreen(),
+            initialRoute: initScreen == 0 || initScreen == null ? 'onboard' : 'home',
+      routes: {
+        'home' : (context) => SignInScreen(),
+        'onboard': (context) => Onboarding(),
             },
             title: 'Aquafocus',
             theme: ThemeData(
               fontFamily: 'Alata',
               primarySwatch: Colors.blue,
             ),
-            home:SignInScreen(),
+            //home:SignInScreen(),
           );
         });
   }
