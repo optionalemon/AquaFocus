@@ -1,4 +1,3 @@
-import 'package:AquaFocus/screens/Tasks/task_screen.dart';
 import 'package:AquaFocus/services/task_firestore_service.dart';
 import 'package:flutter/material.dart';
 import 'package:AquaFocus/model/app_task.dart';
@@ -75,6 +74,7 @@ class _TaskDetailsState extends State<TaskDetails> {
                     false;
                 if (confirm) {
                   await taskDBS.removeItem(widget.task.id);
+                  Navigator.pop(context);
                 }
               },
             )

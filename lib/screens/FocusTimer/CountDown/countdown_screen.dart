@@ -263,8 +263,7 @@ class _CountDownScreenState extends State<CountDownScreen> {
 
   _completeTaskDialog(context) {
     List totalTime = CountDownHelper().timeString(initialDur.inSeconds);
-    int moneyEarned = int.parse(totalTime[1]) + int.parse(totalTime[0]) * 60;
-    print(moneyEarned);
+    int moneyEarned = int.parse(totalTime[2]) + int.parse(totalTime[1])*60 + int.parse(totalTime[0]) * 60;
     DatabaseService().addMoney(moneyEarned);
     fishMoney += moneyEarned;
     Size size = MediaQuery.of(context).size;

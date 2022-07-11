@@ -6,7 +6,7 @@ class AppTask {
   final String? description;
   final DateTime date;
   final String? userId;
-  final bool? isCompleted;
+  bool isCompleted;
 
   AppTask({
     this.title = "",
