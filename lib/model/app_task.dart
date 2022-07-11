@@ -66,7 +66,7 @@ class AppTask {
       id: id,
       description: data['description'],
       date: DateTime.fromMillisecondsSinceEpoch(data['date']),
-      userId: data['user_id'],
+      userId: data['userId'],
       isCompleted: data['isCompleted'],
     );
   }
