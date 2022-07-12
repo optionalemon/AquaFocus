@@ -1,4 +1,4 @@
-import 'package:AquaFocus/screens/UserPages/setting_screen.dart';
+import 'package:AquaFocus/screens/UserPages/Setting%20Pages/setting_screen.dart';
 import 'package:AquaFocus/screens/home_screen.dart';
 import 'package:AquaFocus/screens/signin_screen.dart';
 import 'package:carousel_slider/carousel_slider.dart';

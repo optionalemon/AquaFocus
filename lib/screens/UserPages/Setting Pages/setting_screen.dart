@@ -14,6 +14,8 @@ import 'package:flutter/material.dart';
 
 class SettingScreen extends StatefulWidget {
   User? user;
+  final Function _updateHomeName;
+  SettingScreen(this._updateHomeName);
 
   @override
   State<SettingScreen> createState() => _SettingScreenState();
@@ -23,7 +25,14 @@ class _SettingScreenState extends State<SettingScreen> {
   late String name;
   bool loading = true;
 
-  Future<void> getName() async{
+  updateSetting(String newName) {
+    setState(() {
+      name = newName;
+      widget._updateHomeName(newName);
+    });
+  }
+
+  Future<void> getName() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       name = await DatabaseService().getUserName(user.uid);
@@ -43,70 +52,67 @@ class _SettingScreenState extends State<SettingScreen> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return loading
-    ? const Loading()
-    : Scaffold(
-      resizeToAvoidBottomInset: false,
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        title: const Text("Settings"),
-        backgroundColor: Color.fromARGB(40, 0, 0, 0),
-      ),
-      body: Stack(
-        children: <Widget> [
-          Container(
-            constraints: BoxConstraints.expand(),
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/images/background2.png'),
-                fit: BoxFit.cover,
-              ),
+        ? const Loading()
+        : Scaffold(
+            resizeToAvoidBottomInset: false,
+            extendBodyBehindAppBar: true,
+            appBar: AppBar(
+              title: const Text("Settings"),
+              backgroundColor: Color.fromARGB(40, 0, 0, 0),
             ),
-          ),
-          SafeArea(
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
+            body: Stack(children: <Widget>[
               Container(
-              padding: EdgeInsets.all(size.height * 0.01),
-              child: Container(
-                margin: EdgeInsets.fromLTRB(10, 0, 10, 10),
-                width: double.infinity,
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                    gradient: LinearGradient(colors: [
-                      Colors.blue.withOpacity(0.5),
-                      Colors.white.withOpacity(0.5)
-                    ]),
-                    boxShadow: const <BoxShadow>[
-                      BoxShadow(
-                          color: Colors.black12,
-                          blurRadius: 5,
-                          offset: Offset(0.0, 5))
-                    ]),
-                child: buildSettingHeader(context),
-              )
+                constraints: BoxConstraints.expand(),
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('assets/images/background2.png'),
+                    fit: BoxFit.cover,
+                  ),
+                ),
               ),
-                  Container(
-                      padding: EdgeInsets.all(size.height * 0.01),
-                      child: Container(
-                        margin: EdgeInsets.fromLTRB(10, 0, 10, 10),
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(20),
-                            gradient: LinearGradient(colors: [
-                              Colors.blue.withOpacity(0.5),
-                              Colors.white.withOpacity(0.5)
-                            ]),
-                            boxShadow: const <BoxShadow>[
-                              BoxShadow(
-                                  color: Colors.black12,
-                                  blurRadius: 5,
-                                  offset: Offset(0.0, 5))
-                            ]),
-                        child: Wrap(
-                            children: [
+              SafeArea(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      Container(
+                          padding: EdgeInsets.all(size.height * 0.01),
+                          child: Container(
+                            margin: EdgeInsets.fromLTRB(10, 0, 10, 10),
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(20),
+                                gradient: LinearGradient(colors: [
+                                  Colors.blue.withOpacity(0.5),
+                                  Colors.white.withOpacity(0.5)
+                                ]),
+                                boxShadow: const <BoxShadow>[
+                                  BoxShadow(
+                                      color: Colors.black12,
+                                      blurRadius: 5,
+                                      offset: Offset(0.0, 5))
+                                ]),
+                            child: buildSettingHeader(context),
+                          )),
+                      Container(
+                          padding: EdgeInsets.all(size.height * 0.01),
+                          child: Container(
+                            margin: EdgeInsets.fromLTRB(10, 0, 10, 10),
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(20),
+                                gradient: LinearGradient(colors: [
+                                  Colors.blue.withOpacity(0.5),
+                                  Colors.white.withOpacity(0.5)
+                                ]),
+                                boxShadow: const <BoxShadow>[
+                                  BoxShadow(
+                                      color: Colors.black12,
+                                      blurRadius: 5,
+                                      offset: Offset(0.0, 5))
+                                ]),
+                            child: Wrap(children: [
                               ListTile(
                                 leading: Icon(
                                   Icons.account_circle,
@@ -115,15 +121,14 @@ class _SettingScreenState extends State<SettingScreen> {
                                 ),
                                 title: Text(
                                   "Account Settings",
-                                  style:
-                                  TextStyle(
+                                  style: TextStyle(
                                       fontSize: size.height * 0.02,
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white),
                                 ),
                               ),
                               const Divider(
-                                  color: Colors.white70,
+                                color: Colors.white70,
                                 thickness: 2,
                               ),
                               ListTile(
@@ -134,14 +139,16 @@ class _SettingScreenState extends State<SettingScreen> {
                                 ),
                                 title: Text(
                                   "Change Username",
-                                  style:
-                                  TextStyle(
+                                  style: TextStyle(
                                       fontSize: size.height * 0.02,
                                       color: Colors.white),
                                 ),
                                 onTap: () {
-                                  Navigator.push(context,
-                                      MaterialPageRoute(builder: (context) => changeUsernameScreen()));
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              changeUsernameScreen(updateSetting)));
                                 },
                               ),
                               const Divider(
@@ -157,18 +164,20 @@ class _SettingScreenState extends State<SettingScreen> {
                                 ),
                                 title: Text(
                                   "Reset Password",
-                                  style:
-                                  TextStyle(
+                                  style: TextStyle(
                                       fontSize: size.height * 0.02,
                                       color: Colors.white),
                                 ),
                                 onTap: () {
-                                  Navigator.push(context,
-                                      MaterialPageRoute(builder: (context) => ResetPassword()));
-                                  },
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              ResetPassword()));
+                                },
                               ),
                               const Divider(
-                                  color: Colors.white70,
+                                color: Colors.white70,
                                 indent: 10,
                                 endIndent: 10,
                               ),
@@ -180,8 +189,7 @@ class _SettingScreenState extends State<SettingScreen> {
                                 ),
                                 title: Text(
                                   "Clear Focus Record",
-                                  style:
-                                  TextStyle(
+                                  style: TextStyle(
                                       fontSize: size.height * 0.02,
                                       color: Colors.white),
                                 ),
@@ -190,7 +198,7 @@ class _SettingScreenState extends State<SettingScreen> {
                                 },
                               ),
                               const Divider(
-                                  color: Colors.white70,
+                                color: Colors.white70,
                                 indent: 10,
                                 endIndent: 10,
                               ),
@@ -202,8 +210,7 @@ class _SettingScreenState extends State<SettingScreen> {
                                 ),
                                 title: Text(
                                   "Delete Account",
-                                  style:
-                                  TextStyle(
+                                  style: TextStyle(
                                       fontSize: size.height * 0.02,
                                       color: Colors.white),
                                 ),
@@ -211,30 +218,27 @@ class _SettingScreenState extends State<SettingScreen> {
                                   showDeleteAccountAlertDialog(context);
                                 },
                               ),
-                            ]
-                        ),
-                      )
-                  ),
-                  Container(
-                      padding: EdgeInsets.all(size.height * 0.01),
-                      child: Container(
-                        margin: EdgeInsets.fromLTRB(10, 0, 10, 10),
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(20),
-                            gradient: LinearGradient(colors: [
-                              Colors.blue.withOpacity(0.5),
-                              Colors.white.withOpacity(0.5)
                             ]),
-                            boxShadow: const <BoxShadow>[
-                              BoxShadow(
-                                  color: Colors.black12,
-                                  blurRadius: 5,
-                                  offset: Offset(0.0, 5))
-                            ]),
-                        child: Wrap(
-                            children: [
+                          )),
+                      Container(
+                          padding: EdgeInsets.all(size.height * 0.01),
+                          child: Container(
+                            margin: EdgeInsets.fromLTRB(10, 0, 10, 10),
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(20),
+                                gradient: LinearGradient(colors: [
+                                  Colors.blue.withOpacity(0.5),
+                                  Colors.white.withOpacity(0.5)
+                                ]),
+                                boxShadow: const <BoxShadow>[
+                                  BoxShadow(
+                                      color: Colors.black12,
+                                      blurRadius: 5,
+                                      offset: Offset(0.0, 5))
+                                ]),
+                            child: Wrap(children: [
                               ListTile(
                                 leading: Icon(
                                   Icons.info_outline,
@@ -243,8 +247,7 @@ class _SettingScreenState extends State<SettingScreen> {
                                 ),
                                 title: Text(
                                   "About AquaFocus",
-                                  style:
-                                  TextStyle(
+                                  style: TextStyle(
                                       fontSize: size.height * 0.02,
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white),
@@ -262,14 +265,15 @@ class _SettingScreenState extends State<SettingScreen> {
                                 ),
                                 title: Text(
                                   "Core Concept",
-                                  style:
-                                  TextStyle(
+                                  style: TextStyle(
                                       fontSize: size.height * 0.02,
                                       color: Colors.white),
                                 ),
                                 onTap: () {
-                                  Navigator.push(context,
-                                      MaterialPageRoute(builder: (context) => coreConcept()));
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => coreConcept()));
                                 },
                               ),
                               const Divider(
@@ -285,27 +289,25 @@ class _SettingScreenState extends State<SettingScreen> {
                                 ),
                                 title: Text(
                                   "Feedback Channel",
-                                  style:
-                                  TextStyle(
+                                  style: TextStyle(
                                       fontSize: size.height * 0.02,
                                       color: Colors.white),
                                 ),
                                 onTap: () {
-                                  Navigator.push(context,
-                                      MaterialPageRoute(builder: (context) => feedbackScreen()));
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              feedbackScreen()));
                                 },
                               ),
-                            ]
-                        ),
-                      )
+                            ]),
+                          )),
+                    ],
                   ),
-                ],
-              ),
-            ),
-          )
-        ]
-      )
-    );
+                ),
+              )
+            ]));
   }
 
   Widget buildSettingHeader(BuildContext context) {
@@ -319,7 +321,9 @@ class _SettingScreenState extends State<SettingScreen> {
               radius: size.height * 0.04,
               backgroundImage: NetworkImage(getProfilePhoto()),
             ),
-            Padding(padding: EdgeInsets.all(size.height * 0.01),),
+            Padding(
+              padding: EdgeInsets.all(size.height * 0.01),
+            ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -346,7 +350,8 @@ getEmail() {
 }
 
 getProfilePhoto() {
-  if (FirebaseAuth.instance.currentUser != null && FirebaseAuth.instance.currentUser!.photoURL != null) {
+  if (FirebaseAuth.instance.currentUser != null &&
+      FirebaseAuth.instance.currentUser!.photoURL != null) {
     return FirebaseAuth.instance.currentUser!.photoURL;
   } else {
     return "https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png";
@@ -371,7 +376,8 @@ showDeleteAccountAlertDialog(BuildContext context) {
   // set up the AlertDialog
   AlertDialog alert = AlertDialog(
     title: const Text("Are you sure to delete account?"),
-    content: const Text("You can no longer use this account. Once deleted, all the data in this account cannot be restored."),
+    content: const Text(
+        "You can no longer use this account. Once deleted, all the data in this account cannot be restored."),
     actions: [
       cancelButton,
       continueButton,
@@ -405,7 +411,8 @@ showClearRecordAlertDialog(BuildContext context) {
   // set up the AlertDialog
   AlertDialog alert = AlertDialog(
     title: const Text("Are you sure to clear all focus records?"),
-    content: const Text("You can still use this account. However, all focus records will be cleared and cannot be restored."),
+    content: const Text(
+        "You can still use this account. However, all focus records will be cleared and cannot be restored."),
     actions: [
       cancelButton,
       continueButton,

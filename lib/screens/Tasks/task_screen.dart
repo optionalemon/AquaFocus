@@ -1,16 +1,6 @@
-import 'package:AquaFocus/loading.dart';
-import 'package:AquaFocus/model/app_task.dart';
 import 'package:AquaFocus/screens/Tasks/calendar_body.dart';
-import 'package:AquaFocus/screens/Tasks/task_details.dart';
-import 'package:AquaFocus/services/task_firestore_service.dart';
-import 'package:firebase_helpers/firebase_helpers.dart';
-import 'package:intl/intl.dart';
-import 'package:AquaFocus/screens/Tasks/task_utils.dart';
-import 'package:AquaFocus/screens/Tasks/add_task.dart';
 import 'package:flutter/material.dart';
-import 'package:table_calendar/table_calendar.dart';
-import 'package:AquaFocus/screens/signin_screen.dart';
-import 'dart:collection';
+import 'package:AquaFocus/screens/Tasks/list_body.dart';
 
 class TaskScreen extends StatefulWidget {
   const TaskScreen({Key? key}) : super(key: key);
@@ -58,7 +48,7 @@ class _TaskScreenState extends State<TaskScreen> {
                             ))),
                   ],
                 ),
-                body: !isCheckList? ListBody() : CalendarBody()// put the arguments here
+                body: isCheckList? ListBodyPage() :CalendarBody() // put the arguments here
 
   )
           ]);

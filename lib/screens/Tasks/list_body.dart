@@ -1,18 +1,29 @@
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
-
 import 'package:flutter/material.dart';
 
-class ListBody extends StatefulWidget {
-  const ListBody({Key? key}) : super(key: key);
+class ListBodyPage extends StatefulWidget {
+  const ListBodyPage({Key? key}) : super(key: key);
 
   @override
-  State<ListBody> createState() => _ListBodyState();
+  State<ListBodyPage> createState() => _ListBodyPageState();
 }
 
-class _ListBodyState extends State<ListBody> {
+class _ListBodyPageState extends State<ListBodyPage> {
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView();
+    return Expanded(
+      child: Stack(
+        children: [
+          Container(
+        constraints: const BoxConstraints.expand(),
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/images/mainscreen.png'),
+            fit: BoxFit.cover,
+          ),
+        ),
+      ),
+        ],
+      )
+    );
   }
 }
