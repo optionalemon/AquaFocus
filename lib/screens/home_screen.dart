@@ -1,11 +1,12 @@
 import 'package:AquaFocus/screens/UserPages/aquarium_screen.dart';
-import 'package:AquaFocus/screens/UserPages/setting_screen.dart';
+import 'package:AquaFocus/screens/UserPages/Setting%20Pages/setting_screen.dart';
 import 'package:AquaFocus/screens/UserPages/Shop/shop_screen.dart';
 import 'package:AquaFocus/screens/UserPages/statistics_screen.dart';
 import 'package:AquaFocus/screens/signin_screen.dart';
 import 'package:AquaFocus/services/firebase_services.dart';
 import 'package:AquaFocus/widgets/focus_timer.dart';
 import 'package:AquaFocus/widgets/tasks_today.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:AquaFocus/services/database_services.dart';
@@ -22,11 +23,16 @@ class _HomeScreenState extends State<HomeScreen> {
   int fishMoney = 0;
   late String name;
   bool loading = true;
-  
 
   _updateHomeScreen(int newMoney) {
     setState(() {
       fishMoney = newMoney;
+    });
+  }
+
+  _updateHomeName(String newName) {
+    setState(() {
+      name = newName;
     });
   }
 
@@ -55,7 +61,7 @@ class _HomeScreenState extends State<HomeScreen> {
             resizeToAvoidBottomInset: false,
             extendBodyBehindAppBar: true,
             appBar: _buildAppBar(MediaQuery.of(context).size),
-            drawer: NavigationDrawer(updateHomeScreen: _updateHomeScreen),
+            drawer: NavigationDrawer(updateHomeScreen: _updateHomeScreen, updateHomeName: _updateHomeName,),
             body: Stack(children: <Widget>[
               Container(
                 constraints: const BoxConstraints.expand(),
@@ -76,7 +82,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Expanded(child: FocusTimer(updateHomeState: _updateHomeScreen,)),
+                          Expanded(
+                              child: FocusTimer(
+                            updateHomeState: _updateHomeScreen,
+                          )),
                         ]),
                   ),
                   //Row(children: [Expanded(child: FunFact())])
@@ -99,10 +108,11 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Image.asset('assets/icons/AquaFocus_icon.png')),
         ),
         SizedBox(width: size.width * 0.025),
-        FittedBox(
-          fit: BoxFit.fitWidth,
-          child: Text(
+        SizedBox(
+          width: size.width * 0.45,
+          child: AutoSizeText(
             'Hello $name :)',
+            maxLines: 1,
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           ),
         )
@@ -134,10 +144,12 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 class NavigationDrawer extends StatelessWidget {
-  NavigationDrawer({required this.updateHomeScreen, Key? key})
+  NavigationDrawer(
+      {required this.updateHomeScreen, required this.updateHomeName, Key? key})
       : super(key: key);
   final currUser = FirebaseAuth.instance.currentUser;
   final updateHomeScreen;
+  final updateHomeName;
 
   @override
   Widget build(BuildContext context) {
@@ -150,7 +162,7 @@ class NavigationDrawer extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
                 buildHeader(context),
-                buildMenuItem(context),
+                buildMenuItem(context, updateHomeName),
               ]),
         )));
   }
@@ -193,7 +205,7 @@ class NavigationDrawer extends StatelessWidget {
     }
   }
 
-  Widget buildMenuItem(BuildContext context) {
+  Widget buildMenuItem(BuildContext context, Function updateHomeName) {
     Size size = MediaQuery.of(context).size;
     return Container(
         padding: EdgeInsets.all(size.height * 0.03),
@@ -263,8 +275,8 @@ class NavigationDrawer extends StatelessWidget {
               ),
               onTap: () {
                 Navigator.pop(context);
-                Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => SettingScreen()));
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => SettingScreen(updateHomeName)));
               },
             ),
             ListTile(
