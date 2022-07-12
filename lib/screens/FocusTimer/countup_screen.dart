@@ -36,8 +36,15 @@ class _CountUpScreenState extends State<CountUpScreen> {
     getMarMoney();
   }
 
+  @override
+  void dispose() {
+    timer?.cancel();
+    super.dispose();
+  }
+
   void startTimer() {
     hvStarted = true;
+    timer?.cancel();
     timer = Timer.periodic(Duration(seconds: 1), (_) => setCountUp());
   }
 
@@ -102,6 +109,7 @@ class _CountUpScreenState extends State<CountUpScreen> {
     return Column(
       children: [
         Container(
+          width: size.width * 0.312,
           padding: EdgeInsets.all(size.width * 0.02),
           decoration: BoxDecoration(
             color: Color.fromARGB(172, 255, 255, 255),
@@ -109,10 +117,11 @@ class _CountUpScreenState extends State<CountUpScreen> {
           ),
           child: Text(
             time,
+            textAlign: TextAlign.center,
             style: TextStyle(
               fontWeight: FontWeight.bold,
               color: Colors.blue,
-              fontSize: size.height * 0.1,
+              fontSize: size.height * 0.09,
             ),
           ),
         ),
@@ -159,7 +168,9 @@ class _CountUpScreenState extends State<CountUpScreen> {
 
   _completeTaskDialog() {
     List totalTime = CountDownHelper().timeString(duration.inSeconds);
-    int moneyEarned = int.parse(totalTime[2]) + int.parse(totalTime[1])*60 + int.parse(totalTime[0]) * 60;
+    int moneyEarned = int.parse(totalTime[2]) +
+        int.parse(totalTime[1]) * 60 +
+        int.parse(totalTime[0]) * 60;
     DatabaseService().addMoney(moneyEarned);
     fishMoney += moneyEarned;
     Size size = MediaQuery.of(context).size;
@@ -223,19 +234,7 @@ class _CountUpScreenState extends State<CountUpScreen> {
                     stopTimer(false);
                   });
                   Navigator.pop(context);
-                  showDialog(
-                      context: context,
-                      builder: (_) => AlertDialog(
-                            title: Text("Your task has been cancelled"),
-                            actions: [
-                              ElevatedButton(
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                                child: Text("Back"),
-                              ),
-                            ],
-                          ));
+                
                 },
                 child: Text("Yes"),
               ),
