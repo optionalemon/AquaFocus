@@ -25,6 +25,8 @@ class AddEventPage extends StatefulWidget {
 
 class _AddEventPageState extends State<AddEventPage> {
   final _formKey = GlobalKey<FormBuilderState>();
+  final repeatList = ["Daily", "WeekDays", "Weekends", "Weekly", "Monthly"];
+  bool isReminded = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -67,9 +69,10 @@ class _AddEventPageState extends State<AddEventPage> {
                         initialValue: widget.task?.title,
                         style: TextStyle(color: Colors.white),
                         decoration: InputDecoration(
+                          labelText: "Title",
+                          labelStyle: TextStyle(color: Colors.white),
                           filled: true,
                           fillColor: Colors.cyan.withOpacity(0.5),
-                          hintText: "Add Title",
                           hintStyle: TextStyle(color: Colors.white),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(15),
@@ -87,9 +90,10 @@ class _AddEventPageState extends State<AddEventPage> {
                       maxLines: 5,
                       minLines: 1,
                       decoration: InputDecoration(
+                        labelText: "Description",
+                        labelStyle: TextStyle(color: Colors.white),
                         filled: true,
                         fillColor: Colors.cyan.withOpacity(0.5),
-                        hintText: "Add Description",
                         hintStyle: TextStyle(color: Colors.white),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15),
@@ -108,11 +112,12 @@ class _AddEventPageState extends State<AddEventPage> {
                         FormBuilderValidators.required(),
                       ]),
                       initialValue: widget.selectedDate ?? DateTime.now(),
-                      fieldHintText: "Add Date",
                       initialDatePickerMode: DatePickerMode.day,
                       inputType: InputType.date,
                       format: DateFormat('EEEE, dd MMMM, yyyy'),
                       decoration: InputDecoration(
+                        labelText: "Date",
+                        labelStyle: TextStyle(color: Colors.white),
                         filled: true,
                         fillColor: Colors.cyan.withOpacity(0.5),
                         border: OutlineInputBorder(
@@ -123,6 +128,72 @@ class _AddEventPageState extends State<AddEventPage> {
                             color: Colors.white),
                       ),
                     ),
+                    Divider(),
+                    FormBuilderDropdown(
+                      initialValue: "never",
+                      dropdownColor: Color.fromARGB(119, 100, 180, 255),
+                      borderRadius: BorderRadius.circular(20.0),
+                      decoration: InputDecoration(
+                        labelText: 'Repeat',
+                        labelStyle: TextStyle(color: Colors.white),
+                        filled: true,
+                        fillColor: Colors.cyan.withOpacity(0.5),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15),
+                          borderSide: BorderSide.none,
+                        ),
+                        prefixIcon: Icon(Icons.event_repeat_outlined,
+                            color: Colors.white),
+                      ),
+                      name: "repeat",
+                      items: const [
+                        DropdownMenuItem(
+                          value: "never",
+                          child: Text(
+                            'Never',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                        DropdownMenuItem(
+                          value: "daily",
+                          child: Text(
+                            'Daily',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                        DropdownMenuItem(
+                          value: "weekdays",
+                          child: Text(
+                            'Weekdays',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                        DropdownMenuItem(
+                          value: "weekends",
+                          child: Text(
+                            'Weekends',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                        DropdownMenuItem(
+                          value: "weekly",
+                          child: Text(
+                            'Weekly',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                        DropdownMenuItem(
+                          value: "monthly",
+                          child: Text(
+                            'Monthly',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Divider(),
+                    
+                    
                   ])),
               SizedBox(height: MediaQuery.of(context).size.height * 0.02),
               firebaseButton(context, "Save", () async {

@@ -10,20 +10,18 @@ class ListBodyPage extends StatefulWidget {
 class _ListBodyPageState extends State<ListBodyPage> {
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Stack(
-        children: [
-          Container(
-        constraints: const BoxConstraints.expand(),
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/images/mainscreen.png'),
-            fit: BoxFit.cover,
-          ),
+    return Stack(
+      children: [
+        Container(
+      constraints: const BoxConstraints.expand(),
+      decoration: const BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage('assets/images/mainscreen.png'),
+          fit: BoxFit.cover,
         ),
       ),
-        ],
-      )
+    ),
+      ],
     );
   }
 }
