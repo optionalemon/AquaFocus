@@ -5,6 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
+import 'package:intl/intl.dart';
+
 class CountUpScreen extends StatefulWidget {
   final Function _updateHomeScreen;
   CountUpScreen(this._updateHomeScreen);
@@ -171,6 +173,7 @@ class _CountUpScreenState extends State<CountUpScreen> {
     int moneyEarned = int.parse(totalTime[2]) +
         int.parse(totalTime[1]) * 60 +
         int.parse(totalTime[0]) * 60;
+    DatabaseService().saveFocusTime(moneyEarned, DateFormat('yyyy-MM-dd').format(DateTime.now()));
     DatabaseService().addMoney(moneyEarned);
     fishMoney += moneyEarned;
     Size size = MediaQuery.of(context).size;
