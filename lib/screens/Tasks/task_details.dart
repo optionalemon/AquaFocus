@@ -43,7 +43,7 @@ class _TaskDetailsState extends State<TaskDetails> {
     } else if (reminders == '15min') {
       return "Reminder sent 15 minutes before the task";
     }
-    return "No repeat";
+    return "No reminder";
   }
 
   @override
@@ -81,7 +81,7 @@ class _TaskDetailsState extends State<TaskDetails> {
                         context: context,
                         builder: (context) => AlertDialog(
                                 title: Text("Confirm delete?"),
-                                content: Text("Your task record will be gone."),
+                                content: Text("Your task record will be permanently deleted."),
                                 actions: [
                                   TextButton(
                                     onPressed: () =>
@@ -171,7 +171,7 @@ class _TaskDetailsState extends State<TaskDetails> {
                           ),
                           Text(
                             widget.task.hasTime
-                                ? DateFormat('hh : mm').format(
+                                ? DateFormat('HH : mm').format(
                                     widget.task.time ?? widget.task.date)
                                 : "",
                             style: TextStyle(color: Colors.white),

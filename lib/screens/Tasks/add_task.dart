@@ -1,6 +1,5 @@
 import 'package:AquaFocus/model/app_task.dart';
 import 'package:AquaFocus/reusable_widgets/reusable_widget.dart';
-import 'package:AquaFocus/screens/Tasks/task_screen.dart';
 import 'package:AquaFocus/services/task_firestore_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -8,7 +7,6 @@ import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:intl/intl.dart';
 import 'package:AquaFocus/screens/signin_screen.dart';
 import 'package:uuid/uuid.dart';
-import 'package:AquaFocus/screens/Tasks/task_details.dart';
 
 class AddEventPage extends StatefulWidget {
   final DateTime? selectedDate;
@@ -317,6 +315,10 @@ class _AddEventPageState extends State<AddEventPage> {
                     await taskDBS.create(data);
                   } else {
                     //edit and update
+                    if (!widget.task!.hasTime) {
+                      data['time'] = null;
+                      data['reminder'] = 'never';
+                    }
                     await taskDBS.updateData(widget.task!.id, data);
                     widget.updateTaskDetails();
                   }
