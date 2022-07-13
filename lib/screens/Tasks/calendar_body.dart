@@ -1,6 +1,6 @@
 import 'dart:collection';
 
-import 'package:AquaFocus/loading.dart';
+import 'package:AquaFocus/reusable_widgets/loading.dart';
 import 'package:AquaFocus/screens/Tasks/add_task.dart';
 import 'package:AquaFocus/screens/Tasks/task_details.dart';
 import 'package:AquaFocus/screens/Tasks/task_utils.dart';
@@ -308,7 +308,7 @@ class _CalendarBodyState extends State<CalendarBody> {
                                                   await taskDBS
                                                       .updateData(event.id, {
                                                     'isCompleted':
-                                                        !event.isCompleted,
+                                                        event.isCompleted,
                                                   });
                                                 },
                                               )),
