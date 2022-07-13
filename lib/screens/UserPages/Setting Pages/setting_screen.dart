@@ -1,14 +1,10 @@
-import 'package:AquaFocus/loading.dart';
-import 'package:AquaFocus/reusable_widgets/reusable_widget.dart';
-import 'package:AquaFocus/screens/Onboarding/Onboarding.dart';
+import 'package:AquaFocus/reusable_widgets/loading.dart';
 import 'package:AquaFocus/screens/Onboarding/core_concept.dart';
 import 'package:AquaFocus/screens/UserPages/Setting%20Pages/change_username_screen.dart';
 import 'package:AquaFocus/screens/UserPages/Setting%20Pages/feedback_screen.dart';
 import 'package:AquaFocus/screens/reset_password.dart';
-import 'package:AquaFocus/screens/signin_screen.dart';
 import 'package:AquaFocus/services/database_services.dart';
 import 'package:AquaFocus/services/firebase_services.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
