@@ -109,7 +109,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         SizedBox(width: size.width * 0.025),
         SizedBox(
-          width: size.width * 0.4,
+          width: size.width * 0.35,
           child: AutoSizeText(
             'Hello $name :)',
             maxLines: 1,
