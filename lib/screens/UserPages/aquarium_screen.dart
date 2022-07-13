@@ -48,6 +48,7 @@ class _AquariumScreenState extends State<AquariumScreen> {
         extendBodyBehindAppBar: true,
         appBar: AppBar(
           title: const Text("Aquarium"),
+          centerTitle: true,
           backgroundColor: Color.fromARGB(40, 0, 0, 0),
         ),
         body: Stack(
@@ -56,7 +57,7 @@ class _AquariumScreenState extends State<AquariumScreen> {
                 constraints: BoxConstraints.expand(),
                 decoration: const BoxDecoration(
                   image: DecorationImage(
-                    image: AssetImage('assets/images/background2.png'),
+                    image: AssetImage('assets/images/aquarium_background.png'),
                     fit: BoxFit.cover,
                   ),
                 ),
