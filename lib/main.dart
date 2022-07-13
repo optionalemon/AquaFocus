@@ -1,5 +1,5 @@
-import 'package:AquaFocus/loading.dart';
 import 'package:AquaFocus/model/state.dart';
+import 'package:AquaFocus/reusable_widgets/loading.dart';
 import 'package:AquaFocus/screens/Onboarding/Onboarding.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:flutter_localizations/flutter_localizations.dart'; 
