@@ -1,7 +1,7 @@
 import 'package:AquaFocus/model/marine_creature.dart';
+import 'package:AquaFocus/reusable_widgets/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:AquaFocus/services/database_services.dart';
-import 'package:AquaFocus/loading.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class AquariumScreen extends StatefulWidget {
