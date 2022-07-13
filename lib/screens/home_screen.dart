@@ -1,7 +1,8 @@
-import 'package:AquaFocus/screens/UserPages/aquarium_screen.dart';
+import 'package:AquaFocus/reusable_widgets/loading.dart';
+import 'package:AquaFocus/screens/UserPages/Aquarium/aquarium_screen.dart';
+import 'package:AquaFocus/screens/UserPages/Statistics/statistics_screen.dart';
 import 'package:AquaFocus/screens/UserPages/Setting%20Pages/setting_screen.dart';
 import 'package:AquaFocus/screens/UserPages/Shop/shop_screen.dart';
-import 'package:AquaFocus/screens/UserPages/statistics_screen.dart';
 import 'package:AquaFocus/screens/signin_screen.dart';
 import 'package:AquaFocus/services/firebase_services.dart';
 import 'package:AquaFocus/widgets/focus_timer.dart';
@@ -10,7 +11,6 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:AquaFocus/services/database_services.dart';
-import 'package:AquaFocus/loading.dart';
 
 class HomeScreen extends StatefulWidget {
   User? user;
