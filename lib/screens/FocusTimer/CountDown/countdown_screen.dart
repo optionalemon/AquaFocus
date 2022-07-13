@@ -1,9 +1,10 @@
-import 'package:AquaFocus/loading.dart';
+import 'package:AquaFocus/reusable_widgets/loading.dart';
 import 'package:AquaFocus/reusable_widgets/reusable_widget.dart';
 import 'package:AquaFocus/screens/FocusTimer/CountDown/countdown_helper.dart';
 import 'package:AquaFocus/services/database_services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'dart:async';
 import 'countdown_helper.dart';
 
@@ -268,6 +269,7 @@ class _CountDownScreenState extends State<CountDownScreen> {
   _completeTaskDialog(context) {
     List totalTime = CountDownHelper().timeString(initialDur.inSeconds);
     int moneyEarned = int.parse(totalTime[2]) + int.parse(totalTime[1])*60 + int.parse(totalTime[0]) * 60;
+    DatabaseService().saveFocusTime(moneyEarned, DateFormat('yyyy-MM-dd').format(DateTime.now()));
     DatabaseService().addMoney(moneyEarned);
     fishMoney += moneyEarned;
     Size size = MediaQuery.of(context).size;
