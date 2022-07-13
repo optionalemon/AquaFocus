@@ -76,7 +76,7 @@ class _AquariumScreenState extends State<AquariumScreen> {
             SizedBox(
           width: size.width*0.8,
           child: Container(
-            padding: EdgeInsets.all(size.width * 0.04),
+            padding: EdgeInsets.all(size.width * 0.06),
               decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(20),
