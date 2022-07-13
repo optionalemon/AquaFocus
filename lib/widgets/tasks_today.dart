@@ -10,7 +10,7 @@ class Tasks extends StatelessWidget {
       onTap: () {
         Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => TaskScreen())
+                      MaterialPageRoute(builder: (context) => TaskScreen(isCheckList: true,))
                   );
       },
       child: Container(

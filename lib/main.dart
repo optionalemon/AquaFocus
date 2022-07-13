@@ -9,6 +9,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_options.dart';
+import 'package:AquaFocus/screens/Tasks/task_screen.dart';
 
 int? initScreen;
 void main() async {
@@ -64,6 +65,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       routes: {
         'home' : (context) => SignInScreen(),
         'onboard': (context) => Onboarding(),
+        'calendarBody': (context) => TaskScreen(isCheckList: false),
             },
             title: 'Aquafocus',
             theme: ThemeData(
