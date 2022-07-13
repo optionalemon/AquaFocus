@@ -269,9 +269,9 @@ class _CalendarBodyState extends State<CalendarBody> {
                                       color: Colors.white,
                                     ),
                                     onPressed: () async {
-                                      event.isCompleted = true;
+                                      event.isCompleted = !event.isCompleted;
                                       await taskDBS.updateData(event.id, {
-                                        'isCompleted': true,
+                                        'isCompleted': !event.isCompleted,
                                       });
                                     },
                                   ));

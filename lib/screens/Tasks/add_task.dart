@@ -25,8 +25,14 @@ class AddEventPage extends StatefulWidget {
 
 class _AddEventPageState extends State<AddEventPage> {
   final _formKey = GlobalKey<FormBuilderState>();
-  final repeatList = ["Daily", "WeekDays", "Weekends", "Weekly", "Monthly"];
-  bool isReminded = false;
+  late bool isTimeSetted;
+
+  @override
+  void initState() {
+    isTimeSetted = widget.task?.hasTime ?? false;
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -129,8 +135,106 @@ class _AddEventPageState extends State<AddEventPage> {
                       ),
                     ),
                     Divider(),
+                    FormBuilderSwitch(
+                      name: 'hasTime',
+                      initialValue: isTimeSetted,
+                      title: Text(
+                        "Time",
+                        style: TextStyle(color: Colors.white, fontSize: 15),
+                      ),
+                      activeColor: Colors.white,
+                      activeTrackColor: Colors.lightGreen,
+                      inactiveTrackColor: Colors.grey,
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.cyan.withOpacity(0.5),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15),
+                          borderSide: BorderSide.none,
+                        ),
+                        prefixIcon:
+                            Icon(Icons.access_time, color: Colors.white),
+                      ),
+                      onChanged: (initialValue) {
+                        setState(() {
+                          isTimeSetted = !isTimeSetted;
+                        });
+                      },
+                    ),
+                    Divider(),
+                    !isTimeSetted
+                        ? Container()
+                        : FormBuilderDateTimePicker(
+                            style: TextStyle(color: Colors.white),
+                            name: "time",
+                            // onChanged: _onChanged,
+                            inputType: InputType.time,
+                            decoration: InputDecoration(
+                              //labelText: 'Time',
+                              //labelStyle: TextStyle(color: Colors.white),
+                              filled: true,
+                              fillColor: Colors.cyan.withOpacity(0.5),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15),
+                                borderSide: BorderSide.none,
+                              ),
+                            ),
+                            initialValue: widget.task?.time ?? DateTime.now(),
+                          ),
+                    !isTimeSetted ? Container() : Divider(),
+                    !isTimeSetted
+                        ? Container()
+                        : FormBuilderDropdown(
+                            initialValue: widget.task?.reminder ?? "never",
+                            dropdownColor: Color.fromARGB(119, 100, 180, 255),
+                            borderRadius: BorderRadius.circular(20.0),
+                            decoration: InputDecoration(
+                              labelText: 'Reminder',
+                              labelStyle: TextStyle(color: Colors.white),
+                              filled: true,
+                              fillColor: Colors.cyan.withOpacity(0.5),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15),
+                                borderSide: BorderSide.none,
+                              ),
+                              prefixIcon:
+                                  Icon(Icons.access_alarm, color: Colors.white),
+                            ),
+                            name: "reminder",
+                            items: const [
+                              DropdownMenuItem(
+                                value: "never",
+                                child: const Text(
+                                  'Never',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                              DropdownMenuItem(
+                                value: "5min",
+                                child: Text(
+                                  '5 Minutes early',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                              DropdownMenuItem(
+                                value: "10min",
+                                child: Text(
+                                  '10 Minutes early',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                              DropdownMenuItem(
+                                value: "15min",
+                                child: Text(
+                                  '15 Minutes early',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            ],
+                          ),
+                    !isTimeSetted ? Container() : Divider(),
                     FormBuilderDropdown(
-                      initialValue: "never",
+                      initialValue: widget.task?.repeat ?? "never",
                       dropdownColor: Color.fromARGB(119, 100, 180, 255),
                       borderRadius: BorderRadius.circular(20.0),
                       decoration: InputDecoration(
@@ -192,8 +296,6 @@ class _AddEventPageState extends State<AddEventPage> {
                       ],
                     ),
                     Divider(),
-                    
-                    
                   ])),
               SizedBox(height: MediaQuery.of(context).size.height * 0.02),
               firebaseButton(context, "Save", () async {
@@ -204,6 +306,10 @@ class _AddEventPageState extends State<AddEventPage> {
                       Map<String, dynamic>.from(_formKey.currentState!.value);
                   data['date'] =
                       (data['date'] as DateTime).millisecondsSinceEpoch;
+                  if (data['time'] != null) {
+                    data['time'] =
+                        (data['time'] as DateTime).millisecondsSinceEpoch;
+                  }
                   if (widget.task == null) {
                     data['userId'] = user!.uid;
                     data['id'] = Uuid().v1();

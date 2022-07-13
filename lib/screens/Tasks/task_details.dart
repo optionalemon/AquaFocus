@@ -20,6 +20,32 @@ class _TaskDetailsState extends State<TaskDetails> {
     });
   }
 
+  String repeatText(String repeats) {
+    if (repeats == 'daily') {
+      return "Repeats Daily";
+    } else if (repeats == 'weekdays') {
+      return "Repeat on weekdays";
+    } else if (repeats == 'weekends') {
+      return "Repeat on weekends";
+    } else if (repeats == 'weekly') {
+      return "Repeat weekly";
+    } else if (repeats == 'monthly') {
+      return "Repeat monthly";
+    }
+    return "No repeat";
+  }
+
+  String reminderText(String reminders) {
+    if (reminders == '5min') {
+      return "Reminder sent 5 minutes before the task";
+    } else if (reminders == '10min') {
+      return "Reminder sent 10 minutes before the task";
+    } else if (reminders == '15min') {
+      return "Reminder sent 15 minutes before the task";
+    }
+    return "No repeat";
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -119,10 +145,38 @@ class _TaskDetailsState extends State<TaskDetails> {
                             fontWeight: FontWeight.bold,
                             fontSize: size.height * 0.025),
                       ),
-                      subtitle: Text(
-                        DateFormat('EEEE,dd MMMM, yyyy')
-                            .format(widget.task.date),
-                        style: TextStyle(color: Colors.white),
+                      trailing: IconButton(
+                        onPressed: () async {
+                          setState(() {
+                            widget.task.isCompleted = !widget.task.isCompleted;
+                          });
+                          await taskDBS.updateData(widget.task.id, {
+                            'isCompleted': widget.task.isCompleted,
+                          });
+                        },
+                        icon: Icon(
+                            widget.task.isCompleted
+                                ? Icons.check_circle
+                                : Icons.circle_outlined,
+                            color: Colors.white),
+                      ),
+                      subtitle: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            DateFormat('EEEE, dd MMMM, yyyy')
+                                .format(widget.task.date),
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          Text(
+                            widget.task.hasTime
+                                ? DateFormat('hh : mm').format(
+                                    widget.task.time ?? widget.task.date)
+                                : "",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ],
                       ),
                     ),
                     SizedBox(height: size.height * 0.0125),
@@ -133,6 +187,23 @@ class _TaskDetailsState extends State<TaskDetails> {
                           style: TextStyle(color: Colors.white),
                         )),
                     SizedBox(height: size.height * 0.0125),
+                    ListTile(
+                        leading: Icon(Icons.event_repeat_outlined,
+                            color: Colors.white),
+                        title: Text(
+                          repeatText(widget.task.repeat),
+                          style: TextStyle(color: Colors.white),
+                        )),
+                    SizedBox(height: size.height * 0.0125),
+                    widget.task.hasTime? ListTile(
+                        leading: Icon(Icons.access_alarm,
+                            color: Colors.white),
+                        title: Text(
+                          reminderText(widget.task.reminder ?? ""),
+                          style: TextStyle(color: Colors.white),
+                        )) : Container(),
+                    SizedBox(height: size.height * 0.0125),
+
                   ]),
             ),
           ),
