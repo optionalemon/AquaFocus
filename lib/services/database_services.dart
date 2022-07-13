@@ -1,9 +1,7 @@
-import 'package:AquaFocus/model/app_task.dart';
-import 'package:AquaFocus/model/todo.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:AquaFocus/model/app_user.dart';
 import 'package:AquaFocus/screens/signin_screen.dart';
-import 'package:firebase_helpers/firebase_helpers.dart';
+import 'package:intl/intl.dart';
 
 
 
@@ -109,33 +107,32 @@ class DatabaseService {
     doc.update({"marlives": marList});
   }
 
-  //add when no meaningful id
-  Future createNewToDo(String title) async {
-    return await todoCollection.add({
-      'title': title,
-      'isComplete': false,
+  Future<void> saveFocusTime(int duration, String date) async {
+    var focusTimeCollection = userDoc.collection('FocusTime');
+
+    final focusDate = await focusTimeCollection.doc(date).get();
+    if (focusDate.exists) {
+      focusTimeCollection.doc(date).update({
+        "totalTime": FieldValue.increment(duration)
+      });
+    } else {
+      focusTimeCollection.doc(date).set({
+        "totalTime": duration,
+        "Date": DateFormat('yyyy-MM-dd').format(DateTime.now())
+      });
+    }
+  }
+
+  Future<num> getTimeOfTheDay(String uid, String day) async {
+    num totalMinutes = 0;
+
+    CollectionReference userFocusTime = userCollection.doc(uid).collection('FocusTime');
+
+    await userFocusTime.doc(day).get().then((DocumentSnapshot doc) {
+      if (doc.exists) {
+        totalMinutes = doc.get("totalTime");
+      }
     });
-  }
-
-  Future completeTask(uid) async {
-    await todoCollection.doc(uid).update({'isComplete': true});
-  }
-
-  Future removeToDo(uid) async {
-    await todoCollection.doc(uid).delete();
-  }
-
-  List<CreateToDo> todoFromFirestore(QuerySnapshot snapshot) {
-    return snapshot.docs.map((e) {
-      return CreateToDo(
-        isComplete: (e.data() as dynamic)['isComplete'],
-        title: (e.data() as dynamic)['title'],
-        uid: e.id,
-      );
-    }).toList();
-  }
-
-  Stream<List<CreateToDo>> listToDos() {
-    return todoCollection.snapshots().map(todoFromFirestore);
+    return totalMinutes;
   }
 }
