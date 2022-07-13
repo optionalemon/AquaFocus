@@ -1,10 +1,9 @@
 import 'package:AquaFocus/model/marine_creature.dart';
+import 'package:AquaFocus/reusable_widgets/loading.dart';
 import 'package:AquaFocus/screens/UserPages/Shop/details_screen.dart';
 import 'package:AquaFocus/screens/UserPages/Shop/item_card.dart';
-import 'package:AquaFocus/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:AquaFocus/services/database_services.dart';
-import 'package:AquaFocus/loading.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class ShopScreen extends StatefulWidget {
