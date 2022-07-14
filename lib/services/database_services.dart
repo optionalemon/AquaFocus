@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:AquaFocus/model/app_user.dart';
 import 'package:AquaFocus/screens/signin_screen.dart';
@@ -162,5 +164,17 @@ class DatabaseService {
       }
     });
     return totalMinutes;
+  }
+
+  Future<Map<DateTime, int>> heatMapData() async {
+    Map<DateTime, int> mapInput = new HashMap<DateTime, int>();
+    await focusTimeCollection.get().then((QuerySnapshot querySnapshot) {
+      querySnapshot.docs.forEach((QueryDocumentSnapshot doc) {
+        DateTime dt = DateTime.parse('${doc.get("Date")}');
+        int duration = doc.get("totalTime");
+        mapInput.putIfAbsent(dt, () => duration);
+      });
+    });
+    return mapInput;
   }
 }
