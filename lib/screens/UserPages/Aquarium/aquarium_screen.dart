@@ -20,7 +20,7 @@ class _AquariumScreenState extends State<AquariumScreen> {
     if (user != null) {
       marLives = await DatabaseService().getMarLivesList(user.uid);
       for (int i = 0; i < marLives.length; i++) {
-        for (int j = 0; j < 6; j++) {
+        for (int j = 0; j < 7; j++) {
           if (marLives[i] == j) {
             aqList.add(marinesCreatures[j].image);
           }
