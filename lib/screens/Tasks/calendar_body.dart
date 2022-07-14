@@ -352,6 +352,8 @@ class _CalendarBodyState extends State<CalendarBody> {
                                                 await Navigator.push(
                                                     context, MaterialPageRoute(
                                   builder: (context) => TaskDetails(event)));
+                                  _selectedDay = null;
+                          _selectedEvents.value = [];
                                               },
                                               subtitle: Wrap(
                                                 children: [
