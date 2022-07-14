@@ -115,11 +115,35 @@ class _BarChartWidgetState extends State<BarChartWidget> {
               showTitles: false,
             )
         ),
+          topTitles: AxisTitles(
+              sideTitles: SideTitles(
+                showTitles: false,
+              )
+          ),
+          rightTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              getTitlesWidget: getAxisTitles,
+            ),
+          )
       ),
       borderData: FlBorderData(
         show: false,
       ),
       barGroups: showingGroups(),
+    );
+  }
+
+  Widget getAxisTitles(double value, TitleMeta meta) {
+    const style = TextStyle(
+      color: Colors.white,
+      fontSize: 10,
+    );
+    Widget text;
+    text = Text(value.toInt().toString(), style: style);
+    return SideTitleWidget(
+      axisSide: meta.axisSide,
+      child: text,
     );
   }
 
@@ -176,15 +200,19 @@ class _BarChartWidgetState extends State<BarChartWidget> {
       barRods: [
         BarChartRodData(
           toY: isTouched ? y + 1 : y,
-          color: isTouched ? Colors.white : Colors.cyan,
+          color: isTouched ? Colors.white : Colors.cyanAccent,
           width: width,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(6),
+            topRight: Radius.circular(6),
+          ),
           borderSide: isTouched
               ? BorderSide(color: Colors.cyan, width: 1)
               : const BorderSide(color: Colors.white, width: 0),
           backDrawRodData: BackgroundBarChartRodData(
             show: true,
             toY: 20,
-            color: Colors.blue,
+            color: Colors.lightBlueAccent[700],
           ),
         ),
       ],
