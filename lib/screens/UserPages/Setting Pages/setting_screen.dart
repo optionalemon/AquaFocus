@@ -305,7 +305,7 @@ class _SettingScreenState extends State<SettingScreen> {
                                 color: Colors.white,
                               ),
                               title: Text(
-                                "List as Default Page",
+                                "List as Default To-Do List Page",
                                 style: TextStyle(
                                     fontSize: size.height * 0.02,
                                     color: Colors.white),
