@@ -11,7 +11,10 @@ import 'package:flutter/material.dart';
 class SettingScreen extends StatefulWidget {
   User? user;
   final Function _updateHomeName;
-  SettingScreen(this._updateHomeName);
+  final Function _updateHomeCheckList;
+  bool isCheckList;
+  SettingScreen(
+      this._updateHomeName, this._updateHomeCheckList, this.isCheckList);
 
   @override
   State<SettingScreen> createState() => _SettingScreenState();
@@ -20,6 +23,7 @@ class SettingScreen extends StatefulWidget {
 class _SettingScreenState extends State<SettingScreen> {
   late String name;
   bool loading = true;
+  late bool allowNotif;
 
   updateSetting(String newName) {
     setState(() {
@@ -28,10 +32,48 @@ class _SettingScreenState extends State<SettingScreen> {
     });
   }
 
-  Future<void> getName() async {
+  showNotifAlertDialog(BuildContext context) {
+    // set up the buttons
+    Widget cancelButton = TextButton(
+      child: const Text("Cancel", style: TextStyle(color: Colors.grey)),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
+    Widget continueButton = TextButton(
+      child: const Text("Disable Anyway"),
+      onPressed: () async {
+        Navigator.of(context).pop();
+        setState(() {
+          allowNotif = !allowNotif;
+        });
+        await DatabaseService().updateNotif(allowNotif);
+      },
+    );
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: const Text("Are you sure to disable notification?"),
+      content: const Text(
+          "No reminders or any form of notification will be sent upon disabling."),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
+  Future<void> getNameNotif() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       name = await DatabaseService().getUserName(user.uid);
+      allowNotif = await DatabaseService().getAllowNotif();
     }
     setState(() {
       loading = false;
@@ -40,7 +82,8 @@ class _SettingScreenState extends State<SettingScreen> {
 
   @override
   void initState() {
-    getName();
+    getNameNotif();
+
     super.initState();
   }
 
@@ -144,7 +187,8 @@ class _SettingScreenState extends State<SettingScreen> {
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) =>
-                                              changeUsernameScreen(updateSetting)));
+                                              changeUsernameScreen(
+                                                  updateSetting)));
                                 },
                               ),
                               const Divider(
@@ -216,6 +260,93 @@ class _SettingScreenState extends State<SettingScreen> {
                               ),
                             ]),
                           )),
+                      Container(
+                        padding: EdgeInsets.all(size.height * 0.01),
+                        child: Container(
+                          margin: EdgeInsets.fromLTRB(10, 0, 10, 10),
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(20),
+                              gradient: LinearGradient(colors: [
+                                Colors.blue.withOpacity(0.5),
+                                Colors.white.withOpacity(0.5)
+                              ]),
+                              boxShadow: const <BoxShadow>[
+                                BoxShadow(
+                                    color: Colors.black12,
+                                    blurRadius: 5,
+                                    offset: Offset(0.0, 5))
+                              ]),
+                          child: Wrap(children: [
+                            ListTile(
+                              leading: Icon(
+                                Icons.dashboard_customize,
+                                size: size.height * 0.03,
+                                color: Colors.white,
+                              ),
+                              title: Text(
+                                "Customisation",
+                                style: TextStyle(
+                                    fontSize: size.height * 0.02,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white),
+                              ),
+                            ),
+                            const Divider(
+                              color: Colors.white70,
+                              thickness: 2,
+                            ),
+                            SwitchListTile(
+                              value: widget.isCheckList,
+                              secondary: Icon(
+                                Icons.all_inbox,
+                                size: size.height * 0.025,
+                                color: Colors.white,
+                              ),
+                              title: Text(
+                                "List as Default Page",
+                                style: TextStyle(
+                                    fontSize: size.height * 0.02,
+                                    color: Colors.white),
+                              ),
+                              onChanged: (bool value) async {
+                                setState(() {
+                                  widget.isCheckList = !widget.isCheckList;
+                                });
+                                widget._updateHomeCheckList(widget.isCheckList);
+                                DatabaseService()
+                                    .updateCheckList(widget.isCheckList);
+                              },
+                            ),
+                            SwitchListTile(
+                              value: allowNotif,
+                              secondary: Icon(
+                                Icons.notifications,
+                                size: size.height * 0.025,
+                                color: Colors.white,
+                              ),
+                              title: Text(
+                                "Allow Notifications",
+                                style: TextStyle(
+                                    fontSize: size.height * 0.02,
+                                    color: Colors.white),
+                              ),
+                              onChanged: (bool value) async {
+                                if (value) {
+                                  setState(() {
+                                    allowNotif = !allowNotif;
+                                  });
+                                  await DatabaseService()
+                                      .updateNotif(allowNotif);
+                                } else {
+                                  showNotifAlertDialog(context);
+                                }
+                              },
+                            ),
+                          ]),
+                        ),
+                      ),
                       Container(
                           padding: EdgeInsets.all(size.height * 0.01),
                           child: Container(

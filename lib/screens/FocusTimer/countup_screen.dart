@@ -180,9 +180,8 @@ class _CountUpScreenState extends State<CountUpScreen> {
 
     return AlertDialog(
       title: const Text("Congrats! You have earned"),
-      content: SizedBox(
-        height: size.height * 0.035,
-        child: Column(
+      content: Wrap(
+        children: [Column(
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -198,7 +197,7 @@ class _CountUpScreenState extends State<CountUpScreen> {
               ],
             )
           ],
-        ),
+        ),]
       ),
       actions: [
         ElevatedButton(
