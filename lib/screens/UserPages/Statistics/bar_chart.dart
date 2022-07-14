@@ -211,7 +211,7 @@ class _BarChartWidgetState extends State<BarChartWidget> {
               : const BorderSide(color: Colors.white, width: 0),
           backDrawRodData: BackgroundBarChartRodData(
             show: true,
-            toY: 20,
+            toY: 1,
             color: Colors.lightBlueAccent[700],
           ),
         ),
