@@ -8,6 +8,7 @@ import 'package:AquaFocus/screens/signin_screen.dart';
 import 'package:AquaFocus/services/task_firestore_service.dart';
 import 'package:firebase_helpers/firebase_helpers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -123,6 +124,44 @@ class _CalendarBodyState extends State<CalendarBody> {
     } else if (end != null) {
       _selectedEvents.value = _getEventsForDay(end);
     }
+  }
+
+  _onDelete(AppTask event) async {
+    setState(() {
+      _selectedEvents.value.remove(event);
+    });
+    await taskDBS.removeItem(event.id);
+    setState(() {
+      _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay));
+    });
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text('Task ${event.title} deleted')));
+  }
+
+  String repeatText(String repeats) {
+    if (repeats == 'daily') {
+      return "Repeats Daily";
+    } else if (repeats == 'weekdays') {
+      return "Repeat on weekdays";
+    } else if (repeats == 'weekends') {
+      return "Repeat on weekends";
+    } else if (repeats == 'weekly') {
+      return "Repeat weekly";
+    } else if (repeats == 'monthly') {
+      return "Repeat monthly";
+    }
+    return "";
+  }
+
+  String reminderText(String reminders) {
+    if (reminders == '5min') {
+      return "Reminder sent 5 minutes before the task";
+    } else if (reminders == '10min') {
+      return "Reminder sent 10 minutes before the task";
+    } else if (reminders == '15min') {
+      return "Reminder sent 15 minutes before the task";
+    }
+    return "";
   }
 
   @override
@@ -250,52 +289,117 @@ class _CalendarBodyState extends State<CalendarBody> {
                                       itemBuilder:
                                           (BuildContext context, int index) {
                                         AppTask event = value[index];
-                                        return Dismissible(
+                                        return Slidable(
                                           key: Key(event.id),
-                                          background: Container(
-                                              color: Colors.red,
-                                              child: Icon(Icons.delete,
-                                                  color: Colors.white)),
-                                          onDismissed: (endToStart) async {
-                                            setState(() {
-                                              _selectedEvents.value.remove(event);
-                                            });
-                                            await taskDBS.removeItem(event.id);
-                                            setState(() {
-                                              _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay));
-                                            });
-
-                                          
-
-                                            ScaffoldMessenger.of(context)
-                                                .showSnackBar(SnackBar(
-                                                    content: Text(
-                                                        'Task ${event.title} deleted')));
-                                          },
+                                          endActionPane: ActionPane(
+                                            motion: const BehindMotion(),
+                                            dismissible: DismissiblePane(
+                                                onDismissed: () async {
+                                              await _onDelete(event);
+                                            }),
+                                            children: [
+                                              SlidableAction(
+                                                onPressed: (context) async {
+                                                  await Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              AddEventPage(
+                                                                task: event,
+                                                                selectedDate:
+                                                                    event.date,
+                                                                updateTaskDetails:
+                                                                    () async {
+                                                                  AppTask
+                                                                      tempTask =
+                                                                      (await taskDBS
+                                                                          .getSingle(
+                                                                              event.id))!;
+                                                                  setState(() {
+                                                                    event =
+                                                                        tempTask;
+                                                                  });
+                                                                },
+                                                              )));
+                                                  _selectedDay = null;
+                                                  _selectedEvents.value = [];
+                                                },
+                                                backgroundColor:
+                                                    Color(0xFF21B7CA),
+                                                foregroundColor: Colors.white,
+                                                icon: Icons.edit,
+                                                label: 'Edit',
+                                              ),
+                                              SlidableAction(
+                                                onPressed: (context) async {
+                                                  await _onDelete(event);
+                                                },
+                                                backgroundColor:
+                                                    Color(0xFFFE4A49),
+                                                foregroundColor: Colors.white,
+                                                icon: Icons.delete,
+                                                label: 'Delete',
+                                              ),
+                                            ],
+                                          ),
                                           child: ListTile(
-                                              onTap: () async {
-                                                await Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            TaskDetails(
-                                                                event)));
-                                                _selectedDay = null;
-                                                _selectedEvents.value = [];
-                                              },
                                               title: Text(
                                                 event.title,
                                                 style: TextStyle(
                                                     color: Colors.white),
                                               ),
-                                              subtitle: Text(
-                                                DateFormat(
-                                                        'EEEE, dd MMMM, yyyy')
-                                                    .format(event.date),
-                                                style: TextStyle(
-                                                    color: Colors.white),
+                                              onTap: () async {
+                                                await Navigator.push(
+                                                    context, MaterialPageRoute(
+                                  builder: (context) => TaskDetails(event)));
+                                              },
+                                              subtitle: Wrap(
+                                                children: [
+                                                  Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.start,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      event.hasTime
+                                                          ? Text(
+                                                              DateFormat(
+                                                                      'HH : mm ')
+                                                                  .format(event
+                                                                      .time!),
+                                                              style: TextStyle(
+                                                                  color: Colors
+                                                                      .white),
+                                                            )
+                                                          : Container(),
+                                                      repeatText(event
+                                                                  .repeat) !=
+                                                              ""
+                                                          ? Text(
+                                                              '${repeatText(event.repeat)} ',
+                                                              style: TextStyle(
+                                                                  color: Colors
+                                                                      .white),
+                                                            )
+                                                          : Container(),
+                                                      event.hasTime
+                                                          ? (reminderText(event
+                                                                      .reminder!) !=
+                                                                  ""
+                                                              ? Text(
+                                                                  '${reminderText(event.reminder!)} ',
+                                                                  style: TextStyle(
+                                                                      color: Colors
+                                                                          .white),
+                                                                )
+                                                              : Container())
+                                                          : Container(),
+                                                    ],
+                                                  ),
+                                                ],
                                               ),
-                                              trailing: IconButton(
+                                              leading: IconButton(
                                                 icon: Icon(
                                                   event.isCompleted
                                                       ? Icons.check_circle

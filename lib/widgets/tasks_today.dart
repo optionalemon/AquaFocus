@@ -3,25 +3,29 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class Tasks extends StatelessWidget {
+  const Tasks({Key? key, required this.isCheckList}) : super(key: key);
+  final bool isCheckList;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => TaskScreen(isCheckList: true,))
-                  );
+            context,
+            MaterialPageRoute(
+                builder: (context) => TaskScreen(
+                      isCheckList: isCheckList,
+                    )));
       },
       child: Container(
-        height: MediaQuery.of(context).size.height / 2.5,
-        width: MediaQuery.of(context).size.width,
-        margin: EdgeInsets.all(15),
-        padding: EdgeInsets.all(20),
-        decoration: BoxDecoration(
+          height: MediaQuery.of(context).size.height / 2.5,
+          width: MediaQuery.of(context).size.width,
+          margin: EdgeInsets.all(15),
+          padding: EdgeInsets.all(20),
+          decoration: BoxDecoration(
             color: Colors.lightBlueAccent.withOpacity(0.5),
             borderRadius: BorderRadius.circular(20),
-        ),
+          ),
           child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
@@ -34,16 +38,14 @@ class Tasks extends StatelessWidget {
                     size: 38,
                   ),
                 ),
-                SizedBox( height: MediaQuery.of(context).size.height * 0.01),
-                const Text(
-                    "Today's Tasks",
+                SizedBox(height: MediaQuery.of(context).size.height * 0.01),
+                const Text("Today's Tasks",
                     style: TextStyle(
                       fontSize: 25,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
-                    )
-                ),
-                SizedBox( height: MediaQuery.of(context).size.height * 0.01),
+                    )),
+                SizedBox(height: MediaQuery.of(context).size.height * 0.01),
                 Container(
                   padding: EdgeInsets.all(10),
                   decoration: BoxDecoration(
@@ -53,39 +55,29 @@ class Tasks extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(
-                        Icons.auto_awesome,
-                        color: Colors.white
-                      ),
+                      Icon(Icons.auto_awesome, color: Colors.white),
                       Text(
-                          " " + DateFormat.yMMMEd().format(DateTime.now()) + " ",
+                          " " +
+                              DateFormat.yMMMEd().format(DateTime.now()) +
+                              " ",
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
-                          )
-                      ),
-                      Icon(
-                        Icons.auto_awesome,
-                        color: Colors.white
-                      ),
+                          )),
+                      Icon(Icons.auto_awesome, color: Colors.white),
                     ],
                   ),
                 ),
-                SizedBox( height: MediaQuery.of(context).size.height * 0.01),
-                const Text(
-                    "Take a look at today's agenda!",
+                SizedBox(height: MediaQuery.of(context).size.height * 0.01),
+                const Text("Take a look at today's agenda!",
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.normal,
                       color: Colors.white,
-                    )
-                ),
-                SizedBox( height: MediaQuery.of(context).size.height * 0.03),
-                
-              ]
-          )
-      ),
+                    )),
+                SizedBox(height: MediaQuery.of(context).size.height * 0.03),
+              ])),
     );
   }
 }

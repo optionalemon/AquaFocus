@@ -23,10 +23,17 @@ class _HomeScreenState extends State<HomeScreen> {
   int fishMoney = 0;
   late String name;
   bool loading = true;
+  late bool isCheckList;
 
   _updateHomeScreen(int newMoney) {
     setState(() {
       fishMoney = newMoney;
+    });
+  }
+
+  _updateHomeCheckList(bool newCheckList) {
+    setState(() {
+      isCheckList = newCheckList;
     });
   }
 
@@ -39,6 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> getNameAndMoney() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
+      isCheckList = await DatabaseService().getisCheckList();
       name = await DatabaseService().getUserName(user.uid);
       fishMoney = await DatabaseService().getMoney();
     }
@@ -61,7 +69,12 @@ class _HomeScreenState extends State<HomeScreen> {
             resizeToAvoidBottomInset: false,
             extendBodyBehindAppBar: true,
             appBar: _buildAppBar(MediaQuery.of(context).size),
-            drawer: NavigationDrawer(updateHomeScreen: _updateHomeScreen, updateHomeName: _updateHomeName,),
+            drawer: NavigationDrawer(
+              updateHomeScreen: _updateHomeScreen,
+              updateHomeName: _updateHomeName,
+              updateHomeCheckList: _updateHomeCheckList,
+              isCheckList: isCheckList,
+            ),
             body: Stack(children: <Widget>[
               Container(
                 constraints: const BoxConstraints.expand(),
@@ -76,7 +89,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Tasks(),
+                  Tasks(
+                    isCheckList: isCheckList,
+                  ),
                   Expanded(
                     child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -145,11 +160,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
 class NavigationDrawer extends StatelessWidget {
   NavigationDrawer(
-      {required this.updateHomeScreen, required this.updateHomeName, Key? key})
+      {required this.updateHomeScreen,
+      required this.updateHomeName,
+      required this.updateHomeCheckList,
+      required this.isCheckList,
+      Key? key})
       : super(key: key);
   final currUser = FirebaseAuth.instance.currentUser;
   final updateHomeScreen;
   final updateHomeName;
+  final updateHomeCheckList;
+  bool isCheckList;
 
   @override
   Widget build(BuildContext context) {
@@ -162,7 +183,7 @@ class NavigationDrawer extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
                 buildHeader(context),
-                buildMenuItem(context, updateHomeName),
+                buildMenuItem(context, updateHomeName, updateHomeCheckList, isCheckList),
               ]),
         )));
   }
@@ -205,7 +226,8 @@ class NavigationDrawer extends StatelessWidget {
     }
   }
 
-  Widget buildMenuItem(BuildContext context, Function updateHomeName) {
+  Widget buildMenuItem(BuildContext context, Function updateHomeName,
+      Function updateHomeCheckList, bool isCheckList) {
     Size size = MediaQuery.of(context).size;
     return Container(
         padding: EdgeInsets.all(size.height * 0.03),
@@ -276,7 +298,9 @@ class NavigationDrawer extends StatelessWidget {
               onTap: () {
                 Navigator.pop(context);
                 Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => SettingScreen(updateHomeName)));
+                    builder: (context) => SettingScreen(
+                          updateHomeName, updateHomeCheckList, isCheckList
+                        )));
               },
             ),
             ListTile(

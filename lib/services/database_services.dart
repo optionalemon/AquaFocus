@@ -76,6 +76,20 @@ class DatabaseService {
     return result;
   }
 
+  Future<void> updateCheckList(bool newCheckList) async {
+    userDoc.update({"isCheckList": newCheckList});
+  }
+
+  Future<bool> getisCheckList() async {
+    bool isCheckList = true;
+    await userDoc.get().then((DocumentSnapshot documentSnapshot) {
+      if (documentSnapshot.exists) {
+        isCheckList = documentSnapshot.get("isCheckList");
+      }
+    });
+    return isCheckList;
+  }
+
   Future<List<int>> getList(String databaseField, String userId) async {
     late List<int> requestList;
     DocumentReference docRef = userCollection.doc(userId);

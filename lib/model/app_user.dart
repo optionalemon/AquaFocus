@@ -4,17 +4,10 @@ class AppUser {
   String userName = '';
   List<int> marLives = [];
   int fishMoney = 0;
+  bool isCheckList = true;
 
   AppUser({
     required this.email,
     required this.userName,
   });
-
-  void setEmail(String email) {
-    this.email = email;
-  }
-
-  void setuserName(String userName) {
-    this.userName = userName;
-  }
 }

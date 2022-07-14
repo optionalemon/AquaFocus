@@ -11,7 +11,10 @@ import 'package:flutter/material.dart';
 class SettingScreen extends StatefulWidget {
   User? user;
   final Function _updateHomeName;
-  SettingScreen(this._updateHomeName);
+  final Function _updateHomeCheckList;
+  bool isCheckList;
+  SettingScreen(
+      this._updateHomeName, this._updateHomeCheckList, this.isCheckList);
 
   @override
   State<SettingScreen> createState() => _SettingScreenState();
@@ -144,7 +147,8 @@ class _SettingScreenState extends State<SettingScreen> {
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) =>
-                                              changeUsernameScreen(updateSetting)));
+                                              changeUsernameScreen(
+                                                  updateSetting)));
                                 },
                               ),
                               const Divider(
@@ -216,6 +220,68 @@ class _SettingScreenState extends State<SettingScreen> {
                               ),
                             ]),
                           )),
+                      Container(
+                        padding: EdgeInsets.all(size.height * 0.01),
+                        child: Container(
+                          margin: EdgeInsets.fromLTRB(10, 0, 10, 10),
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(20),
+                              gradient: LinearGradient(colors: [
+                                Colors.blue.withOpacity(0.5),
+                                Colors.white.withOpacity(0.5)
+                              ]),
+                              boxShadow: const <BoxShadow>[
+                                BoxShadow(
+                                    color: Colors.black12,
+                                    blurRadius: 5,
+                                    offset: Offset(0.0, 5))
+                              ]),
+                          child: Wrap(children: [
+                            ListTile(
+                              leading: Icon(
+                                Icons.dashboard_customize,
+                                size: size.height * 0.03,
+                                color: Colors.white,
+                              ),
+                              title: Text(
+                                "Customisation",
+                                style: TextStyle(
+                                    fontSize: size.height * 0.02,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white),
+                              ),
+                            ),
+                            const Divider(
+                              color: Colors.white70,
+                              thickness: 2,
+                            ),
+                            SwitchListTile(
+                              value: widget.isCheckList,
+                              secondary: Icon(
+                                Icons.all_inbox,
+                                size: size.height * 0.025,
+                                color: Colors.white,
+                              ),
+                              title: Text(
+                                "List as Default Page",
+                                style: TextStyle(
+                                    fontSize: size.height * 0.02,
+                                    color: Colors.white),
+                              ),
+                              onChanged: (bool value) async {
+                                setState(() {
+                                  widget.isCheckList = !widget.isCheckList;
+                                });
+                                widget._updateHomeCheckList(widget.isCheckList);
+                                DatabaseService()
+                                    .updateCheckList(widget.isCheckList);
+                              },
+                            ),
+                          ]),
+                        ),
+                      ),
                       Container(
                           padding: EdgeInsets.all(size.height * 0.01),
                           child: Container(
