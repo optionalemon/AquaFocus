@@ -304,9 +304,10 @@ class _AddEventPageState extends State<AddEventPage> {
                       Map<String, dynamic>.from(_formKey.currentState!.value);
                   data['date'] =
                       (data['date'] as DateTime).millisecondsSinceEpoch;
-                  if (data['time'] != null) {
+                  if (data['hasTime']) {
                     data['time'] =
                         (data['time'] as DateTime).millisecondsSinceEpoch;
+                    print(data['time']);
                   }
                   if (widget.task == null) {
                     data['userId'] = user!.uid;
@@ -315,7 +316,7 @@ class _AddEventPageState extends State<AddEventPage> {
                     await taskDBS.create(data);
                   } else {
                     //edit and update
-                    if (!widget.task!.hasTime) {
+                    if (!data['hasTime']) {
                       data['time'] = null;
                       data['reminder'] = 'never';
                     }
