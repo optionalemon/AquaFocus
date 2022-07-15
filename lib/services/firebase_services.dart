@@ -125,4 +125,27 @@ class FirebaseServices {
       await _googleSignIn.signOut();
     }
 
+  clearRecord(BuildContext context) async {
+    await FirebaseFirestore.instance
+        .collection('tasks')
+        .where('userId', isEqualTo: _auth.currentUser!.uid)
+        .get()
+        .then((querySnapshot) => {querySnapshot.docs.forEach((element) {element.reference.delete();})});
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(_auth.currentUser!.uid)
+        .update({
+      'marlives': FieldValue.delete(),
+      'allowNotif': true,
+      "isCheckList": true,
+      'money': 0,
+        });
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(_auth.currentUser!.uid)
+        .collection('FocusTime')
+        .get()
+        .then((querySnapshot) => {querySnapshot.docs.forEach((element) {element.reference.delete();})});
+  }
+
 }

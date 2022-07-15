@@ -42,6 +42,8 @@ class DatabaseService {
       'username': user.userName,
       'marlives': user.marLives,
       'money': user.fishMoney,
+      'isCheckList': true,
+      'allowNotif': true,
     });
   }
 
@@ -148,7 +150,7 @@ class DatabaseService {
     } else {
       focusTimeCollection.doc(date).set({
         "totalTime": duration,
-        "Date": DateFormat('yyyy-MM-dd').format(DateTime.now())
+        "Date": DateFormat('yyyy-MM-dd').format(DateTime.now()),
       });
     }
   }
