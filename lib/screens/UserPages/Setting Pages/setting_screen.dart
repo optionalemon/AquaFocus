@@ -496,6 +496,7 @@ showDeleteAccountAlertDialog(BuildContext context) {
   Widget continueButton = TextButton(
     child: const Text("Delete Anyway"),
     onPressed: () {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Account deleted successfully')));
       Navigator.of(context).pop();
       FirebaseServices().deleteAccount(context);
     },
@@ -530,9 +531,9 @@ showClearRecordAlertDialog(BuildContext context) {
   Widget continueButton = TextButton(
     child: const Text("Clear Anyway"),
     onPressed: () {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Record cleared successfully')));
       Navigator.of(context).pop();
-      //TODO
-      FirebaseServices().deleteAccount(context);
+      FirebaseServices().clearRecord(context);
     },
   );
   // set up the AlertDialog
