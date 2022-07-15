@@ -199,17 +199,13 @@ class _BarChartWidgetState extends State<BarChartWidget> {
           toY: isTouched ? y + 1 : y,
           color: isTouched ? Colors.white : Colors.cyanAccent,
           width: width,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(6),
-            topRight: Radius.circular(6),
-          ),
           borderSide: isTouched
               ? BorderSide(color: Colors.cyan, width: 1)
               : const BorderSide(color: Colors.white, width: 0),
           backDrawRodData: BackgroundBarChartRodData(
             show: true,
-            toY: 1,
-            color: Colors.lightBlueAccent[700],
+            toY: 99,
+            color: Colors.blueGrey[400]!.withOpacity(0.5),
           ),
         ),
       ],
