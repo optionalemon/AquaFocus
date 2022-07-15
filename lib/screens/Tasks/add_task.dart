@@ -208,6 +208,13 @@ class _AddEventPageState extends State<AddEventPage> {
                                 ),
                               ),
                               DropdownMenuItem(
+                                value: "ontime",
+                                child: Text(
+                                  'On Time',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                              DropdownMenuItem(
                                 value: "5min",
                                 child: Text(
                                   '5 Minutes early',

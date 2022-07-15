@@ -154,12 +154,15 @@ class _CalendarBodyState extends State<CalendarBody> {
   }
 
   String reminderText(String reminders) {
-    if (reminders == '5min') {
-      return "Reminder sent 5 minutes before the task";
+    if (reminders == 'ontime') {
+      return "Reminder send on time";
+    }
+    else if (reminders == '5min') {
+      return "Reminder send 5 minutes before the task";
     } else if (reminders == '10min') {
-      return "Reminder sent 10 minutes before the task";
+      return "Reminder send 10 minutes before the task";
     } else if (reminders == '15min') {
-      return "Reminder sent 15 minutes before the task";
+      return "Reminder send 15 minutes before the task";
     }
     return "";
   }

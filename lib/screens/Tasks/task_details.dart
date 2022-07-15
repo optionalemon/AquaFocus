@@ -36,12 +36,14 @@ class _TaskDetailsState extends State<TaskDetails> {
   }
 
   String reminderText(String reminders) {
-    if (reminders == '5min') {
-      return "Reminder sent 5 minutes before the task";
+    if (reminders == 'ontime') {
+      return "Reminder send on time";
+    } else if (reminders == '5min') {
+      return "Reminder send 5 minutes before the task";
     } else if (reminders == '10min') {
-      return "Reminder sent 10 minutes before the task";
+      return "Reminder send 10 minutes before the task";
     } else if (reminders == '15min') {
-      return "Reminder sent 15 minutes before the task";
+      return "Reminder send 15 minutes before the task";
     }
     return "No reminder";
   }
@@ -81,7 +83,8 @@ class _TaskDetailsState extends State<TaskDetails> {
                         context: context,
                         builder: (context) => AlertDialog(
                                 title: Text("Confirm delete?"),
-                                content: Text("Your task record will be permanently deleted."),
+                                content: Text(
+                                    "Your task record will be permanently deleted."),
                                 actions: [
                                   TextButton(
                                     onPressed: () =>
@@ -195,15 +198,16 @@ class _TaskDetailsState extends State<TaskDetails> {
                           style: TextStyle(color: Colors.white),
                         )),
                     SizedBox(height: size.height * 0.0125),
-                    widget.task.hasTime? ListTile(
-                        leading: Icon(Icons.access_alarm,
-                            color: Colors.white),
-                        title: Text(
-                          reminderText(widget.task.reminder ?? ""),
-                          style: TextStyle(color: Colors.white),
-                        )) : Container(),
+                    widget.task.hasTime
+                        ? ListTile(
+                            leading:
+                                Icon(Icons.access_alarm, color: Colors.white),
+                            title: Text(
+                              reminderText(widget.task.reminder ?? ""),
+                              style: TextStyle(color: Colors.white),
+                            ))
+                        : Container(),
                     SizedBox(height: size.height * 0.0125),
-
                   ]),
             ),
           ),
