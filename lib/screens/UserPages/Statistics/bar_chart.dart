@@ -11,21 +11,19 @@ class BarChartWidget extends StatefulWidget {
 }
 
 class _BarChartWidgetState extends State<BarChartWidget> {
-  final Duration animDuration = const Duration(milliseconds: 250);
   List<double> weekHours = [0, 0, 0, 0, 0, 0, 0];
   bool loading = true;
   int touchedIndex = -1;
-  bool isPlaying = false;
 
   @override
   void initState() {
+    super.initState();
     hourOfTheDay().then((value) {
       setState(() {
         loading = false;
       });
     });
     print("initializing");
-    super.initState();
   }
 
   @override
@@ -34,7 +32,6 @@ class _BarChartWidgetState extends State<BarChartWidget> {
         ? LoadingWidget()
         : BarChart(
       BarData(),
-      swapAnimationDuration: animDuration,
     );
   }
 
@@ -241,15 +238,6 @@ class _BarChartWidgetState extends State<BarChartWidget> {
     }
   });
 
-  Future<dynamic> refreshState() async {
-    setState(() {});
-    await Future<dynamic>.delayed(
-        animDuration + const Duration(milliseconds: 50));
-    if (isPlaying) {
-      await refreshState();
-    }
-  }
-
   Future<void> hourOfTheDay() async {
     DateTime date = DateTime.now();
     int currDay = date.weekday; //Monday -> 1
@@ -259,12 +247,10 @@ class _BarChartWidgetState extends State<BarChartWidget> {
     for (int i = 0; i < 7; i++) {
       DateTime thisDay = monday.add(Duration(days: i));
       String date = "${thisDay.year}-${thisDay.month.toString().padLeft(2,'0')}-${thisDay.day.toString().padLeft(2,'0')}";
-
-      await DatabaseService().getTimeOfTheDay(user!.uid, date).then((value) {
-        setState(() {
+      if (!mounted) return;
+        await DatabaseService().getTimeOfTheDay(user!.uid, date).then((value) {
           weekHours[i] = value.roundToDouble();
-        });
       });
+      }
     }
-  }
 }
