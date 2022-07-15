@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:AquaFocus/reusable_widgets/loading_widget.dart';
 import 'package:AquaFocus/screens/signin_screen.dart';
 import 'package:AquaFocus/services/database_services.dart';
@@ -29,10 +31,8 @@ class _BarChartWidgetState extends State<BarChartWidget> {
   @override
   Widget build(BuildContext context) {
     return loading
-        ? LoadingWidget()
-        : BarChart(
-      BarData(),
-    );
+        ? BarChart(InitData())
+        : BarChart(BarData());
   }
 
   BarChartData BarData() {
@@ -249,4 +249,61 @@ class _BarChartWidgetState extends State<BarChartWidget> {
       });
       }
     }
+
+  BarChartData InitData() {
+    return BarChartData(
+      barTouchData: BarTouchData(
+        enabled: false,
+      ),
+      titlesData: FlTitlesData(
+          show: true,
+          bottomTitles: AxisTitles(
+              sideTitles: SideTitles(
+                showTitles: true,
+                getTitlesWidget: getTitles,
+                reservedSize: 38,
+              )
+          ),
+          leftTitles: AxisTitles(
+              sideTitles: SideTitles(
+                showTitles: false,
+              )
+          ),
+          topTitles: AxisTitles(
+              sideTitles: SideTitles(
+                showTitles: false,
+              )
+          ),
+          rightTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              getTitlesWidget: getAxisTitles,
+            ),
+          )
+      ),
+      borderData: FlBorderData(
+        show: false,
+      ),
+      barGroups: List.generate(7, (i) {
+        switch (i) {
+          case 0:
+            return makeGroupData(0, 0);
+          case 1:
+            return makeGroupData(1, 0);
+          case 2:
+            return makeGroupData(2, 0);
+          case 3:
+            return makeGroupData(3, 0);
+          case 4:
+            return makeGroupData(4, 0);
+          case 5:
+            return makeGroupData(5, 0);
+          case 6:
+            return makeGroupData(6, 0);
+          default:
+            return throw Error();
+        }
+      }),
+    );
+  }
 }
