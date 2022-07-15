@@ -5,6 +5,7 @@ import 'package:AquaFocus/screens/UserPages/Setting%20Pages/setting_screen.dart'
 import 'package:AquaFocus/screens/UserPages/Shop/shop_screen.dart';
 import 'package:AquaFocus/screens/signin_screen.dart';
 import 'package:AquaFocus/services/firebase_services.dart';
+import 'package:AquaFocus/services/notification_services.dart';
 import 'package:AquaFocus/widgets/focus_timer.dart';
 import 'package:AquaFocus/widgets/tasks_today.dart';
 import 'package:auto_size_text/auto_size_text.dart';
@@ -24,6 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
   late String name;
   bool loading = true;
   late bool isCheckList;
+  var notifyHelper;
 
   _updateHomeScreen(int newMoney) {
     setState(() {
@@ -59,6 +61,8 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     getNameAndMoney();
     super.initState();
+    notifyHelper = NotifyHelper();
+    notifyHelper.initializeNotification();
   }
 
   @override
@@ -183,7 +187,8 @@ class NavigationDrawer extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
                 buildHeader(context),
-                buildMenuItem(context, updateHomeName, updateHomeCheckList, isCheckList),
+                buildMenuItem(
+                    context, updateHomeName, updateHomeCheckList, isCheckList),
               ]),
         )));
   }
@@ -299,8 +304,7 @@ class NavigationDrawer extends StatelessWidget {
                 Navigator.pop(context);
                 Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => SettingScreen(
-                          updateHomeName, updateHomeCheckList, isCheckList
-                        )));
+                        updateHomeName, updateHomeCheckList, isCheckList)));
               },
             ),
             ListTile(

@@ -59,6 +59,7 @@ dependencies:
   timezone: ^0.8.0
   flutter_native_timezone: 
   device_info_plus: ^4.0.0
+  get: ^4.6.5
 
   flutter_localizations:
     sdk: flutter

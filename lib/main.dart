@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:AquaFocus/model/state.dart';
 import 'package:AquaFocus/reusable_widgets/loading.dart';
 import 'package:AquaFocus/screens/Onboarding/Onboarding.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
@@ -11,7 +10,6 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:AquaFocus/screens/signin_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_options.dart';
 import 'package:AquaFocus/screens/Tasks/task_screen.dart';
@@ -23,17 +21,15 @@ int? initScreen;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SharedPreferences preferences = await SharedPreferences.getInstance();
-  initScreen = await preferences.getInt('initScreen');
+  initScreen = preferences.getInt('initScreen');
   await preferences.setInt('initScreen', 1);
 
   await Firebase.initializeApp(
     name: 'AquaFocus',
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  
-  runApp(BlocProvider(
-      create: (BuildContext context) => HabitBoardCubit()..load(),
-      child: MyApp()));
+
+  runApp(MyApp());
 }
 
 class MyApp extends StatefulWidget {
@@ -100,13 +96,4 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     super.dispose();
   }
 
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    print('State changed!');
-    print(state);
-
-    if (state == AppLifecycleState.paused) {
-      context.read<HabitBoardCubit>().saveState();
-    }
-  }
 }
