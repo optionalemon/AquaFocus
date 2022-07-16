@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:AquaFocus/model/app_user.dart';
 import 'package:AquaFocus/model/tags.dart';
 import 'package:AquaFocus/screens/signin_screen.dart';
-import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class DatabaseService {
@@ -49,6 +48,14 @@ class DatabaseService {
           })
         });
     return tags;
+  }
+  
+  Future<double> getPercentageForTag(Tags tag) async {
+    QuerySnapshot tasks = await userDoc.collection('tasks').where('tag', isEqualTo: tag.title).get();
+    //print(tasks.size);
+    QuerySnapshot totalTasks = await userDoc.collection('tasks').get();
+    //print(totalTasks.size);
+    return double.parse((tasks.size / totalTasks.size * 100).toStringAsFixed(2));
   }
 
   Future<void> addUser(AppUser user, String uid) async {

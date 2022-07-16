@@ -129,6 +129,12 @@ class FirebaseServices {
     await FirebaseFirestore.instance
         .collection('users')
         .doc(_auth.currentUser!.uid)
+        .collection('Tags')
+        .get()
+        .then((querySnapshot) => {querySnapshot.docs.forEach((element) {element.reference.delete();})});
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(_auth.currentUser!.uid)
         .update({
       'marlives': FieldValue.delete(),
       'allowNotif': true,
