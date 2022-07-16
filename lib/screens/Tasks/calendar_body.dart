@@ -1,5 +1,6 @@
 import 'dart:collection';
 
+import 'package:AquaFocus/services/database_services.dart';
 import 'package:AquaFocus/widgets/loading.dart';
 import 'package:AquaFocus/screens/Tasks/add_task.dart';
 import 'package:AquaFocus/screens/Tasks/task_details.dart';
@@ -33,6 +34,7 @@ class _CalendarBodyState extends State<CalendarBody> {
       LinkedHashMap<DateTime, List<AppTask>>();
   List<AppTask> eventList = [];
   bool loading = true;
+  late bool showCompleted;
 
   @override
   void initState() {
@@ -66,6 +68,7 @@ class _CalendarBodyState extends State<CalendarBody> {
         isEqualTo: user!.uid,
       ),
     ]);
+
     if (!mounted) return;
     setState(() {
       loading = false;
@@ -156,8 +159,7 @@ class _CalendarBodyState extends State<CalendarBody> {
   String reminderText(String reminders) {
     if (reminders == 'ontime') {
       return "Reminder send on time";
-    }
-    else if (reminders == '5min') {
+    } else if (reminders == '5min') {
       return "Reminder send 5 minutes before the task";
     } else if (reminders == '10min') {
       return "Reminder send 10 minutes before the task";
@@ -353,10 +355,13 @@ class _CalendarBodyState extends State<CalendarBody> {
                                               ),
                                               onTap: () async {
                                                 await Navigator.push(
-                                                    context, MaterialPageRoute(
-                                  builder: (context) => TaskDetails(event)));
-                                  _selectedDay = null;
-                          _selectedEvents.value = [];
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            TaskDetails(
+                                                                event)));
+                                                _selectedDay = null;
+                                                _selectedEvents.value = [];
                                               },
                                               subtitle: Wrap(
                                                 children: [
@@ -400,13 +405,14 @@ class _CalendarBodyState extends State<CalendarBody> {
                                                                 )
                                                               : Container())
                                                           : Container(),
-                                                      event.tag != null ? Text(
-                                                                  '#${event.tag}',
-                                                                  style: TextStyle(
-                                                                      color: Colors
-                                                                          .white),
-                                                                )
-                                                              : Container(),
+                                                      event.tag != null
+                                                          ? Text(
+                                                              '#${event.tag}',
+                                                              style: TextStyle(
+                                                                  color: Colors
+                                                                      .white),
+                                                            )
+                                                          : Container(),
                                                     ],
                                                   ),
                                                 ],

@@ -77,12 +77,6 @@ class FirebaseServices {
     bool step4 = false;
     while (true) {
       if (step1) {
-        //delete user info in the database
-        await FirebaseFirestore.instance
-            .collection('tasks')
-            .where('userId', isEqualTo: _auth.currentUser!.uid)
-            .get()
-            .then((querySnapshot) => {querySnapshot.docs.forEach((element) {element.reference.delete();})});
         await FirebaseFirestore.instance
             .collection('users')
             .doc(_auth.currentUser!.uid)
@@ -127,8 +121,9 @@ class FirebaseServices {
 
   clearRecord(BuildContext context) async {
     await FirebaseFirestore.instance
+        .collection('users')
+        .doc(_auth.currentUser!.uid)
         .collection('tasks')
-        .where('userId', isEqualTo: _auth.currentUser!.uid)
         .get()
         .then((querySnapshot) => {querySnapshot.docs.forEach((element) {element.reference.delete();})});
     await FirebaseFirestore.instance

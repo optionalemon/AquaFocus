@@ -19,7 +19,7 @@ class SignInScreen extends StatefulWidget {
 class _SignInScreenState extends State<SignInScreen> {
   @override
   void initState() {
-    auth.userChanges().listen((event) => setState(() => user = event));
+    auth.userChanges().listen((event) => mounted ? setState(() => user = event) : null);
     super.initState();
   }
 

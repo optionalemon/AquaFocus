@@ -21,6 +21,28 @@ class _ListBodyPageState extends State<ListBodyPage> {
         ),
       ),
     ),
+    SafeArea(
+      child: Container(
+        margin: EdgeInsets.fromLTRB(10, 0, 10, 10),
+        width: double.infinity,
+        decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      gradient: LinearGradient(colors: [
+                        Colors.cyan.withOpacity(0.5),
+                        Colors.white.withOpacity(0.5)
+                      ]),
+                      boxShadow: const <BoxShadow>[
+                        BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 5,
+                            offset: Offset(0.0, 5))
+                      ]),
+        child: Column(children: [
+          
+        ]),
+      ),
+    ),
       ],
     );
   }

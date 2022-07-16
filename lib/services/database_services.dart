@@ -1,15 +1,16 @@
 import 'dart:collection';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:AquaFocus/model/app_user.dart';
+import 'package:AquaFocus/model/tags.dart';
 import 'package:AquaFocus/screens/signin_screen.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class DatabaseService {
   late CollectionReference userCollection;
-  late CollectionReference todoCollection;
+  late CollectionReference tagsCollection;
   late DocumentReference userDoc;
   late CollectionReference focusTimeCollection;
-  late CollectionReference habitCollection;
 
   DatabaseService({FirebaseFirestore? instanceInjection}) {
     FirebaseFirestore instance;
@@ -25,12 +26,29 @@ class DatabaseService {
 
     userCollection = instance.collection('users');
     userDoc = instance.collection('users').doc(uid);
-    todoCollection =
-        instance.collection('users').doc(uid).collection('AppTask');
+    tagsCollection = instance.collection('users').doc(uid).collection('Tags');
     focusTimeCollection =
         instance.collection('users').doc(uid).collection('FocusTime');
-    habitCollection =
-        instance.collection('users').doc(uid).collection('HabitTracker');
+  }
+
+  Future<void> addTags(Tags newTag) async {
+    await tagsCollection.doc(newTag.title).set({
+      'title': newTag.title,
+      'color': newTag.color,
+    });
+  }
+
+  Future<List> getUserTags() async {
+    List tags = [];
+    await tagsCollection.get().then((snapshot) => {
+          snapshot.docs.forEach((doc) {
+            String color = doc.get("color");
+            String title = doc.get("title");
+
+            tags.add(Tags(title: title, color: color));
+          })
+        });
+    return tags;
   }
 
   Future<void> addUser(AppUser user, String uid) async {
@@ -54,17 +72,6 @@ class DatabaseService {
       }
     });
     return name;
-  }
-
-  Future<List> getUserTags(String userId) async {
-    List tags = [];
-    DocumentReference docRef = userCollection.doc(userId);
-    await docRef.get().then((DocumentSnapshot documentSnapshot) {
-      if (documentSnapshot.exists) {
-        tags = documentSnapshot.get("tags");
-      }
-    });
-    return tags;
   }
 
   Future<void> addMoney(int amt) async {
@@ -98,6 +105,20 @@ class DatabaseService {
     await userDoc.get().then((DocumentSnapshot documentSnapshot) {
       if (documentSnapshot.exists) {
         isCheckList = documentSnapshot.get("isCheckList");
+      }
+    });
+    return isCheckList;
+  }
+
+  Future<void> updateShowCompl(bool newShow) async {
+    userDoc.update({"showCompleted": newShow});
+  }
+
+  Future<bool> getShowCompl() async {
+    bool isCheckList = true;
+    await userDoc.get().then((DocumentSnapshot documentSnapshot) {
+      if (documentSnapshot.exists) {
+        isCheckList = documentSnapshot.get("showCompleted");
       }
     });
     return isCheckList;
