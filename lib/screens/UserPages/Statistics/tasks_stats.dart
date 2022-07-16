@@ -1,6 +1,7 @@
 import 'package:AquaFocus/screens/UserPages/Statistics/pie_chart.dart';
 import 'package:AquaFocus/screens/UserPages/Statistics/pie_chart_indicator.dart';
-import 'package:fl_chart/fl_chart.dart';
+import 'package:AquaFocus/services/database_services.dart';
+import 'package:AquaFocus/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
 
 class TasksStats extends StatefulWidget {
@@ -12,6 +13,41 @@ class TasksStats extends StatefulWidget {
 
 class _TasksStatsState extends State<TasksStats> {
   int touchedIndex = -1;
+  late List tagList;
+
+  bool loading = true;
+
+  @override
+  void initState() {
+    loading = true;
+    setMap();
+    super.initState();
+  }
+
+  Future<void> setMap() async {
+    await DatabaseService().getUserTags().then((input) {
+      setState(() {
+        tagList = input;
+        loading = false;
+      });
+    });
+  }
+
+  Color getColor(String color) {
+    if (color == 'red') {
+      return const Color.fromARGB(255, 245, 107, 116);
+    } else if (color == "orange") {
+      return const Color.fromARGB(255, 244, 167, 111);
+    } else if (color == "yellow") {
+      return const Color.fromARGB(255, 232, 224, 103);
+    } else if (color == "green") {
+      return const Color.fromARGB(255, 91, 220, 119);
+    } else if (color == "blue") {
+      return const Color.fromARGB(255, 84, 164, 234);
+    } else if (color == "purple") {
+      return const Color.fromARGB(255, 125, 100, 226);
+    } else { return Colors.black; }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,12 +61,14 @@ class _TasksStatsState extends State<TasksStats> {
               fit: BoxFit.cover,
             ),
           )),
-      SafeArea(
+      loading
+      ? LoadingWidget()
+      : SafeArea(
           child: SingleChildScrollView(
               child: Column(
                   children: <Widget>[
                     AspectRatio(
-                      aspectRatio: 0.8,
+                      aspectRatio: 0.7,
                       child: Card(
                         margin: EdgeInsets.all(size.height * 0.03),
                         elevation: 4,
@@ -67,48 +105,35 @@ class _TasksStatsState extends State<TasksStats> {
                               Expanded(
                                 child: Padding(
                                     padding:
-                                    const EdgeInsets.symmetric(horizontal: 8.0),
+                                    const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
                                     child: PieChartWidget()),
                               ),
                               SizedBox(
                                 height: size.height * 0.01,
                               ),
                               Column(
-                                mainAxisSize: MainAxisSize.max,
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: const <Widget>[
-                                  Indicator(
-                                    color: Color(0xff0293ee),
-                                    text: 'Tag 1',
-                                    isSquare: false,
-                                  ),
-                                  SizedBox(
-                                    height: 4,
-                                  ),
-                                  Indicator(
-                                    color: Colors.indigo,
-                                    text: 'Tag 2',
-                                    isSquare: false,
-                                  ),
-                                  SizedBox(
-                                    height: 4,
+                                children: [
+                                  Column(
+                                    mainAxisSize: MainAxisSize.max,
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: List.generate(tagList.length, (index) =>
+                                        Column(children: [
+                                          Indicator(
+                                            color: getColor(tagList[index].color),
+                                            text: tagList[index].title,
+                                            isSquare: false,
+                                          ),
+                                          const SizedBox(
+                                            height: 4,
+                                          ),
+                                        ])
+                                    ),
                                   ),
                                   Indicator(
-                                    color: Colors.cyan,
-                                    text: 'Tag 3',
+                                    color: Colors.grey,
+                                    text: 'no tag',
                                     isSquare: false,
-                                  ),
-                                  SizedBox(
-                                    height: 4,
-                                  ),
-                                  Indicator(
-                                    color: Color(0xff13d38e),
-                                    text: 'Tag 4',
-                                    isSquare: false,
-                                  ),
-                                  SizedBox(
-                                    height: 18,
                                   ),
                                 ],
                               ),
@@ -123,6 +148,4 @@ class _TasksStatsState extends State<TasksStats> {
       )
     ]);
   }
-
-
 }

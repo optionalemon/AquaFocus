@@ -1,5 +1,6 @@
 import 'package:AquaFocus/screens/UserPages/Statistics/bar_chart.dart';
 import 'package:AquaFocus/screens/UserPages/Statistics/heatmap.dart';
+import 'package:AquaFocus/screens/UserPages/Statistics/line_chart.dart';
 import 'package:flutter/material.dart';
 
 class FocusTimeStats extends StatefulWidget {
@@ -50,7 +51,7 @@ class _FocusTimeStatsState extends State<FocusTimeStats> {
                           ),
                           SizedBox(height: size.height * 0.01),
                           Text(
-                            'Your focus time distribution this week',
+                            'Your focus time distribution by day',
                             style: TextStyle(
                               color: Colors.cyan[200],
                               fontSize: 16,
@@ -124,7 +125,8 @@ class _FocusTimeStatsState extends State<FocusTimeStats> {
                       ),
                     ),
                   ),
-                )
+                ),
+                LineChartWidget(),
               ]
               ),
             )
