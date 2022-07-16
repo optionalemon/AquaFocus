@@ -148,21 +148,6 @@ class _TaskDetailsState extends State<TaskDetails> {
                             fontWeight: FontWeight.bold,
                             fontSize: size.height * 0.025),
                       ),
-                      trailing: IconButton(
-                        onPressed: () async {
-                          setState(() {
-                            widget.task.isCompleted = !widget.task.isCompleted;
-                          });
-                          await taskDBS.updateData(widget.task.id, {
-                            'isCompleted': widget.task.isCompleted,
-                          });
-                        },
-                        icon: Icon(
-                            widget.task.isCompleted
-                                ? Icons.check_circle
-                                : Icons.circle_outlined,
-                            color: Colors.white),
-                      ),
                       subtitle: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,

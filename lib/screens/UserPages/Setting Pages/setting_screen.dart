@@ -228,7 +228,7 @@ class _SettingScreenState extends State<SettingScreen> {
                                   color: Colors.white,
                                 ),
                                 title: Text(
-                                  "Clear Focus Record",
+                                  "Clear Data",
                                   style: TextStyle(
                                       fontSize: size.height * 0.02,
                                       color: Colors.white),
@@ -531,16 +531,16 @@ showClearRecordAlertDialog(BuildContext context) {
   Widget continueButton = TextButton(
     child: const Text("Clear Anyway"),
     onPressed: () {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Record cleared successfully')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Data cleared successfully')));
       Navigator.of(context).pop();
       FirebaseServices().clearRecord(context);
     },
   );
   // set up the AlertDialog
   AlertDialog alert = AlertDialog(
-    title: const Text("Are you sure to clear all focus records?"),
+    title: const Text("Are you sure to clear all data?"),
     content: const Text(
-        "You can still use this account. However, all focus records will be cleared and cannot be restored."),
+        "You can still use this account. However, all records will be cleared and cannot be restored."),
     actions: [
       cancelButton,
       continueButton,
