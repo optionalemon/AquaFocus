@@ -190,6 +190,15 @@ class _TaskDetailsState extends State<TaskDetails> {
                           style: TextStyle(color: Colors.white),
                         )),
                     SizedBox(height: size.height * 0.0125),
+                    widget.task.tag != null ? ListTile(
+                            leading:
+                                Icon(Icons.tag, color: Colors.white),
+                            title: Text(
+                              widget.task.tag ?? "",
+                              style: TextStyle(color: Colors.white),
+                            ))
+                        : Container(),
+                    SizedBox(height: size.height * 0.0125),
                     ListTile(
                         leading: Icon(Icons.event_repeat_outlined,
                             color: Colors.white),
@@ -208,6 +217,7 @@ class _TaskDetailsState extends State<TaskDetails> {
                             ))
                         : Container(),
                     SizedBox(height: size.height * 0.0125),
+                    
                   ]),
             ),
           ),

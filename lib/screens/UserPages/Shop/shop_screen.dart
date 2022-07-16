@@ -1,5 +1,5 @@
 import 'package:AquaFocus/model/marine_creature.dart';
-import 'package:AquaFocus/reusable_widgets/loading.dart';
+import 'package:AquaFocus/widgets/loading.dart';
 import 'package:AquaFocus/screens/UserPages/Shop/details_screen.dart';
 import 'package:AquaFocus/screens/UserPages/Shop/item_card.dart';
 import 'package:flutter/material.dart';

@@ -1,4 +1,4 @@
-import 'package:AquaFocus/reusable_widgets/loading.dart';
+import 'package:AquaFocus/widgets/loading.dart';
 import 'package:AquaFocus/screens/Onboarding/core_concept.dart';
 import 'package:AquaFocus/screens/UserPages/Setting%20Pages/change_username_screen.dart';
 import 'package:AquaFocus/screens/UserPages/Setting%20Pages/feedback_screen.dart';

@@ -2,7 +2,7 @@ import 'package:AquaFocus/model/app_user.dart';
 import 'package:AquaFocus/screens/signin_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:AquaFocus/reusable_widgets/reusable_widget.dart';
+import 'package:AquaFocus/widgets/reusable_widget.dart';
 import 'package:AquaFocus/services/database_services.dart';
 
 class SignUpScreen extends StatefulWidget {

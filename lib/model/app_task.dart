@@ -11,6 +11,7 @@ class AppTask {
   final DateTime? time;
   final String repeat;
   final String? reminder;
+  final String? tag;
 
   AppTask({
     this.title = "",
@@ -23,6 +24,7 @@ class AppTask {
     this.time,
     this.reminder,
     this.repeat = "never",
+    this.tag,
   }) : this.date = date ?? DateTime(1970);
 
   AppTask copyWith({
@@ -36,6 +38,7 @@ class AppTask {
     DateTime? time,
     String? repeat,
     String? reminder,
+    String? tag,
   }) {
     return AppTask(
       title: title ?? this.title,
@@ -45,9 +48,10 @@ class AppTask {
       userId: userId ?? this.userId,
       isCompleted: isCompleted ?? this.isCompleted,
       hasTime: hasTime ?? this.hasTime,
-      time: time?? this.time,
-      repeat: repeat?? this.repeat,
-      reminder: reminder??this.reminder,
+      time: time ?? this.time,
+      repeat: repeat ?? this.repeat,
+      reminder: reminder ?? this.reminder,
+      tag: tag ?? this.tag,
     );
   }
 
@@ -59,10 +63,11 @@ class AppTask {
       'date': date.millisecondsSinceEpoch,
       'userId': userId,
       'isCompleted': isCompleted,
-      'hasTime':hasTime,
-      'time':time?.millisecondsSinceEpoch,
-      'repeat':repeat,
-      'reminder':reminder,
+      'hasTime': hasTime,
+      'time': time?.millisecondsSinceEpoch,
+      'repeat': repeat,
+      'reminder': reminder,
+      'tag' : tag,
     };
   }
 
@@ -80,6 +85,7 @@ class AppTask {
       time: map['time'],
       repeat: map['repeat'],
       reminder: map['reminder'],
+      tag: map['tag'],
     );
   }
 
@@ -94,9 +100,12 @@ class AppTask {
       userId: data['userId'],
       isCompleted: data['isCompleted'],
       hasTime: data['hasTime'],
-      time: data['time'] != null ? DateTime.fromMillisecondsSinceEpoch(data['time']) : null,
+      time: data['time'] != null
+          ? DateTime.fromMillisecondsSinceEpoch(data['time'])
+          : null,
       repeat: data['repeat'],
       reminder: data['reminder'],
+      tag: data['tag'],
     );
   }
 
@@ -104,11 +113,6 @@ class AppTask {
 
   static AppTask? fromJson(String source) =>
       AppTask.fromMap(json.decode(source));
-
-  @override
-  String toString() {
-    return 'AppEvent(title: $title, id: $id, description: $description, date: $date, userId: $userId)';
-  }
 
   @override
   bool operator ==(Object o) {
@@ -123,7 +127,8 @@ class AppTask {
         o.time == time &&
         o.repeat == repeat &&
         o.reminder == reminder &&
-        o.isCompleted == isCompleted;
+        o.isCompleted == isCompleted &&
+        o.tag == tag;
   }
 
   @override
@@ -133,6 +138,11 @@ class AppTask {
         description.hashCode ^
         date.hashCode ^
         userId.hashCode ^
-        isCompleted.hashCode ^hasTime.hashCode ^time.hashCode ^repeat.hashCode ^reminder.hashCode;
+        isCompleted.hashCode ^
+        hasTime.hashCode ^
+        time.hashCode ^
+        repeat.hashCode ^
+        reminder.hashCode ^
+        tag.hashCode;
   }
 }

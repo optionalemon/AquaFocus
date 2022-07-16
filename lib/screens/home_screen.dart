@@ -1,4 +1,4 @@
-import 'package:AquaFocus/reusable_widgets/loading.dart';
+import 'package:AquaFocus/widgets/loading.dart';
 import 'package:AquaFocus/screens/UserPages/Aquarium/aquarium_screen.dart';
 import 'package:AquaFocus/screens/UserPages/Statistics/statistics_screen.dart';
 import 'package:AquaFocus/screens/UserPages/Setting%20Pages/setting_screen.dart';

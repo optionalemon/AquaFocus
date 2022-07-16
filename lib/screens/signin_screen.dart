@@ -1,11 +1,9 @@
-import 'package:AquaFocus/screens/Onboarding/Onboarding.dart';
 import 'package:AquaFocus/screens/reset_password.dart';
 import 'package:AquaFocus/services/firebase_services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:AquaFocus/reusable_widgets/reusable_widget.dart';
+import 'package:AquaFocus/widgets/reusable_widget.dart';
 import 'package:AquaFocus/screens/home_screen.dart';
 import 'package:AquaFocus/screens/signup_screen.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 final FirebaseAuth auth = FirebaseAuth.instance;

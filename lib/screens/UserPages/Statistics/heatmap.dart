@@ -1,4 +1,4 @@
-import 'package:AquaFocus/reusable_widgets/loading_widget.dart';
+import 'package:AquaFocus/widgets/loading_widget.dart';
 import 'package:AquaFocus/services/database_services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_heatmap_calendar/flutter_heatmap_calendar.dart';
