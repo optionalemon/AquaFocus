@@ -1,5 +1,5 @@
-import 'package:AquaFocus/reusable_widgets/loading.dart';
-import 'package:AquaFocus/reusable_widgets/reusable_widget.dart';
+import 'package:AquaFocus/widgets/loading.dart';
+import 'package:AquaFocus/widgets/reusable_widget.dart';
 import 'package:AquaFocus/services/database_services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';

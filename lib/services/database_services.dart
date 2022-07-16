@@ -1,11 +1,8 @@
 import 'dart:collection';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:AquaFocus/model/app_user.dart';
 import 'package:AquaFocus/screens/signin_screen.dart';
 import 'package:intl/intl.dart';
-
-
 
 class DatabaseService {
   late CollectionReference userCollection;
@@ -28,7 +25,8 @@ class DatabaseService {
 
     userCollection = instance.collection('users');
     userDoc = instance.collection('users').doc(uid);
-    todoCollection = instance.collection('users').doc(uid).collection('Todos');
+    todoCollection =
+        instance.collection('users').doc(uid).collection('AppTask');
     focusTimeCollection =
         instance.collection('users').doc(uid).collection('FocusTime');
     habitCollection =
@@ -56,6 +54,17 @@ class DatabaseService {
       }
     });
     return name;
+  }
+
+  Future<List> getUserTags(String userId) async {
+    List tags = [];
+    DocumentReference docRef = userCollection.doc(userId);
+    await docRef.get().then((DocumentSnapshot documentSnapshot) {
+      if (documentSnapshot.exists) {
+        tags = documentSnapshot.get("tags");
+      }
+    });
+    return tags;
   }
 
   Future<void> addMoney(int amt) async {
@@ -144,9 +153,9 @@ class DatabaseService {
 
     final focusDate = await focusTimeCollection.doc(date).get();
     if (focusDate.exists) {
-      focusTimeCollection.doc(date).update({
-        "totalTime": FieldValue.increment(duration)
-      });
+      focusTimeCollection
+          .doc(date)
+          .update({"totalTime": FieldValue.increment(duration)});
     } else {
       focusTimeCollection.doc(date).set({
         "totalTime": duration,
@@ -158,7 +167,8 @@ class DatabaseService {
   Future<num> getTimeOfTheDay(String uid, String day) async {
     num totalMinutes = 0;
 
-    CollectionReference userFocusTime = userCollection.doc(uid).collection('FocusTime');
+    CollectionReference userFocusTime =
+        userCollection.doc(uid).collection('FocusTime');
 
     await userFocusTime.doc(day).get().then((DocumentSnapshot doc) {
       if (doc.exists) {
@@ -171,11 +181,11 @@ class DatabaseService {
   Future<Map<DateTime, int>> heatMapData() async {
     Map<DateTime, int> mapInput = new HashMap<DateTime, int>();
     await focusTimeCollection.get().then((QuerySnapshot querySnapshot) {
-      querySnapshot.docs.forEach((QueryDocumentSnapshot doc) {
+      for (var doc in querySnapshot.docs) {
         DateTime dt = DateTime.parse('${doc.get("Date")}');
         int duration = doc.get("totalTime");
         mapInput.putIfAbsent(dt, () => duration);
-      });
+      }
     });
     return mapInput;
   }

@@ -1,6 +1,8 @@
 import 'package:AquaFocus/model/app_task.dart';
-import 'package:AquaFocus/reusable_widgets/reusable_widget.dart';
+import 'package:AquaFocus/widgets/loading.dart';
+import 'package:AquaFocus/widgets/reusable_widget.dart';
 import 'package:AquaFocus/services/task_firestore_service.dart';
+import 'package:AquaFocus/services/database_services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
@@ -24,16 +26,34 @@ class AddEventPage extends StatefulWidget {
 class _AddEventPageState extends State<AddEventPage> {
   final _formKey = GlobalKey<FormBuilderState>();
   late bool isTimeSetted;
+  late List tags;
+  bool loading = true;
 
   @override
   void initState() {
-    isTimeSetted = widget.task?.hasTime ?? false;
     super.initState();
+    isTimeSetted = widget.task?.hasTime ?? false;
+    getTags();
+  }
+
+  getTags() async {
+    tags = await DatabaseService().getUserTags(user?.uid ?? "");
+    setState(() {
+      loading = false;
+    });
+  }
+
+  List<FormBuilderChipOption> getOptions() {
+    List<FormBuilderChipOption> lst = [];
+    for (var tag in tags) {
+      lst.add(FormBuilderChipOption(value: tag, child: Text(tag, style: TextStyle(color: Color.fromARGB(255, 65, 65, 65)),)));
+    }
+    return lst;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return loading? const Loading() :Scaffold(
         resizeToAvoidBottomInset: false,
         extendBodyBehindAppBar: true,
         appBar: AppBar(
@@ -239,6 +259,8 @@ class _AddEventPageState extends State<AddEventPage> {
                           ),
                     !isTimeSetted ? Container() : Divider(),
                     FormBuilderDropdown(
+                      icon: Icon(Icons.event_repeat_outlined,
+                            color: Colors.white),
                       initialValue: widget.task?.repeat ?? "never",
                       dropdownColor: Color.fromARGB(119, 100, 180, 255),
                       borderRadius: BorderRadius.circular(20.0),
@@ -251,8 +273,7 @@ class _AddEventPageState extends State<AddEventPage> {
                           borderRadius: BorderRadius.circular(15),
                           borderSide: BorderSide.none,
                         ),
-                        prefixIcon: Icon(Icons.event_repeat_outlined,
-                            color: Colors.white),
+                        
                       ),
                       name: "repeat",
                       items: const [
@@ -301,6 +322,23 @@ class _AddEventPageState extends State<AddEventPage> {
                       ],
                     ),
                     Divider(),
+                    FormBuilderChoiceChip(
+                      name: 'tag',
+                      disabledColor: Color.fromARGB(186, 158, 158, 158),
+                      selectedColor: Color.fromARGB(218, 3, 168, 244),
+                      decoration: InputDecoration(
+                        labelText: 'Tags',
+                        labelStyle: TextStyle(color: Colors.white),
+                        filled: true,
+                        fillColor: Colors.cyan.withOpacity(0.5),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15),
+                          borderSide: BorderSide.none,
+                        ),
+                        prefixIcon: Icon(Icons.tag, color: Colors.white),
+                      ),
+                      options: getOptions(),
+                    ),
                   ])),
               SizedBox(height: MediaQuery.of(context).size.height * 0.02),
               firebaseButton(context, "Save", () async {
@@ -314,7 +352,6 @@ class _AddEventPageState extends State<AddEventPage> {
                   if (data['hasTime']) {
                     data['time'] =
                         (data['time'] as DateTime).millisecondsSinceEpoch;
-                    print(data['time']);
                   }
                   if (widget.task == null) {
                     data['userId'] = user!.uid;
