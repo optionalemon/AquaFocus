@@ -21,16 +21,16 @@ class FirebaseServices {
   signInWithGoogle() async {
     try {
       final GoogleSignInAccount? googleSignInAccount =
-          await _googleSignIn.signIn();
+      await _googleSignIn.signIn();
       if (googleSignInAccount != null) {
         String googleEmail = googleSignInAccount.email;
         final GoogleSignInAuthentication googleSignInAuthentication =
-            await googleSignInAccount.authentication;
+        await googleSignInAccount.authentication;
         final AuthCredential authCredential = GoogleAuthProvider.credential(
             accessToken: googleSignInAuthentication.accessToken,
             idToken: googleSignInAuthentication.idToken);
         final UserCredential authResult =
-            await _auth.signInWithCredential(authCredential);
+        await _auth.signInWithCredential(authCredential);
 
         if (authResult.additionalUserInfo!.isNewUser) {
           AppUser appUser = AppUser(email: googleEmail, userName: "default");
@@ -50,12 +50,12 @@ class FirebaseServices {
       );
       // Create a credential from the access token
       final OAuthCredential facebookAuthCredential =
-          FacebookAuthProvider.credential(loginResult.accessToken!.token);
+      FacebookAuthProvider.credential(loginResult.accessToken!.token);
 
       final userData = await _facebookSignIn.getUserData();
 
       final UserCredential authResult =
-          await _auth.signInWithCredential(facebookAuthCredential);
+      await _auth.signInWithCredential(facebookAuthCredential);
       final facebookEmail = userData["email"];
 
       if (authResult.additionalUserInfo!.isNewUser) {
@@ -113,11 +113,11 @@ class FirebaseServices {
     }
   }
 
-    signOut() async {
-      await _auth.signOut();
-      await _facebookSignIn.logOut();
-      await _googleSignIn.signOut();
-    }
+  signOut() async {
+    await _auth.signOut();
+    await _facebookSignIn.logOut();
+    await _googleSignIn.signOut();
+  }
 
   clearRecord(BuildContext context) async {
     await FirebaseFirestore.instance
@@ -136,11 +136,11 @@ class FirebaseServices {
         .collection('users')
         .doc(_auth.currentUser!.uid)
         .update({
-      'marlives': FieldValue.delete(),
+      //'marlives': FieldValue.delete(),
       'allowNotif': true,
       "isCheckList": true,
-      'money': 0,
-        });
+      //'money': 0,
+    });
     await FirebaseFirestore.instance
         .collection('users')
         .doc(_auth.currentUser!.uid)
