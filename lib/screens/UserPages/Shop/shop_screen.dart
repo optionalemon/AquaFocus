@@ -119,7 +119,7 @@ class _ShopScreenState extends State<ShopScreen> {
                                             updateShopState: _update,
                                           ))),
                             )),
-                  ))
+                  )),
                 ],
               ))
             ]));

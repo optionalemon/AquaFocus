@@ -24,6 +24,7 @@ class _SettingScreenState extends State<SettingScreen> {
   late String name;
   bool loading = true;
   late bool allowNotif;
+  late bool showCompleted;
 
   updateSetting(String newName) {
     setState(() {
@@ -74,6 +75,7 @@ class _SettingScreenState extends State<SettingScreen> {
     if (user != null) {
       name = await DatabaseServices().getUserName(user.uid);
       allowNotif = await DatabaseServices().getAllowNotif();
+      showCompleted = await DatabaseServices().getShowCompl();
     }
     setState(() {
       loading = false;
@@ -344,6 +346,27 @@ class _SettingScreenState extends State<SettingScreen> {
                                 }
                               },
                             ),
+                            SwitchListTile(
+                              value: showCompleted,
+                              secondary: Icon(
+                                Icons.remove_red_eye_rounded,
+                                size: size.height * 0.025,
+                                color: Colors.white,
+                              ),
+                              title: Text(
+                                "Show Completed Tasks",
+                                style: TextStyle(
+                                    fontSize: size.height * 0.02,
+                                    color: Colors.white),
+                              ),
+                              onChanged: (bool value) async {
+                                setState(() {
+                                  showCompleted = !showCompleted;
+                                });
+                                await DatabaseServices()
+                                    .updateShowCompl(showCompleted);
+                              },
+                            ),
                           ]),
                         ),
                       ),
@@ -496,7 +519,8 @@ showDeleteAccountAlertDialog(BuildContext context) {
   Widget continueButton = TextButton(
     child: const Text("Delete Anyway"),
     onPressed: () {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Account deleted successfully')));
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Account deleted successfully')));
       Navigator.of(context).pop();
       FirebaseServices().deleteAccount(context);
     },
@@ -531,7 +555,8 @@ showClearRecordAlertDialog(BuildContext context) {
   Widget continueButton = TextButton(
     child: const Text("Clear Anyway"),
     onPressed: () {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Data cleared successfully')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Data cleared successfully')));
       Navigator.of(context).pop();
       FirebaseServices().clearRecord(context);
     },

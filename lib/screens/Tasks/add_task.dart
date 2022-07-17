@@ -400,6 +400,7 @@ class _AddEventPageState extends State<AddEventPage> {
                     data['id'] = Uuid().v1();
                     data['isCompleted'] = false;
                     await taskDBS.create(data);
+                    widget.updateTaskDetails();
                   } else {
                     //edit and update
                     if (!data['hasTime']) {
