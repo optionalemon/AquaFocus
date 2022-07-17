@@ -56,25 +56,25 @@ class _PieChartWidgetState extends State<PieChartWidget> {
 
   Color getColor(String color) {
     if (color == 'red') {
-      return Color.fromARGB(255, 245, 107, 116);
+      return const Color.fromARGB(255, 245, 107, 116);
     } else if (color == "orange") {
-      return Color.fromARGB(255, 244, 167, 111);
+      return const Color.fromARGB(255, 244, 167, 111);
     } else if (color == "yellow") {
-      return Color.fromARGB(255, 232, 224, 103);
+      return const Color.fromARGB(255, 232, 224, 103);
     } else if (color == "green") {
-      return Color.fromARGB(255, 91, 220, 119);
+      return const Color.fromARGB(255, 91, 220, 119);
     } else if (color == "blue") {
-      return Color.fromARGB(255, 84, 164, 234);
+      return const Color.fromARGB(255, 84, 164, 234);
     } else if (color == "purple") {
-      return Color.fromARGB(255, 125, 100, 226);
-    } else return Colors.black;
+      return const Color.fromARGB(255, 125, 100, 226);
+    } else { return Colors.black; }
   }
 
   @override
   Widget build(BuildContext context) {
     return loading
-    ? LoadingWidget()
-    : PieChart(
+        ? LoadingWidget()
+        : PieChart(
       PieChartData(
           pieTouchData: PieTouchData(touchCallback:
               (FlTouchEvent event, pieTouchResponse) {
@@ -104,27 +104,27 @@ class _PieChartWidgetState extends State<PieChartWidget> {
       final fontSize = isTouched ? 20.0 : 14.0;
       final radius = isTouched ? 70.0 : 65.0;
       return PieChartSectionData(
-                color: getColor(tagList[i].color),
-                value: percentageList[i],
-                title: '${percentageList[i]}%',
-                radius: radius,
-                titleStyle: TextStyle(
-                    fontSize: fontSize,
-                    fontWeight: FontWeight.bold,
-                    color: const Color(0xffffffff)),
-              );
+        color: getColor(tagList[i].color),
+        value: double.parse(percentageList[i].toStringAsFixed(2)),
+        title: '${double.parse(percentageList[i].toStringAsFixed(2))}%',
+        radius: radius,
+        titleStyle: TextStyle(
+            fontSize: fontSize,
+            fontWeight: FontWeight.bold,
+            color: const Color(0xffffffff)),
+      );
     });
 
     tempList.add(
         PieChartSectionData(
-      color: Colors.grey,
-      value: percentageList[tagList.length],
-      title: '${percentageList[tagList.length]}%',
-      radius: 65.0,
-      titleStyle: TextStyle(
-          fontSize: 14.0,
-          fontWeight: FontWeight.bold,
-          color: const Color(0xffffffff)),
+          color: Colors.grey,
+          value: double.parse(percentageList[tagList.length].toStringAsFixed(2)),
+          title: '${double.parse(percentageList[tagList.length].toStringAsFixed(2))}%',
+          radius: 65.0,
+          titleStyle: const TextStyle(
+              fontSize: 14.0,
+              fontWeight: FontWeight.bold,
+              color: Color(0xffffffff)),
         )
     );
 

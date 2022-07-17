@@ -1,11 +1,15 @@
+import 'package:AquaFocus/screens/signin_screen.dart';
+import 'package:AquaFocus/services/database_services.dart';
+import 'package:AquaFocus/widgets/loading_widget.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class LineChartWidget extends StatefulWidget {
-  const LineChartWidget({Key? key}) : super(key: key);
+const LineChartWidget({Key? key}) : super(key: key);
 
-  @override
-  State<LineChartWidget> createState() => _LineChartWidgetState();
+@override
+State<LineChartWidget> createState() => _LineChartWidgetState();
 }
 
 class _LineChartWidgetState extends State<LineChartWidget> {
@@ -14,21 +18,47 @@ class _LineChartWidgetState extends State<LineChartWidget> {
     const Color(0xff02d39a),
   ];
   bool showAvg = false;
+  bool loading = true;
+  late num dailyTotal;
+  late List dailyHours;
+
+  @override
+  void initState() {
+    super.initState();
+    getDailyHours().then((value) {
+      setState(() {
+        loading = false;
+      });
+    });
+    print("initializing");
+  }
+
+  Future<void> getDailyHours() async {
+    String date = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    await DatabaseServices().getTimeOfTheDay(user!.uid, date).then((value) {
+      dailyTotal = value.roundToDouble();
+    });
+    await DatabaseServices().getTimeOfTheHours(user!.uid, date).then((value) {
+      dailyHours = value;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return Stack(
+    return loading
+        ? LoadingWidget()
+        : Stack(
       children: <Widget>[
         AspectRatio(
-          aspectRatio: 3 / 4,
+          aspectRatio: 1,
           child: Card(
             margin: EdgeInsets.all(size.height * 0.03),
             elevation: 4,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(32),
             ),
-            color: Colors.teal.withOpacity(0.4),
+            color: Colors.tealAccent.withOpacity(0.4),
             child: Padding(
               padding: EdgeInsets.all(size.width * 0.05),
               child: Column(
@@ -54,9 +84,15 @@ class _LineChartWidgetState extends State<LineChartWidget> {
                         fontStyle: FontStyle.italic,
                       ),
                     ),
-                    SizedBox(
-                      height: size.height * 0.02,
+                    SizedBox(height: size.height * 0.01),
+                    Text(
+                      'Total focus time today: ${dailyTotal.toStringAsFixed(2)} seconds',
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 14,
+                      ),
                     ),
+                    SizedBox(height: size.height * 0.03),
                     Expanded(
                       child: Padding(
                         padding: EdgeInsets.symmetric(horizontal: 8.0),
@@ -76,21 +112,21 @@ class _LineChartWidgetState extends State<LineChartWidget> {
           top: 36,
           right: 30,
           child: TextButton(
-              onPressed: () {
-                setState(() {
-                  showAvg = !showAvg;
-                });
-              },
-              child: Text(
-                'show average',
-                style: TextStyle(
-                    fontSize: 14,
-                    fontStyle: FontStyle.italic,
-                    color:
-                        showAvg ? Colors.white.withOpacity(0.5) : Colors.white),
-              ),
+            onPressed: () {
+              setState(() {
+                showAvg = !showAvg;
+              });
+            },
+            child: Text(
+              'show average',
+              style: TextStyle(
+                  fontSize: 14,
+                  fontStyle: FontStyle.italic,
+                  color:
+                  showAvg ? Colors.white.withOpacity(0.5) : Colors.white),
             ),
           ),
+        ),
       ],
     );
   }
@@ -133,19 +169,40 @@ class _LineChartWidgetState extends State<LineChartWidget> {
   Widget leftTitleWidgets(double value, TitleMeta meta) {
     const style = TextStyle(
       color: Colors.white,
-      fontWeight: FontWeight.bold,
-      fontSize: 15,
+      //fontWeight: FontWeight.bold,
+      fontSize: 10,
     );
     String text;
     switch (value.toInt()) {
-      case 1:
+      case 10:
         text = '10';
         break;
-      case 3:
+      case 30:
         text = '30';
         break;
-      case 5:
+      case 50:
         text = '50';
+        break;
+      case 70:
+        text = '70';
+        break;
+      case 90:
+        text = '90';
+        break;
+      case 110:
+        text = '110';
+        break;
+      case 130:
+        text = '130';
+        break;
+      case 150:
+        text = '150';
+        break;
+      case 170:
+        text = '170';
+        break;
+      case 190:
+        text = '190';
         break;
       default:
         return Container();
@@ -163,13 +220,13 @@ class _LineChartWidgetState extends State<LineChartWidget> {
         verticalInterval: 1,
         getDrawingHorizontalLine: (value) {
           return FlLine(
-            color: const Color(0xff37434d),
+            color: const Color(0xff37434d).withOpacity(0.5),
             strokeWidth: 1,
           );
         },
         getDrawingVerticalLine: (value) {
           return FlLine(
-            color: const Color(0xff37434d),
+            color: const Color(0xff37434d).withOpacity(0.5),
             strokeWidth: 1,
           );
         },
@@ -201,34 +258,27 @@ class _LineChartWidgetState extends State<LineChartWidget> {
       ),
       borderData: FlBorderData(
           show: true,
-          border: Border.all(color: const Color(0xff37434d), width: 1)),
+          border: Border.all(color: const Color(0xff37434d).withOpacity(0.5), width: 1)),
       minX: 0,
       maxX: 23,
       minY: 0,
-      maxY: 6,
+      maxY: 190,
       lineBarsData: [
         LineChartBarData(
-          spots: const [
-            FlSpot(0, 3),
-            FlSpot(2.6, 2),
-            FlSpot(4.9, 5),
-            FlSpot(6.8, 3.1),
-            FlSpot(8, 4),
-            FlSpot(9.5, 3),
-            FlSpot(11, 4),
-            FlSpot(15, 5),
-            FlSpot(17, 3),
-            FlSpot(19, 3.5),
-            FlSpot(20, 4),
-            FlSpot(23, 2),
-          ],
+          spots: List.generate(
+              24, (index) => FlSpot(
+              index.roundToDouble(),
+              dailyHours[index].roundToDouble()
+          )
+          ),
           isCurved: true,
           gradient: LinearGradient(
             colors: gradientColors,
             begin: Alignment.centerLeft,
             end: Alignment.centerRight,
           ),
-          barWidth: 5,
+          barWidth: 4,
+          preventCurveOverShooting: true,
           isStrokeCapRound: true,
           dotData: FlDotData(
             show: false,
@@ -249,6 +299,7 @@ class _LineChartWidgetState extends State<LineChartWidget> {
   }
 
   LineChartData avgData() {
+    double dailyAverage = dailyTotal / 24;
     return LineChartData(
       lineTouchData: LineTouchData(enabled: false),
       gridData: FlGridData(
@@ -258,13 +309,13 @@ class _LineChartWidgetState extends State<LineChartWidget> {
         horizontalInterval: 1,
         getDrawingVerticalLine: (value) {
           return FlLine(
-            color: const Color(0xff37434d),
+            color: const Color(0xff37434d).withOpacity(0.5),
             strokeWidth: 1,
           );
         },
         getDrawingHorizontalLine: (value) {
           return FlLine(
-            color: const Color(0xff37434d),
+            color: const Color(0xff37434d).withOpacity(0.5),
             strokeWidth: 1,
           );
         },
@@ -296,27 +347,14 @@ class _LineChartWidgetState extends State<LineChartWidget> {
       ),
       borderData: FlBorderData(
           show: true,
-          border: Border.all(color: const Color(0xff37434d), width: 1)),
+          border: Border.all(color: const Color(0xff37434d).withOpacity(0.5), width: 1)),
       minX: 0,
       maxX: 23,
       minY: 0,
-      maxY: 6,
+      maxY: 190,
       lineBarsData: [
         LineChartBarData(
-          spots: const [
-            FlSpot(0, 4.3),
-            FlSpot(2.6, 4.3),
-            FlSpot(4.9, 4.3),
-            FlSpot(6.8, 4.3),
-            FlSpot(8, 4.3),
-            FlSpot(9.5, 4.3),
-            FlSpot(11, 4.3),
-            FlSpot(13, 4.3),
-            FlSpot(15, 4.3),
-            FlSpot(17, 4.3),
-            FlSpot(20, 4.3),
-            FlSpot(23, 4.3),
-          ],
+          spots: List.generate(24, (index) => FlSpot(index.roundToDouble(), dailyAverage)),
           isCurved: true,
           gradient: LinearGradient(
             colors: [
@@ -328,7 +366,7 @@ class _LineChartWidgetState extends State<LineChartWidget> {
             begin: Alignment.centerLeft,
             end: Alignment.centerRight,
           ),
-          barWidth: 5,
+          barWidth: 4,
           isStrokeCapRound: true,
           dotData: FlDotData(
             show: false,
