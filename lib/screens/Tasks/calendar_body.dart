@@ -1,6 +1,5 @@
 import 'dart:collection';
 
-import 'package:AquaFocus/services/database_services.dart';
 import 'package:AquaFocus/widgets/loading.dart';
 import 'package:AquaFocus/screens/Tasks/add_task.dart';
 import 'package:AquaFocus/screens/Tasks/task_details.dart';
@@ -39,7 +38,8 @@ class _CalendarBodyState extends State<CalendarBody> {
   @override
   void initState() {
     super.initState();
-    _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay));
+    _getEvents();
+    _selectedDay = _focusedDay;
   }
 
   @override
@@ -172,6 +172,7 @@ class _CalendarBodyState extends State<CalendarBody> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay));
 
     return loading
         ? const Loading()
@@ -326,8 +327,8 @@ class _CalendarBodyState extends State<CalendarBody> {
                                                                   });
                                                                 },
                                                               )));
-                                                  _selectedDay = null;
-                                                  _selectedEvents.value = [];
+                                                  //_selectedDay = null;
+                                                  //_selectedEvents.value = [];
                                                 },
                                                 backgroundColor:
                                                     Color(0xFF21B7CA),
@@ -360,8 +361,8 @@ class _CalendarBodyState extends State<CalendarBody> {
                                                         builder: (context) =>
                                                             TaskDetails(
                                                                 event)));
-                                                _selectedDay = null;
-                                                _selectedEvents.value = [];
+                                                //_selectedDay = null;
+                                                //_selectedEvents.value = [];
                                               },
                                               subtitle: Wrap(
                                                 children: [
@@ -456,8 +457,8 @@ class _CalendarBodyState extends State<CalendarBody> {
                                         selectedDate: _selectedDay,
                                         updateTaskDetails: () {},
                                       )));
-                          _selectedDay = null;
-                          _selectedEvents.value = [];
+                          //_selectedDay = null;
+                          //_selectedEvents.value = [];
                         })))
           ]);
   }

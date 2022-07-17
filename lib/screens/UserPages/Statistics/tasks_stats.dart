@@ -25,7 +25,7 @@ class _TasksStatsState extends State<TasksStats> {
   }
 
   Future<void> setMap() async {
-    await DatabaseService().getUserTags().then((input) {
+    await DatabaseServices().getUserTags().then((input) {
       setState(() {
         tagList = input;
         loading = false;

@@ -22,7 +22,7 @@ class _changeUsernameScreenState extends State<changeUsernameScreen> {
   Future<void> getName() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      name = await DatabaseService().getUserName(user.uid);
+      name = await DatabaseServices().getUserName(user.uid);
     }
     setState(() {
       loading = false;

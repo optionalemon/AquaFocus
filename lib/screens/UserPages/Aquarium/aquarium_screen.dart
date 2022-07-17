@@ -17,7 +17,7 @@ class _AquariumScreenState extends State<AquariumScreen> {
   Future<void> getMarLives() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      marLives = await DatabaseService().getMarLivesList(user.uid);
+      marLives = await DatabaseServices().getMarLivesList(user.uid);
       for (int i = 0; i < marLives.length; i++) {
         for (int j = 0; j < marinesCreatures.length; j++) {
           if (marLives[i] == j) {

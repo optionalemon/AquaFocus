@@ -28,13 +28,13 @@ class _PieChartWidgetState extends State<PieChartWidget> {
   Future<void> setData() async {
     List percentages = [];
     double sum = 0;
-    List tags = await DatabaseService().getUserTags();
+    List tags = await DatabaseServices().getUserTags();
 
     if (tags.isEmpty) {
       sum = 0;
     } else {
       for (Tags tag in tags) {
-        double percentage = await DatabaseService().getPercentageForTag(tag);
+        double percentage = await DatabaseServices().getPercentageForTag(tag);
         //print('percentage:$percentage');
         percentages.add(percentage);
       }

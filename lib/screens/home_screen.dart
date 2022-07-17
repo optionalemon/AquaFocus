@@ -48,9 +48,9 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> getNameAndMoney() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      isCheckList = await DatabaseService().getisCheckList();
-      name = await DatabaseService().getUserName(user.uid);
-      fishMoney = await DatabaseService().getMoney();
+      isCheckList = await DatabaseServices().getisCheckList();
+      name = await DatabaseServices().getUserName(user.uid);
+      fishMoney = await DatabaseServices().getMoney();
     }
     setState(() {
       loading = false;

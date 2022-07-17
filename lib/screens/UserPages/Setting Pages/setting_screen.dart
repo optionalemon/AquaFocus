@@ -47,7 +47,7 @@ class _SettingScreenState extends State<SettingScreen> {
         setState(() {
           allowNotif = !allowNotif;
         });
-        await DatabaseService().updateNotif(allowNotif);
+        await DatabaseServices().updateNotif(allowNotif);
       },
     );
     // set up the AlertDialog
@@ -72,8 +72,8 @@ class _SettingScreenState extends State<SettingScreen> {
   Future<void> getNameNotif() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      name = await DatabaseService().getUserName(user.uid);
-      allowNotif = await DatabaseService().getAllowNotif();
+      name = await DatabaseServices().getUserName(user.uid);
+      allowNotif = await DatabaseServices().getAllowNotif();
     }
     setState(() {
       loading = false;
@@ -315,7 +315,7 @@ class _SettingScreenState extends State<SettingScreen> {
                                   widget.isCheckList = !widget.isCheckList;
                                 });
                                 widget._updateHomeCheckList(widget.isCheckList);
-                                DatabaseService()
+                                DatabaseServices()
                                     .updateCheckList(widget.isCheckList);
                               },
                             ),
@@ -337,7 +337,7 @@ class _SettingScreenState extends State<SettingScreen> {
                                   setState(() {
                                     allowNotif = !allowNotif;
                                   });
-                                  await DatabaseService()
+                                  await DatabaseServices()
                                       .updateNotif(allowNotif);
                                 } else {
                                   showNotifAlertDialog(context);

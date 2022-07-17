@@ -22,7 +22,7 @@ class _HeatMapWidgetState extends State<HeatMapWidget> {
   }
 
   Future<void> setMap() async {
-    await DatabaseService().heatMapData().then((input) {
+    await DatabaseServices().heatMapData().then((input) {
       setState(() {
         mapInput = input;
         loading = false;
