@@ -27,7 +27,7 @@ class _CountDownScreenState extends State<CountDownScreen> {
   Future<void> getMarMoney() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      fishMoney = await DatabaseService().getMoney();
+      fishMoney = await DatabaseServices().getMoney();
     }
     setState(() {
       loading = false;
@@ -269,8 +269,8 @@ class _CountDownScreenState extends State<CountDownScreen> {
   _completeTaskDialog(context) {
     List totalTime = CountDownHelper().timeString(initialDur.inSeconds);
     int moneyEarned = int.parse(totalTime[2]) + int.parse(totalTime[1])*60 + int.parse(totalTime[0]) * 60;
-    DatabaseService().saveFocusTime(moneyEarned, DateFormat('yyyy-MM-dd').format(DateTime.now()));
-    DatabaseService().addMoney(moneyEarned);
+    DatabaseServices().saveFocusTime(moneyEarned, DateFormat('yyyy-MM-dd').format(DateTime.now()));
+    DatabaseServices().addMoney(moneyEarned);
     fishMoney += moneyEarned;
     Size size = MediaQuery.of(context).size;
 

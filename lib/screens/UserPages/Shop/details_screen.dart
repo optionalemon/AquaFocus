@@ -179,11 +179,11 @@ class DetailsBody extends StatelessWidget {
   }
 
   _purchase(context) async {
-    bool hasEnough = await DatabaseService().hasEnoughMoney(marLife.price);
+    bool hasEnough = await DatabaseServices().hasEnoughMoney(marLife.price);
     if (hasEnough) {
       updateShopState(marLife.id, marLife.price);
-      DatabaseService().addMoney(-marLife.price);
-      DatabaseService()
+      DatabaseServices().addMoney(-marLife.price);
+      DatabaseServices()
           .addMarLives(FirebaseAuth.instance.currentUser!.uid, marLife.id);
 
       showAlertDialog(context, "You have purchased successfully!");

@@ -119,7 +119,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       AppUser appUser = AppUser(
           email: _emailTextController.text,
           userName: _userNameTextController.text);
-      DatabaseService().addUser(appUser, newUser.user!.uid);
+      DatabaseServices().addUser(appUser, newUser.user!.uid);
       Navigator.push(
           context, MaterialPageRoute(builder: (context) => SignInScreen()));
     } on FirebaseAuthException catch (e) {

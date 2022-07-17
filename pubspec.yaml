@@ -60,6 +60,7 @@ dependencies:
   flutter_native_timezone: 
   device_info_plus: ^4.0.0
   get: ^4.6.5
+  dotted_border: ^2.0.0+2
 
   flutter_localizations:
     sdk: flutter

@@ -33,8 +33,8 @@ class _ShopScreenState extends State<ShopScreen> {
   Future<void> getMarMoney() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      fishMoney = await DatabaseService().getMoney();
-      marLives = await DatabaseService().getMarLivesList(user.uid);
+      fishMoney = await DatabaseServices().getMoney();
+      marLives = await DatabaseServices().getMarLivesList(user.uid);
     }
     setState(() {
       loading = false;

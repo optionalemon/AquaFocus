@@ -5,13 +5,13 @@ import 'package:AquaFocus/model/tags.dart';
 import 'package:AquaFocus/screens/signin_screen.dart';
 import 'package:intl/intl.dart';
 
-class DatabaseService {
+class DatabaseServices {
   late CollectionReference userCollection;
   late CollectionReference tagsCollection;
   late DocumentReference userDoc;
   late CollectionReference focusTimeCollection;
 
-  DatabaseService({FirebaseFirestore? instanceInjection}) {
+  DatabaseServices({FirebaseFirestore? instanceInjection}) {
     FirebaseFirestore instance;
     String uid;
 

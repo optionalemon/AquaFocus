@@ -34,7 +34,7 @@ class FirebaseServices {
 
         if (authResult.additionalUserInfo!.isNewUser) {
           AppUser appUser = AppUser(email: googleEmail, userName: "default");
-          DatabaseService().addUser(appUser, user!.uid);
+          DatabaseServices().addUser(appUser, user!.uid);
         }
       }
     } on FirebaseAuthException {
@@ -60,7 +60,7 @@ class FirebaseServices {
 
       if (authResult.additionalUserInfo!.isNewUser) {
         AppUser appUser = AppUser(email: facebookEmail, userName: "default");
-        DatabaseService().addUser(appUser, user!.uid);
+        DatabaseServices().addUser(appUser, user!.uid);
       }
 
       return FirebaseAuth.instance.signInWithCredential(facebookAuthCredential);

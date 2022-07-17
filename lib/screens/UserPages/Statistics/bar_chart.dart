@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 class BarChartWidget extends StatefulWidget {
-
   @override
   State<BarChartWidget> createState() => _BarChartWidgetState();
 }
@@ -17,19 +16,13 @@ class _BarChartWidgetState extends State<BarChartWidget> {
   @override
   void initState() {
     super.initState();
-    hourOfTheDay().then((value) {
-      setState(() {
-        loading = false;
-      });
-    });
+    hourOfTheDay();
     print("initializing");
   }
 
   @override
   Widget build(BuildContext context) {
-    return loading
-        ? BarChart(InitData())
-        : BarChart(BarData());
+    return loading ? BarChart(InitData()) : BarChart(BarData());
   }
 
   BarChartData BarData() {
@@ -96,31 +89,27 @@ class _BarChartWidgetState extends State<BarChartWidget> {
         },
       ),
       titlesData: FlTitlesData(
-        show: true,
-        bottomTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: true,
-              getTitlesWidget: getTitles,
-              reservedSize: 38,
-            )
-        ),
-        leftTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: false,
-            )
-        ),
+          show: true,
+          bottomTitles: AxisTitles(
+              sideTitles: SideTitles(
+            showTitles: true,
+            getTitlesWidget: getTitles,
+            reservedSize: 38,
+          )),
+          leftTitles: AxisTitles(
+              sideTitles: SideTitles(
+            showTitles: false,
+          )),
           topTitles: AxisTitles(
               sideTitles: SideTitles(
-                showTitles: false,
-              )
-          ),
+            showTitles: false,
+          )),
           rightTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
               getTitlesWidget: getAxisTitles,
             ),
-          )
-      ),
+          )),
       borderData: FlBorderData(
         show: false,
       ),
@@ -182,13 +171,13 @@ class _BarChartWidgetState extends State<BarChartWidget> {
   }
 
   BarChartGroupData makeGroupData(
-      int x,
-      double y, {
-        bool isTouched = false,
-        Color barColor = Colors.white,
-        double width = 22,
-        List<int> showTooltips = const [],
-      }) {
+    int x,
+    double y, {
+    bool isTouched = false,
+    Color barColor = Colors.white,
+    double width = 22,
+    List<int> showTooltips = const [],
+  }) {
     return BarChartGroupData(
       x: x,
       barRods: [
@@ -211,25 +200,25 @@ class _BarChartWidgetState extends State<BarChartWidget> {
   }
 
   List<BarChartGroupData> showingGroups() => List.generate(7, (i) {
-    switch (i) {
-      case 0:
-        return makeGroupData(0, weekHours[0], isTouched: i == touchedIndex);
-      case 1:
-        return makeGroupData(1, weekHours[1], isTouched: i == touchedIndex);
-      case 2:
-        return makeGroupData(2, weekHours[2], isTouched: i == touchedIndex);
-      case 3:
-        return makeGroupData(3, weekHours[3], isTouched: i == touchedIndex);
-      case 4:
-        return makeGroupData(4, weekHours[4], isTouched: i == touchedIndex);
-      case 5:
-        return makeGroupData(5, weekHours[5], isTouched: i == touchedIndex);
-      case 6:
-        return makeGroupData(6, weekHours[6], isTouched: i == touchedIndex);
-      default:
-        return throw Error();
-    }
-  });
+        switch (i) {
+          case 0:
+            return makeGroupData(0, weekHours[0], isTouched: i == touchedIndex);
+          case 1:
+            return makeGroupData(1, weekHours[1], isTouched: i == touchedIndex);
+          case 2:
+            return makeGroupData(2, weekHours[2], isTouched: i == touchedIndex);
+          case 3:
+            return makeGroupData(3, weekHours[3], isTouched: i == touchedIndex);
+          case 4:
+            return makeGroupData(4, weekHours[4], isTouched: i == touchedIndex);
+          case 5:
+            return makeGroupData(5, weekHours[5], isTouched: i == touchedIndex);
+          case 6:
+            return makeGroupData(6, weekHours[6], isTouched: i == touchedIndex);
+          default:
+            return throw Error();
+        }
+      });
 
   Future<void> hourOfTheDay() async {
     DateTime date = DateTime.now();
@@ -239,13 +228,17 @@ class _BarChartWidgetState extends State<BarChartWidget> {
 
     for (int i = 0; i < 7; i++) {
       DateTime thisDay = monday.add(Duration(days: i));
-      String date = "${thisDay.year}-${thisDay.month.toString().padLeft(2,'0')}-${thisDay.day.toString().padLeft(2,'0')}";
+      String date =
+          "${thisDay.year}-${thisDay.month.toString().padLeft(2, '0')}-${thisDay.day.toString().padLeft(2, '0')}";
       if (!mounted) return;
-        await DatabaseService().getTimeOfTheDay(user!.uid, date).then((value) {
-          weekHours[i] = value.roundToDouble();
+      await DatabaseServices().getTimeOfTheDay(user!.uid, date).then((value) {
+        weekHours[i] = value.roundToDouble();
       });
-      }
     }
+    setState(() {
+      loading = false;
+    });
+  }
 
   BarChartData InitData() {
     return BarChartData(
@@ -256,28 +249,24 @@ class _BarChartWidgetState extends State<BarChartWidget> {
           show: true,
           bottomTitles: AxisTitles(
               sideTitles: SideTitles(
-                showTitles: true,
-                getTitlesWidget: getTitles,
-                reservedSize: 38,
-              )
-          ),
+            showTitles: true,
+            getTitlesWidget: getTitles,
+            reservedSize: 38,
+          )),
           leftTitles: AxisTitles(
               sideTitles: SideTitles(
-                showTitles: false,
-              )
-          ),
+            showTitles: false,
+          )),
           topTitles: AxisTitles(
               sideTitles: SideTitles(
-                showTitles: false,
-              )
-          ),
+            showTitles: false,
+          )),
           rightTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
               getTitlesWidget: getAxisTitles,
             ),
-          )
-      ),
+          )),
       borderData: FlBorderData(
         show: false,
       ),

@@ -39,7 +39,7 @@ class _AddEventPageState extends State<AddEventPage> {
   }
 
   getTags() async {
-    tags = await DatabaseService().getUserTags();
+    tags = await DatabaseServices().getUserTags();
     setState(() {
       loading = false;
     });
@@ -437,7 +437,7 @@ class _AddEventPageState extends State<AddEventPage> {
           if (_tagFormKey.currentState!.validate()) {
             _tagFormKey.currentState!.save();
             Tags newTag = Tags(title: _tagController.text, color: color);
-            await DatabaseService().addTags(newTag);
+            await DatabaseServices().addTags(newTag);
             setState(() {
               tags.add(newTag);
             });
