@@ -17,6 +17,8 @@ class CountUpScreen extends StatefulWidget {
 
 class _CountUpScreenState extends State<CountUpScreen> {
   Duration duration = Duration(seconds: 0);
+  DateTime? startTime;
+  DateTime? endTime;
   Timer? timer;
   bool hvStarted = false;
   int fishMoney = 0;
@@ -48,6 +50,7 @@ class _CountUpScreenState extends State<CountUpScreen> {
     hvStarted = true;
     timer?.cancel();
     timer = Timer.periodic(Duration(seconds: 1), (_) => setCountUp());
+    startTime = DateTime.now();
   }
 
   void setCountUp() {
@@ -97,9 +100,9 @@ class _CountUpScreenState extends State<CountUpScreen> {
             _countUpButtons(),
             hvStarted && duration.inSeconds < 10
                 ? Text(
-                    "Must be more than 10 seconds",
-                    style: TextStyle(color: Color.fromARGB(255, 255, 255, 255)),
-                  )
+              "Must be more than 10 seconds",
+              style: TextStyle(color: Color.fromARGB(255, 255, 255, 255)),
+            )
                 : Container(),
           ]),
         ],
@@ -154,7 +157,7 @@ class _CountUpScreenState extends State<CountUpScreen> {
           firebaseButton(
             context,
             duration.inSeconds >= 10 ? 'Done' : 'Cancel',
-            () {
+                () {
               showDialog(
                   context: context,
                   builder: (_) => duration.inSeconds >= 10
@@ -169,35 +172,40 @@ class _CountUpScreenState extends State<CountUpScreen> {
   }
 
   _completeTaskDialog() {
+    endTime = DateTime.now();
     List totalTime = CountDownHelper().timeString(duration.inSeconds);
     int moneyEarned = int.parse(totalTime[2]) +
         int.parse(totalTime[1]) * 60 +
         int.parse(totalTime[0]) * 60;
-    DatabaseServices().saveFocusTime(moneyEarned, DateFormat('yyyy-MM-dd').format(DateTime.now()));
+    DatabaseServices().saveFocusTime(moneyEarned, DateFormat('yyyy-MM-dd').format(DateTime.now()), startTime!, endTime!);
     DatabaseServices().addMoney(moneyEarned);
+
+    print('startTime:$startTime');
+    print('endTime:$endTime');
+
     fishMoney += moneyEarned;
     Size size = MediaQuery.of(context).size;
 
     return AlertDialog(
       title: const Text("Congrats! You have earned"),
       content: Wrap(
-        children: [Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.asset(
-                  'assets/icons/money.png',
-                  height: size.height * 0.035,
-                ),
-                SizedBox(width: size.width * 0.02),
-                Text(
-                  '$moneyEarned',
-                ),
-              ],
-            )
-          ],
-        ),]
+          children: [Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    'assets/icons/money.png',
+                    height: size.height * 0.035,
+                  ),
+                  SizedBox(width: size.width * 0.02),
+                  Text(
+                    '$moneyEarned',
+                  ),
+                ],
+              )
+            ],
+          ),]
       ),
       actions: [
         ElevatedButton(
@@ -236,7 +244,7 @@ class _CountUpScreenState extends State<CountUpScreen> {
                     stopTimer(false);
                   });
                   Navigator.pop(context);
-                
+
                 },
                 child: Text("Yes"),
               ),
@@ -245,3 +253,4 @@ class _CountUpScreenState extends State<CountUpScreen> {
         ]);
   }
 }
+
