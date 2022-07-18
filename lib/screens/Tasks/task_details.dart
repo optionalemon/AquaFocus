@@ -127,8 +127,8 @@ class _TaskDetailsState extends State<TaskDetails> {
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(20),
                   gradient: LinearGradient(colors: [
-                    Colors.cyan.withOpacity(0.5),
-                    Colors.white.withOpacity(0.5)
+                    Colors.lightBlue.withOpacity(0.7),
+                    Colors.white.withOpacity(0.7)
                   ]),
                   boxShadow: const <BoxShadow>[
                     BoxShadow(

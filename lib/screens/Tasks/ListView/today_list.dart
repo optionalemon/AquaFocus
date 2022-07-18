@@ -59,6 +59,30 @@ class _ListTodayState extends State<ListToday> {
         .showSnackBar(SnackBar(content: Text('Task ${event.title} deleted')));
   }
 
+  updateTaskDetails() async {
+    List<AppTask> eventList = await taskDBS.getQueryList(args: [
+      QueryArgsV2(
+        "userId",
+        isEqualTo: user!.uid,
+      ),
+    ]);
+    Map<DateTime, List<AppTask>> groupedEvents = {};
+
+    for (var event in eventList) {
+      DateTime date =
+          DateTime.utc(event.date.year, event.date.month, event.date.day, 12);
+      if (groupedEvents[date] == null) groupedEvents[date] = [];
+      groupedEvents[date]!.add(event);
+    }
+
+    LinkedHashMap<DateTime, List<AppTask>> kEvents =
+        LinkedHashMap<DateTime, List<AppTask>>(
+      equals: isSameDay,
+      hashCode: getHashCode,
+    )..addAll(groupedEvents);
+    widget.selectedEvents.value = (kEvents[DateTime.now()] ?? []);
+  }
+
   _hasSubtitle(AppTask event) {
     if (event.hasTime) {
       return true;
@@ -74,7 +98,6 @@ class _ListTodayState extends State<ListToday> {
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
     return Scaffold(
         extendBodyBehindAppBar: true,
         resizeToAvoidBottomInset: false,
@@ -110,28 +133,28 @@ class _ListTodayState extends State<ListToday> {
                         blurRadius: 5,
                         offset: Offset(0.0, 5))
                   ]),
-              child: widget.selectedEvents.value.isEmpty
-                  ? Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Wrap(
-                          runAlignment: WrapAlignment.center,
-                          crossAxisAlignment: WrapCrossAlignment.center,
-                          alignment: WrapAlignment.center,
-                          children: [
-                            Text("No task for today!",
-                                style: TextStyle(
-                                    color: Colors.black, fontSize: 20)),
-                          ],
-                        ),
-                      ],
-                    )
-                  : Scrollbar(
+              child: Scrollbar(
                       child: ValueListenableBuilder<List<AppTask>>(
                           valueListenable: widget.selectedEvents,
                           builder: (context, value, _) {
-                            return ListView.builder(
+                            return widget.selectedEvents.value.isEmpty
+                              ? Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Wrap(
+                                      runAlignment: WrapAlignment.center,
+                                      crossAxisAlignment: WrapCrossAlignment.center,
+                                      alignment: WrapAlignment.center,
+                                      children: [
+                                        Text("No task for today!",
+                                            style: TextStyle(
+                                                color: Color.fromARGB(255, 59, 59, 59), fontSize: 20)),
+                                      ],
+                                    ),
+                                  ],
+                                )
+                  : ListView.builder(
                                 itemCount: value.length,
                                 itemBuilder: (BuildContext context, int index) {
                                   AppTask event = value[index];
@@ -149,27 +172,17 @@ class _ListTodayState extends State<ListToday> {
                                             await Navigator.push(
                                                 context,
                                                 MaterialPageRoute(
-                                                    builder:
-                                                        (context) =>
-                                                            AddEventPage(
-                                                              task: event,
-                                                              selectedDate:
-                                                                  event.date,
-                                                              updateTaskDetails:
-                                                                  () async {
-                                                                AppTask
-                                                                    tempTask =
-                                                                    (await taskDBS
-                                                                        .getSingle(
-                                                                            event.id))!;
-                                                                setState(() {
-                                                                  widget.selectedEvents
-                                                                              .value[
-                                                                          index] =
-                                                                      tempTask;
-                                                                });
-                                                              },
-                                                            )));
+                                                    builder: (context) =>
+                                                        AddEventPage(
+                                                          task: event,
+                                                          selectedDate:
+                                                              event.date,
+                                                          updateTaskDetails:
+                                                              () async {
+                                                            updateTaskDetails();
+                                                            setState(() {});
+                                                          },
+                                                        )));
                                           },
                                           backgroundColor: Color(0xFF21B7CA),
                                           foregroundColor: Colors.white,
@@ -201,6 +214,7 @@ class _ListTodayState extends State<ListToday> {
                                                   MaterialPageRoute(
                                                       builder: (context) =>
                                                           TaskDetails(event)));
+                                              updateTaskDetails();
                                             },
                                             subtitle: _hasSubtitle(event)
                                                 ? Wrap(
@@ -267,8 +281,13 @@ class _ListTodayState extends State<ListToday> {
                                                 color: Colors.white,
                                               ),
                                               onPressed: () async {
-                                                event.isCompleted =
-                                                    !event.isCompleted;
+                                                setState(() {
+                                                  widget
+                                                          .selectedEvents
+                                                          .value[index]
+                                                          .isCompleted =
+                                                      !event.isCompleted;
+                                                });
                                                 await taskDBS
                                                     .updateData(event.id, {
                                                   'isCompleted':
@@ -301,39 +320,9 @@ class _ListTodayState extends State<ListToday> {
                             MaterialPageRoute(
                                 builder: (context) => AddEventPage(
                                       selectedDate: DateTime.now(),
-                                      updateTaskDetails: () async {
-                                        List<AppTask> eventList =
-                                            await taskDBS.getQueryList(args: [
-                                          QueryArgsV2(
-                                            "userId",
-                                            isEqualTo: user!.uid,
-                                          ),
-                                        ]);
-                                        Map<DateTime, List<AppTask>>
-                                            groupedEvents = {};
-                                       
-                                          for (var event in eventList) {
-                                            DateTime date = DateTime.utc(
-                                                event.date.year,
-                                                event.date.month,
-                                                event.date.day,
-                                                12);
-                                            if (groupedEvents[date] == null)
-                                              groupedEvents[date] = [];
-                                            groupedEvents[date]!.add(event);
-                                          }
-                              
-                                        LinkedHashMap<DateTime, List<AppTask>>
-                                            kEvents = LinkedHashMap<DateTime,
-                                                List<AppTask>>(
-                                          equals: isSameDay,
-                                          hashCode: getHashCode,
-                                        )..addAll(groupedEvents);
-                                        widget.selectedEvents.value =
-                                            (kEvents[DateTime.now()] ?? []);
-                                        print(widget.selectedEvents.value);
-                                      },
+                                      updateTaskDetails: updateTaskDetails,
                                     )));
+                        setState(() {});
                       })))
         ]));
   }
