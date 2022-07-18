@@ -46,89 +46,154 @@ class _LineChartWidgetState extends State<LineChartWidget> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return loading
-        ? LoadingWidget()
-        : Stack(
-      children: <Widget>[
-        AspectRatio(
-          aspectRatio: 1,
-          child: Card(
-            margin: EdgeInsets.all(size.height * 0.03),
-            elevation: 4,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(32),
-            ),
-            color: Colors.tealAccent.withOpacity(0.4),
-            child: Padding(
-              padding: EdgeInsets.all(size.width * 0.05),
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    const Text(
-                      "Daily",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
+    if (loading) {
+      return LoadingWidget();
+    } else if (dailyHours.isEmpty) {
+      return Stack(
+        children: <Widget>[
+          AspectRatio(
+            aspectRatio: 1,
+            child: Card(
+              margin: EdgeInsets.all(size.height * 0.03),
+              elevation: 4,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(32),
+              ),
+              color: Colors.tealAccent.withOpacity(0.4),
+              child: Padding(
+                padding: EdgeInsets.all(size.width * 0.05),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      const Text(
+                        "Daily",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.left,
                       ),
-                      textAlign: TextAlign.left,
-                    ),
-                    SizedBox(height: size.height * 0.01),
-                    Text(
-                      'Your focus time distribution by hour',
-                      style: TextStyle(
-                        color: Colors.cyan[200],
-                        fontSize: 16,
-                        fontStyle: FontStyle.italic,
-                      ),
-                    ),
-                    SizedBox(height: size.height * 0.01),
-                    Text(
-                      'Total focus time today: ${dailyTotal.toStringAsFixed(2)} seconds',
-                      style: const TextStyle(
-                        color: Colors.white70,
-                        fontSize: 14,
-                      ),
-                    ),
-                    SizedBox(height: size.height * 0.03),
-                    Expanded(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 8.0),
-                        child: LineChart(
-                          showAvg ? avgData() : mainData(),
+                      SizedBox(height: size.height * 0.01),
+                      Text(
+                        'Your focus time distribution by hour',
+                        style: TextStyle(
+                          color: Colors.cyan[200],
+                          fontSize: 16,
+                          fontStyle: FontStyle.italic,
                         ),
                       ),
-                    ),
-                    SizedBox(
-                      height: size.height * 0.01,
-                    ),
-                  ]),
+                      SizedBox(height: size.height * 0.01),
+                      Text(
+                        'Total focus time today: ${dailyTotal.toStringAsFixed(2)} seconds',
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 14,
+                        ),
+                      ),
+                      SizedBox(height: size.height * 0.03),
+                      Expanded(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 8.0),
+                          child: LineChart(
+                            initData(),
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: size.height * 0.01,
+                      ),
+                    ]),
+              ),
             ),
           ),
-        ),
-        Positioned(
-          top: 36,
-          right: 30,
-          child: TextButton(
-            onPressed: () {
-              setState(() {
-                showAvg = !showAvg;
-              });
-            },
-            child: Text(
-              'show average',
-              style: TextStyle(
-                  fontSize: 14,
-                  fontStyle: FontStyle.italic,
-                  color:
-                  showAvg ? Colors.white.withOpacity(0.5) : Colors.white),
+        ],
+      );
+    } else {
+      return Stack(
+        children: <Widget>[
+          AspectRatio(
+            aspectRatio: 1,
+            child: Card(
+              margin: EdgeInsets.all(size.height * 0.03),
+              elevation: 4,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(32),
+              ),
+              color: Colors.tealAccent.withOpacity(0.4),
+              child: Padding(
+                padding: EdgeInsets.all(size.width * 0.05),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      const Text(
+                        "Daily",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.left,
+                      ),
+                      SizedBox(height: size.height * 0.01),
+                      Text(
+                        'Your focus time distribution by hour',
+                        style: TextStyle(
+                          color: Colors.cyan[200],
+                          fontSize: 16,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                      SizedBox(height: size.height * 0.01),
+                      Text(
+                        'Total focus time today: ${dailyTotal.toStringAsFixed(2)} seconds',
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 14,
+                        ),
+                      ),
+                      SizedBox(height: size.height * 0.03),
+                      Expanded(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 8.0),
+                          child: LineChart(
+                            showAvg ? avgData() : mainData(),
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: size.height * 0.01,
+                      ),
+                    ]),
+              ),
             ),
           ),
-        ),
-      ],
-    );
+          Positioned(
+            top: 36,
+            right: 30,
+            child: TextButton(
+              onPressed: () {
+                setState(() {
+                  showAvg = !showAvg;
+                });
+              },
+              child: Text(
+                'show average',
+                style: TextStyle(
+                    fontSize: 14,
+                    fontStyle: FontStyle.italic,
+                    color:
+                    showAvg ? Colors.white.withOpacity(0.5) : Colors.white),
+              ),
+            ),
+          ),
+        ],
+      );
+    }
   }
 
   Widget bottomTitleWidgets(double value, TitleMeta meta) {
@@ -355,6 +420,98 @@ class _LineChartWidgetState extends State<LineChartWidget> {
       lineBarsData: [
         LineChartBarData(
           spots: List.generate(24, (index) => FlSpot(index.roundToDouble(), dailyAverage)),
+          isCurved: true,
+          gradient: LinearGradient(
+            colors: [
+              ColorTween(begin: gradientColors[0], end: gradientColors[1])
+                  .lerp(0.2)!,
+              ColorTween(begin: gradientColors[0], end: gradientColors[1])
+                  .lerp(0.2)!,
+            ],
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+          ),
+          barWidth: 4,
+          isStrokeCapRound: true,
+          dotData: FlDotData(
+            show: false,
+          ),
+          belowBarData: BarAreaData(
+            show: true,
+            gradient: LinearGradient(
+              colors: [
+                ColorTween(begin: gradientColors[0], end: gradientColors[1])
+                    .lerp(0.2)!
+                    .withOpacity(0.1),
+                ColorTween(begin: gradientColors[0], end: gradientColors[1])
+                    .lerp(0.2)!
+                    .withOpacity(0.1),
+              ],
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  LineChartData initData() {
+    return LineChartData(
+      lineTouchData: LineTouchData(enabled: false),
+      gridData: FlGridData(
+        show: true,
+        drawHorizontalLine: true,
+        verticalInterval: 1,
+        horizontalInterval: 1,
+        getDrawingVerticalLine: (value) {
+          return FlLine(
+            color: const Color(0xff37434d).withOpacity(0.5),
+            strokeWidth: 1,
+          );
+        },
+        getDrawingHorizontalLine: (value) {
+          return FlLine(
+            color: const Color(0xff37434d).withOpacity(0.5),
+            strokeWidth: 1,
+          );
+        },
+      ),
+      titlesData: FlTitlesData(
+        show: true,
+        bottomTitles: AxisTitles(
+          sideTitles: SideTitles(
+            showTitles: true,
+            reservedSize: 30,
+            getTitlesWidget: bottomTitleWidgets,
+            interval: 1,
+          ),
+        ),
+        leftTitles: AxisTitles(
+          sideTitles: SideTitles(
+            showTitles: true,
+            getTitlesWidget: leftTitleWidgets,
+            reservedSize: 42,
+            interval: 1,
+          ),
+        ),
+        topTitles: AxisTitles(
+          sideTitles: SideTitles(showTitles: false),
+        ),
+        rightTitles: AxisTitles(
+          sideTitles: SideTitles(showTitles: false),
+        ),
+      ),
+      borderData: FlBorderData(
+          show: true,
+          border: Border.all(color: const Color(0xff37434d).withOpacity(0.5), width: 1)),
+      minX: 0,
+      maxX: 23,
+      minY: 0,
+      maxY: 190,
+      lineBarsData: [
+        LineChartBarData(
+          spots: List.generate(24, (index) => FlSpot(index.roundToDouble(), 0)),
           isCurved: true,
           gradient: LinearGradient(
             colors: [

@@ -108,6 +108,7 @@ class _BarChartWidgetState extends State<BarChartWidget> {
             sideTitles: SideTitles(
               showTitles: true,
               getTitlesWidget: getAxisTitles,
+              reservedSize: 45,
             ),
           )),
       borderData: FlBorderData(
@@ -120,7 +121,7 @@ class _BarChartWidgetState extends State<BarChartWidget> {
   Widget getAxisTitles(double value, TitleMeta meta) {
     const style = TextStyle(
       color: Colors.white,
-      fontSize: 10,
+      fontSize: 9,
     );
     Widget text;
     text = Text(value.toInt().toString(), style: style);
@@ -190,7 +191,7 @@ class _BarChartWidgetState extends State<BarChartWidget> {
               : const BorderSide(color: Colors.white, width: 0),
           backDrawRodData: BackgroundBarChartRodData(
             show: true,
-            toY: 99,
+            toY: 200,
             color: Colors.blueGrey[400]!.withOpacity(0.5),
           ),
         ),
@@ -265,6 +266,7 @@ class _BarChartWidgetState extends State<BarChartWidget> {
             sideTitles: SideTitles(
               showTitles: true,
               getTitlesWidget: getAxisTitles,
+              reservedSize: 45,
             ),
           )),
       borderData: FlBorderData(
