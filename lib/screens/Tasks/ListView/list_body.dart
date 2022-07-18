@@ -73,6 +73,8 @@ class _ListBodyPageState extends State<ListBodyPage> {
         isEqualTo: user!.uid,
       ),
     ]);
+    eventList.sort(((a, b) => a.date.compareTo(b.date)));
+    
 
     if (!mounted) return;
     setState(() {
@@ -123,7 +125,9 @@ class _ListBodyPageState extends State<ListBodyPage> {
                           await Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => ListToday(selectedEvents: _selectedEvents,)));
+                                  builder: (context) => ListToday(
+                                        selectedEvents: _selectedEvents,
+                                      )));
                         },
                         child: DottedBorder(
                           color: Colors.white,
@@ -210,7 +214,9 @@ class _ListBodyPageState extends State<ListBodyPage> {
                           await Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => ListAll(eventList: eventList,)));
+                                  builder: (context) => ListAll(
+                                        eventList: eventList,
+                                      )));
                         },
                         child: DottedBorder(
                           color: Colors.white,

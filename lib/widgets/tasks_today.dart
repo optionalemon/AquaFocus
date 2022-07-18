@@ -39,7 +39,7 @@ class Tasks extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: MediaQuery.of(context).size.height * 0.01),
-                const Text("Today's Tasks",
+                const Text("Tasks",
                     style: TextStyle(
                       fontSize: 25,
                       fontWeight: FontWeight.bold,
