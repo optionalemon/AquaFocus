@@ -1,3 +1,5 @@
+import 'package:AquaFocus/model/app_task.dart';
+
 int getHashCode(DateTime key) {
   return key.day * 1000000 + key.month * 10000 + key.year;
 }
@@ -15,6 +17,19 @@ String repeatText(String repeats) {
       return "Repeat monthly";
     }
     return "";
+  }
+
+   bool hasSubtitle(AppTask event) {
+    if (event.hasTime) {
+      return true;
+    }
+    if (event.tag != null) {
+      return true;
+    }
+    if (repeatText(event.repeat) != "") {
+      return true;
+    }
+    return false;
   }
 
   String reminderText(String reminders) {

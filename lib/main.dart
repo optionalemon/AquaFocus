@@ -9,9 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_options.dart';
 import 'package:AquaFocus/screens/Tasks/task_screen.dart';
 
-
 int? initScreen;
-
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -52,6 +50,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
             return const MediaQuery(
                 data: MediaQueryData(), child: MaterialApp(home: Loading()));
           }
+          initScreen == 0 || initScreen == null ? imageCache.clear() : null;
           return MaterialApp(
             debugShowCheckedModeBanner: false,
             supportedLocales: const [
@@ -90,5 +89,4 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
-
 }

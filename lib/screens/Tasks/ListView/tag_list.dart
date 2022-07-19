@@ -56,7 +56,7 @@ class _ListTagState extends State<ListTag> {
     });
   }
 
-  _updateTask() async {
+  _updateTask(Tags currTag) async {
     eventTagList = [];
     eventList = await taskDBS.getQueryList(args: [
       QueryArgsV2(
@@ -70,16 +70,16 @@ class _ListTagState extends State<ListTag> {
       }
     }
     eventTagList.sort(((a, b) => (a.tag ?? "").compareTo(b.tag ?? "")));
-    selectedEvents = getMatchyEvent(tags[selectedIndex], eventTagList);
+    selectedEvents = getMatchyEvent(currTag, eventTagList);
     tags = await DatabaseServices().getUserTags();
     tags.insert(0, Tags(title: "All", color: "default"));
     setState(() {});
   }
 
-  _onDelete(AppTask event) async {
+  _onDelete(AppTask event, Tags currTag) async {
     selectedEvents.remove(event);
     await taskDBS.removeItem(event.id);
-    _updateTask();
+    _updateTask(currTag);
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text('Task ${event.title} deleted')));
   }
@@ -109,29 +109,66 @@ class _ListTagState extends State<ListTag> {
     return Row(
       children: [
         LongPressDraggable(
-          feedback: Opacity(opacity: 0.8),
-          child: ChoiceChip(
-            backgroundColor: Colors.white,
-            selectedColor: _getTagColor(tag),
-            label: Text(
-              tag.title,
-              style: selectedIndex == index
-                  ? TextStyle(color: Colors.white)
-                  : TextStyle(color: _getTagColor(tag)),
+          data: tag,
+          onDragStarted: () {
+            setState(() {
+              addTaskMode = false;
+            });
+          },
+          onDraggableCanceled: (_, __) {
+            setState(() {
+              addTaskMode = true;
+            });
+          },
+          onDragEnd: (_) {
+            setState(() {
+              addTaskMode = true;
+            });
+          },
+          feedback: Card(
+            color: Colors.amber.withOpacity(0),
+            child: Row(
+              children: [
+                ChoiceChip(
+                  backgroundColor: Colors.white,
+                  selectedColor: _getTagColor(tag),
+                  label: Text(
+                    tag.title,
+                    style: selectedIndex == index
+                        ? TextStyle(color: Colors.white)
+                        : TextStyle(color: _getTagColor(tag)),
+                  ),
+                  selected: selectedIndex == index,
+                ),
+              ],
             ),
-            selected: selectedIndex == index,
-            onSelected: (bool selected) {
-              setState(() {
-                selectedIndex = index;
-                selectedEvents =
-                    getMatchyEvent(tags[selectedIndex], eventTagList);
-              });
-            },
+          ),
+          child: Row(
+            children: [
+              ChoiceChip(
+                backgroundColor: Colors.white,
+                selectedColor: _getTagColor(tag),
+                label: Text(
+                  tag.title,
+                  style: selectedIndex == index
+                      ? TextStyle(color: Colors.white)
+                      : TextStyle(color: _getTagColor(tag)),
+                ),
+                selected: selectedIndex == index,
+                onSelected: (bool selected) {
+                  setState(() {
+                    selectedIndex = index;
+                    selectedEvents =
+                        getMatchyEvent(tags[selectedIndex], eventTagList);
+                  });
+                },
+              ),
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.02,
+              )
+            ],
           ),
         ),
-        SizedBox(
-          width: MediaQuery.of(context).size.width * 0.02,
-        )
       ],
     );
   }
@@ -220,7 +257,8 @@ class _ListTagState extends State<ListTag> {
                                         motion: const BehindMotion(),
                                         dismissible: DismissiblePane(
                                             onDismissed: () async {
-                                          await _onDelete(event);
+                                          await _onDelete(
+                                              event, tags[selectedIndex]);
                                         }),
                                         children: [
                                           SlidableAction(
@@ -244,7 +282,8 @@ class _ListTagState extends State<ListTag> {
                                           ),
                                           SlidableAction(
                                             onPressed: (context) async {
-                                              await _onDelete(event);
+                                              await _onDelete(
+                                                  event, tags[selectedIndex]);
                                             },
                                             backgroundColor:
                                                 const Color(0xFFFE4A49),
@@ -269,7 +308,8 @@ class _ListTagState extends State<ListTag> {
                                                         builder: (context) =>
                                                             TaskDetails(
                                                                 event)));
-                                                _updateTask();
+                                                _updateTask(
+                                                    tags[selectedIndex]);
                                               },
                                               subtitle: Wrap(
                                                 children: [
@@ -343,25 +383,26 @@ class _ListTagState extends State<ListTag> {
                                                 ],
                                               ),
                                               leading: IconButton(
-                                                icon: Icon(
-                                                  event.isCompleted
-                                                      ? Icons.check_circle
-                                                      : Icons.circle_outlined,
-                                                  color: Colors.white,
-                                                ),
-                                                onPressed: () async {
-                                                  setState(() {
-                                                    selectedEvents[index]
-                                                            .isCompleted =
-                                                        !event.isCompleted;
-                                                  });
-                                                  await taskDBS
-                                                      .updateData(event.id, {
-                                                    'isCompleted':
-                                                        event.isCompleted,
-                                                  });
-                                                },
-                                              )),
+                                                  icon: Icon(
+                                                    event.isCompleted
+                                                        ? Icons.check_circle
+                                                        : Icons.circle_outlined,
+                                                    color: Colors.white,
+                                                  ),
+                                                  onPressed: () async {
+                                                    if (!event.isCompleted) {
+                                                      setState(() {
+                                                        selectedEvents[index]
+                                                                .isCompleted =
+                                                            !event.isCompleted;
+                                                      });
+                                                      await taskDBS.updateData(
+                                                          event.id, {
+                                                        'isCompleted':
+                                                            event.isCompleted,
+                                                      });
+                                                    }
+                                                  })),
                                           Divider(
                                             color: Colors.white,
                                             indent: 3,
@@ -378,25 +419,41 @@ class _ListTagState extends State<ListTag> {
                   padding:
                       EdgeInsets.all(MediaQuery.of(context).size.height * 0.05),
                   child: Align(
-                      alignment: Alignment.bottomCenter,
-                      child: 
-                      addTaskMode 
-                      ? FloatingActionButton(
-                          child: Icon(Icons.add, color: Colors.white),
-                          onPressed: () async {
-                            await Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => AddEventPage(
-                                          selectedDate: DateTime.now(),
-                                          updateTaskDetails: _updateTask,
-                                        )));
-                          })
-                      : FloatingActionButton(
-                        backgroundColor: Colors.red,
-                        child: Icon(Icons.delete, color: Colors.white),
-                        onPressed: () {}),
-                          ))
+                    alignment: Alignment.bottomCenter,
+                    child: addTaskMode
+                        ? FloatingActionButton(
+                            child: Icon(Icons.add, color: Colors.white),
+                            onPressed: () async {
+                              await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => AddEventPage(
+                                            selectedDate: DateTime.now(),
+                                            updateTaskDetails: () {},
+                                          )));
+                              _updateTask(tags[selectedIndex]);
+                            })
+                        : DragTarget<Tags>(onAccept: (Tags tag) async {
+                            List<AppTask> tagEvents =
+                                getMatchyEvent(tag, eventTagList);
+                            selectedIndex = 0;
+                            await DatabaseServices().removeTag(tag);
+                            if (tagEvents.isNotEmpty) {
+                              for (AppTask task in tagEvents) {
+                                await DatabaseServices().removeTagTask(task);
+                              }
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                  content: Text(
+                                      'Tag ${tag.title} has been removed from all the related tasks')));
+                            }
+                            _updateTask(tags[0]);
+                          }, builder: (_, __, ___) {
+                            return FloatingActionButton(
+                                backgroundColor: Colors.red,
+                                child: Icon(Icons.delete, color: Colors.white),
+                                onPressed: () {});
+                          }),
+                  ))
             ]));
   }
 }

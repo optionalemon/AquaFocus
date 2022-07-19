@@ -77,166 +77,166 @@ class _ListAllState extends State<ListAll> {
                         blurRadius: 5,
                         offset: Offset(0.0, 5))
                   ]),
-              child:  Scrollbar(
-                      child: ValueListenableBuilder<List<AppTask>>(
-                          valueListenable: ValueNotifier(widget.eventList),
-                          builder: (context, value, _) {
-                            return widget.eventList.isEmpty
-                              ? Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Wrap(
-                                      runAlignment: WrapAlignment.center,
-                                      crossAxisAlignment: WrapCrossAlignment.center,
-                                      alignment: WrapAlignment.center,
-                                      children: const [
-                                        Text("You have completed all your tasks!",
-                                            style: TextStyle(
-                                                color: Color.fromARGB(255, 59, 59, 59), fontSize: 20)),
-                                      ],
-                                    ),
+              child: Scrollbar(
+                child: ValueListenableBuilder<List<AppTask>>(
+                    valueListenable: ValueNotifier(widget.eventList),
+                    builder: (context, value, _) {
+                      return widget.eventList.isEmpty
+                          ? Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Wrap(
+                                  runAlignment: WrapAlignment.center,
+                                  crossAxisAlignment: WrapCrossAlignment.center,
+                                  alignment: WrapAlignment.center,
+                                  children: const [
+                                    Text("You have completed all your tasks!",
+                                        style: TextStyle(
+                                            color:
+                                                Color.fromARGB(255, 59, 59, 59),
+                                            fontSize: 20)),
                                   ],
-                                )
-                  : ListView.builder(
-                                itemCount: value.length,
-                                itemBuilder: (BuildContext context, int index) {
-                                  AppTask event = value[index];
-                                  return Slidable(
-                                    key: Key(event.id),
-                                    endActionPane: ActionPane(
-                                      motion: const BehindMotion(),
-                                      dismissible: DismissiblePane(
-                                          onDismissed: () async {
-                                        await _onDelete(event);
-                                      }),
-                                      children: [
-                                        SlidableAction(
-                                          onPressed: (context) async {
+                                ),
+                              ],
+                            )
+                          : ListView.builder(
+                              itemCount: value.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                AppTask event = value[index];
+                                return Slidable(
+                                  key: Key(event.id),
+                                  endActionPane: ActionPane(
+                                    motion: const BehindMotion(),
+                                    dismissible:
+                                        DismissiblePane(onDismissed: () async {
+                                      await _onDelete(event);
+                                    }),
+                                    children: [
+                                      SlidableAction(
+                                        onPressed: (context) async {
+                                          await Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      AddEventPage(
+                                                        task: event,
+                                                        selectedDate:
+                                                            event.date,
+                                                        updateTaskDetails:
+                                                            updateTaskDetails,
+                                                      )));
+                                        },
+                                        backgroundColor: Color(0xFF21B7CA),
+                                        foregroundColor: Colors.white,
+                                        icon: Icons.edit,
+                                        label: 'Edit',
+                                      ),
+                                      SlidableAction(
+                                        onPressed: (context) async {
+                                          await _onDelete(event);
+                                        },
+                                        backgroundColor:
+                                            const Color(0xFFFE4A49),
+                                        foregroundColor: Colors.white,
+                                        icon: Icons.delete,
+                                        label: 'Delete',
+                                      ),
+                                    ],
+                                  ),
+                                  child: Wrap(
+                                    children: [
+                                      ListTile(
+                                          title: Text(
+                                            event.title,
+                                            style:
+                                                TextStyle(color: Colors.white),
+                                          ),
+                                          onTap: () async {
                                             await Navigator.push(
                                                 context,
                                                 MaterialPageRoute(
                                                     builder: (context) =>
-                                                        AddEventPage(
-                                                          task: event,
-                                                          selectedDate:
-                                                              event.date,
-                                                          updateTaskDetails:
-                                                              updateTaskDetails,
-                                                        )));
+                                                        TaskDetails(event)));
+                                            updateTaskDetails();
                                           },
-                                          backgroundColor: Color(0xFF21B7CA),
-                                          foregroundColor: Colors.white,
-                                          icon: Icons.edit,
-                                          label: 'Edit',
-                                        ),
-                                        SlidableAction(
-                                          onPressed: (context) async {
-                                            await _onDelete(event);
-                                          },
-                                          backgroundColor:
-                                              const Color(0xFFFE4A49),
-                                          foregroundColor: Colors.white,
-                                          icon: Icons.delete,
-                                          label: 'Delete',
-                                        ),
-                                      ],
-                                    ),
-                                    child: Wrap(
-                                      children: [
-                                        ListTile(
-                                            title: Text(
-                                              event.title,
-                                              style: TextStyle(
-                                                  color: Colors.white),
-                                            ),
-                                            onTap: () async {
-                                              await Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          TaskDetails(event)));
-                                              updateTaskDetails();
-                                            },
-                                            subtitle: Wrap(
-                                              children: [
-                                                Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.start,
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      DateFormat('dd/MM/yy')
-                                                          .format(event.date),
-                                                      style: (event.date
-                                                              .isAfter(DateTime(
-                                                                  now.year,
-                                                                  now.month,
-                                                                  now.day)))
-                                                          ? TextStyle(
+                                          subtitle: Wrap(
+                                            children: [
+                                              Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    DateFormat('dd/MM/yy')
+                                                        .format(event.date),
+                                                    style: (event.date.isAfter(
+                                                            DateTime(
+                                                                now.year,
+                                                                now.month,
+                                                                now.day)))
+                                                        ? TextStyle(
+                                                            color: Colors.white)
+                                                        : TextStyle(
+                                                            color:
+                                                                Color.fromARGB(
+                                                                    255,
+                                                                    228,
+                                                                    72,
+                                                                    61)),
+                                                  ),
+                                                  event.hasTime
+                                                      ? Text(
+                                                          DateFormat('HH : mm ')
+                                                              .format(
+                                                                  event.time!),
+                                                          style: TextStyle(
                                                               color:
-                                                                  Colors.white)
-                                                          : TextStyle(
-                                                              color: Color
-                                                                  .fromARGB(
-                                                                      255,
-                                                                      228,
-                                                                      72,
-                                                                      61)),
-                                                    ),
-                                                    event.hasTime
-                                                        ? Text(
-                                                            DateFormat(
-                                                                    'HH : mm ')
-                                                                .format(event
-                                                                    .time!),
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .white),
-                                                          )
-                                                        : Container(),
-                                                    repeatText(event.repeat) !=
-                                                            ""
-                                                        ? Text(
-                                                            '${repeatText(event.repeat)} ',
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .white),
-                                                          )
-                                                        : Container(),
-                                                    event.hasTime
-                                                        ? (reminderText(event
-                                                                    .reminder!) !=
-                                                                ""
-                                                            ? Text(
-                                                                '${reminderText(event.reminder!)} ',
-                                                                style: TextStyle(
-                                                                    color: Colors
-                                                                        .white),
-                                                              )
-                                                            : Container())
-                                                        : Container(),
-                                                    event.tag != null
-                                                        ? Text(
-                                                            '#${event.tag}',
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .white),
-                                                          )
-                                                        : Container(),
-                                                  ],
-                                                ),
-                                              ],
-                                            ),
-                                            leading: IconButton(
-                                              icon: Icon(
-                                                event.isCompleted
-                                                    ? Icons.check_circle
-                                                    : Icons.circle_outlined,
-                                                color: Colors.white,
+                                                                  Colors.white),
+                                                        )
+                                                      : Container(),
+                                                  repeatText(event.repeat) != ""
+                                                      ? Text(
+                                                          '${repeatText(event.repeat)} ',
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.white),
+                                                        )
+                                                      : Container(),
+                                                  event.hasTime
+                                                      ? (reminderText(event
+                                                                  .reminder!) !=
+                                                              ""
+                                                          ? Text(
+                                                              '${reminderText(event.reminder!)} ',
+                                                              style: TextStyle(
+                                                                  color: Colors
+                                                                      .white),
+                                                            )
+                                                          : Container())
+                                                      : Container(),
+                                                  event.tag != null
+                                                      ? Text(
+                                                          '#${event.tag}',
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.white),
+                                                        )
+                                                      : Container(),
+                                                ],
                                               ),
-                                              onPressed: () async {
+                                            ],
+                                          ),
+                                          leading: IconButton(
+                                            icon: Icon(
+                                              event.isCompleted
+                                                  ? Icons.check_circle
+                                                  : Icons.circle_outlined,
+                                              color: Colors.white,
+                                            ),
+                                            onPressed: () async {
+                                              if (!event.isCompleted) {
                                                 setState(() {
                                                   widget.eventList[index]
                                                           .isCompleted =
@@ -247,18 +247,19 @@ class _ListAllState extends State<ListAll> {
                                                   'isCompleted':
                                                       event.isCompleted,
                                                 });
-                                              },
-                                            )),
-                                        Divider(
-                                          color: Colors.white,
-                                          indent: 3,
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                });
-                          }),
-                    ),
+                                              }
+                                            },
+                                          )),
+                                      Divider(
+                                        color: Colors.white,
+                                        indent: 3,
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              });
+                    }),
+              ),
             ),
           ),
           Padding(

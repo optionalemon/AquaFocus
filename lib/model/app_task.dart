@@ -12,6 +12,8 @@ class AppTask {
   final String repeat;
   final String? reminder;
   final String? tag;
+  final int? streak;
+  final DateTime? prevCompletionTime;
 
   AppTask({
     this.title = "",
@@ -25,6 +27,8 @@ class AppTask {
     this.reminder,
     this.repeat = "never",
     this.tag,
+    this.streak,
+    this.prevCompletionTime,
   }) : this.date = date ?? DateTime(1970);
 
   AppTask copyWith({
@@ -39,6 +43,8 @@ class AppTask {
     String? repeat,
     String? reminder,
     String? tag,
+    int? streak,
+    DateTime? prevCompletionTime,
   }) {
     return AppTask(
       title: title ?? this.title,
@@ -52,6 +58,8 @@ class AppTask {
       repeat: repeat ?? this.repeat,
       reminder: reminder ?? this.reminder,
       tag: tag ?? this.tag,
+      streak: streak ?? this.streak,
+      prevCompletionTime : prevCompletionTime ?? this.prevCompletionTime,
     );
   }
 
@@ -67,7 +75,9 @@ class AppTask {
       'time': time?.millisecondsSinceEpoch,
       'repeat': repeat,
       'reminder': reminder,
-      'tag' : tag,
+      'tag': tag,
+      'streak': streak,
+      'prevCompletionTime': prevCompletionTime,
     };
   }
 
@@ -82,10 +92,14 @@ class AppTask {
       userId: map['userId'],
       isCompleted: map['isCompleted'],
       hasTime: map['hasTime'],
-      time: map['time'],
+      time: map['time'] != null
+          ? DateTime.fromMillisecondsSinceEpoch(map['time'])
+          : null,
       repeat: map['repeat'],
       reminder: map['reminder'],
       tag: map['tag'],
+      streak: map['streak'],
+      prevCompletionTime: map['prevCompletionTime'],
     );
   }
 
@@ -106,6 +120,8 @@ class AppTask {
       repeat: data['repeat'],
       reminder: data['reminder'],
       tag: data['tag'],
+      streak: data['streak'],
+      prevCompletionTime: DateTime.fromMillisecondsSinceEpoch(data['prevCompletionTime']),
     );
   }
 
@@ -128,7 +144,9 @@ class AppTask {
         o.repeat == repeat &&
         o.reminder == reminder &&
         o.isCompleted == isCompleted &&
-        o.tag == tag;
+        o.tag == tag && 
+        o.streak == streak &&
+        o.prevCompletionTime == prevCompletionTime;
   }
 
   @override
@@ -143,6 +161,8 @@ class AppTask {
         time.hashCode ^
         repeat.hashCode ^
         reminder.hashCode ^
-        tag.hashCode;
+        tag.hashCode ^
+        streak.hashCode ^
+        prevCompletionTime.hashCode;
   }
 }

@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../model/app_task.dart';
 
@@ -299,10 +300,6 @@ class _CalendarBodyState extends State<CalendarBody> {
                                           key: Key(event.id),
                                           endActionPane: ActionPane(
                                             motion: const BehindMotion(),
-                                            dismissible: DismissiblePane(
-                                                onDismissed: () async {
-                                              await _onDelete(event);
-                                            }),
                                             children: [
                                               SlidableAction(
                                                 onPressed: (context) async {
@@ -364,7 +361,7 @@ class _CalendarBodyState extends State<CalendarBody> {
                                                 //_selectedDay = null;
                                                 //_selectedEvents.value = [];
                                               },
-                                              subtitle: Wrap(
+                                              subtitle: !hasSubtitle(event) ? null : Wrap(
                                                 children: [
                                                   Column(
                                                     mainAxisAlignment:
@@ -426,13 +423,15 @@ class _CalendarBodyState extends State<CalendarBody> {
                                                   color: Colors.white,
                                                 ),
                                                 onPressed: () async {
-                                                  event.isCompleted =
+                                                  if (!event.isCompleted) {
+                                                    event.isCompleted =
                                                       !event.isCompleted;
                                                   await taskDBS
                                                       .updateData(event.id, {
                                                     'isCompleted':
                                                         event.isCompleted,
                                                   });
+                                                  }
                                                 },
                                               )),
                                         );
