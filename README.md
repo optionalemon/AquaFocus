@@ -11,12 +11,12 @@ Our project is developed with the aim of motivating the students to manage their
 
 ### Features
 In total, we have 4 main features(Still implementing).
-1. **Focus Timer** -> Performing both countup and countdown, helps users to stay focused! ~~Definitely not inspired by a tree-planting app~~
-2. **To-do List** -> Helps users to organise their one-time daily tasks
-3. **Habit Tracker** -> Helps users to manage their daily, weekly or monthly goals for habits
-4. **A Beatiful Magnificent S-_blue_-endid _Fin_-tastic Aquarium** -> Gamified aspect of the app. Users can buy sea creatures from all over the world and put into their own aquarium!
+1. **Focus Timer** -> Performing both countup and countdown, helps users to stay focused on their tasks and away from their phones! ~~Definitely not inspired by a tree-planting app~~
+2. **Tasks** -> Helps users to organise their daily tasks or add tasks that repeat in a pattern to foster healthy living habits.
+3. **Statistics** -> Helps users to track their focus time distribution with personalised statistics so as to learn from the insights and tailor their focus habits.
+4. **A Beautiful Magnificent S-_blue_-endid _Fin_-tastic Aquarium** -> Gamified aspect of the app. Users can purchase cute marine creatures from all over the world and put them into their own aquarium as they earn rewards by completing more tasks and stay focused!
 
-### Technologies used
+### Tech Stacks used
 1. Git and GitHub
 2. Flutter
 3. Firebase
