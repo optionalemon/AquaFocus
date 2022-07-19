@@ -14,7 +14,8 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:intl/intl.dart';
 
 class ListTag extends StatefulWidget {
-  const ListTag({Key? key}) : super(key: key);
+  const ListTag({Key? key, required this.showCompleted}) : super(key: key);
+  final bool showCompleted;
 
   @override
   State<ListTag> createState() => _ListTagState();
@@ -38,18 +39,12 @@ class _ListTagState extends State<ListTag> {
   _getTagsEvents() async {
     tags = await DatabaseServices().getUserTags();
     tags.insert(0, Tags(title: "All", color: "default"));
-    eventList = await taskDBS.getQueryList(args: [
-      QueryArgsV2(
-        "userId",
-        isEqualTo: user!.uid,
-      ),
-    ]);
+    eventList = await getEventList(widget.showCompleted);
     for (AppTask event in eventList) {
       if (event.tag != null) {
         eventTagList.add(event);
       }
     }
-    eventTagList.sort(taskCompare);
     selectedEvents = eventTagList;
     setState(() {
       loading = false;
@@ -58,18 +53,12 @@ class _ListTagState extends State<ListTag> {
 
   _updateTask(Tags currTag) async {
     eventTagList = [];
-    eventList = await taskDBS.getQueryList(args: [
-      QueryArgsV2(
-        "userId",
-        isEqualTo: user!.uid,
-      ),
-    ]);
+    eventList = await getEventList(widget.showCompleted);
     for (AppTask event in eventList) {
       if (event.tag != null) {
         eventTagList.add(event);
       }
     }
-    eventTagList.sort(taskCompare);
     selectedEvents = getMatchyEvent(currTag, eventTagList);
     tags = await DatabaseServices().getUserTags();
     tags.insert(0, Tags(title: "All", color: "default"));
@@ -175,7 +164,6 @@ class _ListTagState extends State<ListTag> {
 
   @override
   Widget build(BuildContext context) {
-    DateTime now = DateTime.now();
     Size size = MediaQuery.of(context).size;
     return loading
         ? const Loading()
@@ -207,7 +195,7 @@ class _ListTagState extends State<ListTag> {
               ),
               SafeArea(
                 child: Container(
-                  margin: EdgeInsets.fromLTRB(10, 0, 10, 10),
+                  margin: const EdgeInsets.fromLTRB(10, 0, 10, 10),
                   width: double.infinity,
                   decoration: BoxDecoration(
                       color: Colors.white,
@@ -296,11 +284,7 @@ class _ListTagState extends State<ListTag> {
                                       child: Wrap(
                                         children: [
                                           ListTile(
-                                              title: Text(
-                                                event.title,
-                                                style: TextStyle(
-                                                    color: Colors.white),
-                                              ),
+                                              title: eventVar(event.title, event),
                                               onTap: () async {
                                                 await Navigator.push(
                                                     context,
@@ -311,80 +295,11 @@ class _ListTagState extends State<ListTag> {
                                                 _updateTask(
                                                     tags[selectedIndex]);
                                               },
-                                              subtitle: Wrap(
-                                                children: [
-                                                  Column(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment.start,
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Text(
-                                                        DateFormat('dd/MM/yy')
-                                                            .format(event.date),
-                                                        style: expiredDate(event)
-                                                            ? TextStyle(
-                                                                color: Colors
-                                                                    .red)
-                                                            : TextStyle(
-                                                                color: Colors.white),
-                                                      ),
-                                                      event.hasTime
-                                                          ? Text(
-                                                              DateFormat(
-                                                                      'HH : mm ')
-                                                                  .format(event
-                                                                      .time!),
-                                                              style: expiredTime(event)
-                                                                  ? TextStyle(
-                                                                      color: Colors
-                                                                          .red)
-                                                                  : TextStyle(
-                                                                      color: Colors
-                                                                          .white),
-                                                            )
-                                                          : Container(),
-                                                      repeatText(event
-                                                                  .repeat) !=
-                                                              ""
-                                                          ? Text(
-                                                              '${repeatText(event.repeat)} ',
-                                                              style: TextStyle(
-                                                                  color: Colors
-                                                                      .white),
-                                                            )
-                                                          : Container(),
-                                                      event.hasTime
-                                                          ? (reminderText(event
-                                                                      .reminder!) !=
-                                                                  ""
-                                                              ? Text(
-                                                                  '${reminderText(event.reminder!)} ',
-                                                                  style: TextStyle(
-                                                                      color: Colors
-                                                                          .white),
-                                                                )
-                                                              : Container())
-                                                          : Container(),
-                                                      Text(
-                                                        '#${event.tag}',
-                                                        style: TextStyle(
-                                                          color: Colors.white,
-                                                        ),
-                                                      )
-                                                    ],
-                                                  ),
-                                                ],
-                                              ),
+                                              subtitle: allNTag(event),
                                               leading: IconButton(
-                                                  icon: Icon(
-                                                    event.isCompleted
-                                                        ? Icons.check_circle
-                                                        : Icons.circle_outlined,
-                                                    color: Colors.white,
-                                                  ),
+                                                  icon: complStatusIcon(event),
                                                   onPressed: () async {
+                                                    //TODO
                                                     if (!event.isCompleted) {
                                                       setState(() {
                                                         selectedEvents[index]

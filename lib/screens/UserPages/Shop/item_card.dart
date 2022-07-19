@@ -21,6 +21,7 @@ class ItemCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          SizedBox(height: size.height * 0.01,),
           Expanded(
             child: Align(
               alignment: Alignment.center,
@@ -60,8 +61,10 @@ class ItemCard extends StatelessWidget {
                         style: TextStyle(
                             fontWeight: FontWeight.bold, color: Colors.white)),
                   ],
-                )
+                ),
+                SizedBox(height: size.height * 0.01,)
         ],
+        
       ),
     );
   }

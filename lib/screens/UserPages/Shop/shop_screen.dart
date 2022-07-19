@@ -93,14 +93,13 @@ class _ShopScreenState extends State<ShopScreen> {
               SafeArea(
                   child: Column(
                 children: [
-                  SizedBox(
-                    height: size.height * 0.05,
-                  ),
                   Expanded(
                       child: Padding(
                     padding:
                         EdgeInsets.symmetric(horizontal: size.width * 0.03),
                     child: GridView.builder(
+                        scrollDirection: Axis.vertical,
+                        shrinkWrap: true,
                         itemCount: marinesCreatures.length,
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 2,

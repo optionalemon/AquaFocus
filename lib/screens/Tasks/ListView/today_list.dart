@@ -1,21 +1,19 @@
-import 'dart:collection';
-
 import 'package:AquaFocus/screens/Tasks/add_task.dart';
 import 'package:AquaFocus/screens/Tasks/task_details.dart';
 import 'package:AquaFocus/screens/Tasks/task_utils.dart';
 import 'package:AquaFocus/services/task_firestore_service.dart';
-import 'package:firebase_helpers/firebase_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:intl/intl.dart';
-import 'package:table_calendar/table_calendar.dart';
 import '../../../model/app_task.dart';
-import '../../signin_screen.dart';
 
 class ListToday extends StatefulWidget {
   ValueNotifier<List<AppTask>> selectedEvents;
+  final bool showCompleted;
 
-  ListToday({Key? key, required this.selectedEvents}) : super(key: key);
+  ListToday(
+      {Key? key, required this.selectedEvents, required this.showCompleted})
+      : super(key: key);
 
   @override
   State<ListToday> createState() => _ListTodayState();
@@ -32,28 +30,9 @@ class _ListTodayState extends State<ListToday> {
   }
 
   updateTaskDetails() async {
-    List<AppTask> eventList = await taskDBS.getQueryList(args: [
-      QueryArgsV2(
-        "userId",
-        isEqualTo: user!.uid,
-      ),
-    ]);
-    Map<DateTime, List<AppTask>> groupedEvents = {};
-
-    for (var event in eventList) {
-      DateTime date =
-          DateTime.utc(event.date.year, event.date.month, event.date.day, 12);
-      if (groupedEvents[date] == null) groupedEvents[date] = [];
-      groupedEvents[date]!.add(event);
-    }
-
-    LinkedHashMap<DateTime, List<AppTask>> kEvents =
-        LinkedHashMap<DateTime, List<AppTask>>(
-      equals: isSameDay,
-      hashCode: getHashCode,
-    )..addAll(groupedEvents);
-    widget.selectedEvents.value = (kEvents[DateTime.now()] ?? []);
-    widget.selectedEvents.value.sort(taskCompare);
+    List<AppTask> eventList = await getEventList(widget.showCompleted);
+    widget.selectedEvents.value = getEventsForDay(DateTime.now(), eventList);
+    //widget.selectedEvents.value.sort(taskCompare);
   }
 
   @override
@@ -106,7 +85,7 @@ class _ListTodayState extends State<ListToday> {
                                   runAlignment: WrapAlignment.center,
                                   crossAxisAlignment: WrapCrossAlignment.center,
                                   alignment: WrapAlignment.center,
-                                  children: [
+                                  children: const [
                                     Text("No task for today!",
                                         style: TextStyle(
                                             color:
@@ -141,7 +120,7 @@ class _ListTodayState extends State<ListToday> {
                                                             event.date,
                                                         updateTaskDetails:
                                                             () async {
-                                                          updateTaskDetails();
+                                                          await updateTaskDetails();
                                                           setState(() {});
                                                         },
                                                       )));
@@ -165,87 +144,21 @@ class _ListTodayState extends State<ListToday> {
                                   child: Wrap(
                                     children: [
                                       ListTile(
-                                          title: Text(
-                                            event.title,
-                                            style:
-                                                TextStyle(color: Colors.white),
-                                          ),
+                                          title: eventVar(event.title, event),
                                           onTap: () async {
                                             await Navigator.push(
                                                 context,
                                                 MaterialPageRoute(
                                                     builder: (context) =>
                                                         TaskDetails(event)));
-                                            updateTaskDetails();
+                                            await updateTaskDetails();
                                           },
-                                          subtitle: hasSubtitle(event)
-                                              ? Wrap(
-                                                  children: [
-                                                    Column(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .start,
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        event.hasTime
-                                                            ? Text(
-                                                          DateFormat('HH : mm ')
-                                                              .format(
-                                                                  event.time!),
-                                                          style: expiredTime(event)
-                                                              ? TextStyle(
-                                                                  color: Colors
-                                                                      .red)
-                                                              : TextStyle(
-                                                                  color:Colors.white),
-                                                        )
-                                                            : Container(),
-                                                        repeatText(event
-                                                                    .repeat) !=
-                                                                ""
-                                                            ? Text(
-                                                                '${repeatText(event.repeat)} ',
-                                                                style: TextStyle(
-                                                                    color: Colors
-                                                                        .white),
-                                                              )
-                                                            : Container(),
-                                                        event.hasTime
-                                                            ? (reminderText(event
-                                                                        .reminder!) !=
-                                                                    ""
-                                                                ? Text(
-                                                                    '${reminderText(event.reminder!)} ',
-                                                                    style: TextStyle(
-                                                                        color: Colors
-                                                                            .white),
-                                                                  )
-                                                                : Container())
-                                                            : Container(),
-                                                        event.tag != null
-                                                            ? Text(
-                                                                '#${event.tag}',
-                                                                style: TextStyle(
-                                                                    color: Colors
-                                                                        .white),
-                                                              )
-                                                            : Container(),
-                                                      ],
-                                                    ),
-                                                  ],
-                                                )
-                                              : null,
+                                          subtitle: todayNCalendar(event),
                                           leading: IconButton(
-                                            icon: Icon(
-                                              event.isCompleted
-                                                  ? Icons.check_circle
-                                                  : Icons.circle_outlined,
-                                              color: Colors.white,
-                                            ),
+                                            icon: complStatusIcon(event),
                                             onPressed: () async {
                                               if (!event.isCompleted) {
+                                                //TODO
                                                 setState(() {
                                                   widget
                                                           .selectedEvents

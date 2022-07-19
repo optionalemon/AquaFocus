@@ -64,8 +64,8 @@ class _TaskScreenState extends State<TaskScreen> {
           ],
         ),
         body: isCheckList
-            ? ListBodyPage()
-            : CalendarBody() // put the arguments here
+            ? ListBodyPage(showCompleted: showCompleted,)
+            : CalendarBody(showCompleted: showCompleted) // put the arguments here
 
         );
   }
