@@ -66,7 +66,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
             routes: {
               'home': (context) => SignInScreen(),
               'onboard': (context) => Onboarding(),
-              'calendarBody': (context) => TaskScreen(isCheckList: false),
+              
             },
             title: 'Aquafocus',
             theme: ThemeData(

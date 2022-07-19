@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class Tasks extends StatelessWidget {
-  const Tasks({Key? key, required this.isCheckList}) : super(key: key);
-  final bool isCheckList;
+  const Tasks(
+      {Key? key,})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +15,6 @@ class Tasks extends StatelessWidget {
             context,
             MaterialPageRoute(
                 builder: (context) => TaskScreen(
-                      isCheckList: isCheckList,
                     )));
       },
       child: Container(

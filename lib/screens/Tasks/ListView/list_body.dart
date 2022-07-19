@@ -73,7 +73,7 @@ class _ListBodyPageState extends State<ListBodyPage> {
         isEqualTo: user!.uid,
       ),
     ]);
-    eventList.sort(((a, b) => a.date.compareTo(b.date)));
+    eventList.sort(taskCompare);
     
 
     if (!mounted) return;

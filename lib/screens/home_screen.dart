@@ -25,17 +25,12 @@ class _HomeScreenState extends State<HomeScreen> {
   late String name;
   bool loading = true;
   late bool isCheckList;
+  late bool showCompleted;
   var notifyHelper;
 
   _updateHomeScreen(int newMoney) {
     setState(() {
       fishMoney = newMoney;
-    });
-  }
-
-  _updateHomeCheckList(bool newCheckList) {
-    setState(() {
-      isCheckList = newCheckList;
     });
   }
 
@@ -49,6 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       isCheckList = await DatabaseServices().getisCheckList();
+      showCompleted = await DatabaseServices().getShowCompl();
       name = await DatabaseServices().getUserName(user.uid);
       fishMoney = await DatabaseServices().getMoney();
     }
@@ -76,7 +72,6 @@ class _HomeScreenState extends State<HomeScreen> {
             drawer: NavigationDrawer(
               updateHomeScreen: _updateHomeScreen,
               updateHomeName: _updateHomeName,
-              updateHomeCheckList: _updateHomeCheckList,
               isCheckList: isCheckList,
             ),
             body: Stack(children: <Widget>[
@@ -94,7 +89,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Tasks(
-                    isCheckList: isCheckList,
                   ),
                   Expanded(
                     child: Row(
@@ -166,14 +160,12 @@ class NavigationDrawer extends StatelessWidget {
   NavigationDrawer(
       {required this.updateHomeScreen,
       required this.updateHomeName,
-      required this.updateHomeCheckList,
       required this.isCheckList,
       Key? key})
       : super(key: key);
   final currUser = FirebaseAuth.instance.currentUser;
   final updateHomeScreen;
   final updateHomeName;
-  final updateHomeCheckList;
   bool isCheckList;
 
   @override
@@ -187,8 +179,7 @@ class NavigationDrawer extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
                 buildHeader(context),
-                buildMenuItem(
-                    context, updateHomeName, updateHomeCheckList, isCheckList),
+                buildMenuItem(context, updateHomeName),
               ]),
         )));
   }
@@ -231,8 +222,7 @@ class NavigationDrawer extends StatelessWidget {
     }
   }
 
-  Widget buildMenuItem(BuildContext context, Function updateHomeName,
-      Function updateHomeCheckList, bool isCheckList) {
+  Widget buildMenuItem(BuildContext context, Function updateHomeName) {
     Size size = MediaQuery.of(context).size;
     return Container(
         padding: EdgeInsets.all(size.height * 0.03),
@@ -304,7 +294,7 @@ class NavigationDrawer extends StatelessWidget {
                 Navigator.pop(context);
                 Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => SettingScreen(
-                        updateHomeName, updateHomeCheckList, isCheckList)));
+                        updateHomeName)));
               },
             ),
             ListTile(

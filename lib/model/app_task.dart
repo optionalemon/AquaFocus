@@ -166,3 +166,4 @@ class AppTask {
         prevCompletionTime.hashCode;
   }
 }
+

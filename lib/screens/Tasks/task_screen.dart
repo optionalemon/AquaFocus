@@ -1,22 +1,44 @@
 import 'package:AquaFocus/screens/Tasks/calendar_body.dart';
+import 'package:AquaFocus/screens/signin_screen.dart';
+import 'package:AquaFocus/services/database_services.dart';
+import 'package:AquaFocus/widgets/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:AquaFocus/screens/Tasks/ListView/list_body.dart';
 
 class TaskScreen extends StatefulWidget {
-  bool isCheckList;
-  TaskScreen({Key? key, required bool this.isCheckList}) : super(key: key);
-  
+  TaskScreen({
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<TaskScreen> createState() => _TaskScreenState();
 }
 
 class _TaskScreenState extends State<TaskScreen> {
+  late bool isCheckList;
+  late bool showCompleted;
+  bool loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    getChecknCompl();
+  }
+
+  Future<void> getChecknCompl() async {
+    if (user != null) {
+      isCheckList = await DatabaseServices().getisCheckList();
+      showCompleted = await DatabaseServices().getShowCompl();
+    }
+    setState(() {
+      loading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return Scaffold(
+    return loading? Loading() : Scaffold(
         extendBodyBehindAppBar: true,
         appBar: AppBar(
           backgroundColor: Colors.transparent,
@@ -30,18 +52,18 @@ class _TaskScreenState extends State<TaskScreen> {
                 child: IconButton(
                     onPressed: () {
                       setState(() {
-                        widget.isCheckList = !widget.isCheckList;
+                        isCheckList = !isCheckList;
                       });
                     },
                     icon: Icon(
-                      widget.isCheckList
+                      isCheckList
                           ? Icons.calendar_month_outlined
                           : Icons.checklist,
                       color: Colors.white,
                     ))),
           ],
         ),
-        body: widget.isCheckList
+        body: isCheckList
             ? ListBodyPage()
             : CalendarBody() // put the arguments here
 

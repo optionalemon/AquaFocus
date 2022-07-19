@@ -25,7 +25,7 @@ class _ListAllState extends State<ListAll> {
         isEqualTo: user!.uid,
       ),
     ]);
-    widget.eventList.sort(((a, b) => a.date.compareTo(b.date)));
+    widget.eventList.sort(taskCompare);
     setState(() {});
   }
 
@@ -40,7 +40,6 @@ class _ListAllState extends State<ListAll> {
 
   @override
   Widget build(BuildContext context) {
-    DateTime now = DateTime.now();
     Size size = MediaQuery.of(context).size;
     return Scaffold(
         extendBodyBehindAppBar: true,
@@ -171,29 +170,23 @@ class _ListAllState extends State<ListAll> {
                                                   Text(
                                                     DateFormat('dd/MM/yy')
                                                         .format(event.date),
-                                                    style: (event.date.isAfter(
-                                                            DateTime(
-                                                                now.year,
-                                                                now.month,
-                                                                now.day)))
+                                                    style: expiredDate(event)
                                                         ? TextStyle(
-                                                            color: Colors.white)
+                                                            color: Colors.red)
                                                         : TextStyle(
-                                                            color:
-                                                                Color.fromARGB(
-                                                                    255,
-                                                                    228,
-                                                                    72,
-                                                                    61)),
+                                                            color:Colors.white),
                                                   ),
                                                   event.hasTime
                                                       ? Text(
                                                           DateFormat('HH : mm ')
                                                               .format(
                                                                   event.time!),
-                                                          style: TextStyle(
-                                                              color:
-                                                                  Colors.white),
+                                                          style: expiredTime(event)
+                                                              ? TextStyle(
+                                                                  color: Colors
+                                                                      .red)
+                                                              : TextStyle(
+                                                                  color:Colors.white),
                                                         )
                                                       : Container(),
                                                   repeatText(event.repeat) != ""
