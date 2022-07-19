@@ -1,9 +1,17 @@
+import 'package:AquaFocus/model/app_task.dart';
 import 'package:AquaFocus/model/tag_colors.dart';
 import 'package:AquaFocus/model/tags.dart';
 import 'package:AquaFocus/screens/Tasks/add_task.dart';
+import 'package:AquaFocus/screens/Tasks/task_details.dart';
+import 'package:AquaFocus/screens/Tasks/task_utils.dart';
+import 'package:AquaFocus/screens/signin_screen.dart';
 import 'package:AquaFocus/services/database_services.dart';
+import 'package:AquaFocus/services/task_firestore_service.dart';
 import 'package:AquaFocus/widgets/loading.dart';
+import 'package:firebase_helpers/firebase_helpers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:intl/intl.dart';
 
 class ListTag extends StatefulWidget {
   const ListTag({Key? key}) : super(key: key);
@@ -15,20 +23,65 @@ class ListTag extends StatefulWidget {
 class _ListTagState extends State<ListTag> {
   List tags = [];
   int selectedIndex = 0;
+  late List<AppTask> selectedEvents;
   bool loading = true;
+  late List<AppTask> eventList;
+  bool addTaskMode = true;
+  List<AppTask> eventTagList = [];
 
   @override
   void initState() {
     super.initState();
-    _getTags();
+    _getTagsEvents();
   }
 
-  _getTags() async {
+  _getTagsEvents() async {
     tags = await DatabaseServices().getUserTags();
-    tags.insert(0, Tags(title: "All", color: "indigo"));
+    tags.insert(0, Tags(title: "All", color: "default"));
+    eventList = await taskDBS.getQueryList(args: [
+      QueryArgsV2(
+        "userId",
+        isEqualTo: user!.uid,
+      ),
+    ]);
+    for (AppTask event in eventList) {
+      if (event.tag != null) {
+        eventTagList.add(event);
+      }
+    }
+    eventTagList.sort(((a, b) => (a.tag ?? "").compareTo(b.tag ?? "")));
+    selectedEvents = eventTagList;
     setState(() {
       loading = false;
     });
+  }
+
+  _updateTask() async {
+    eventTagList = [];
+    eventList = await taskDBS.getQueryList(args: [
+      QueryArgsV2(
+        "userId",
+        isEqualTo: user!.uid,
+      ),
+    ]);
+    for (AppTask event in eventList) {
+      if (event.tag != null) {
+        eventTagList.add(event);
+      }
+    }
+    eventTagList.sort(((a, b) => (a.tag ?? "").compareTo(b.tag ?? "")));
+    selectedEvents = getMatchyEvent(tags[selectedIndex], eventTagList);
+    tags = await DatabaseServices().getUserTags();
+    tags.insert(0, Tags(title: "All", color: "default"));
+    setState(() {});
+  }
+
+  _onDelete(AppTask event) async {
+    selectedEvents.remove(event);
+    await taskDBS.removeItem(event.id);
+    _updateTask();
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text('Task ${event.title} deleted')));
   }
 
   _getTagColor(Tags tag) {
@@ -39,22 +92,42 @@ class _ListTagState extends State<ListTag> {
     }
   }
 
+  List<AppTask> getMatchyEvent(Tags tag, eventTagList) {
+    List<AppTask> matchyEvents = [];
+    if (tag.title == 'All') {
+      return eventTagList;
+    }
+    for (AppTask task in eventTagList) {
+      if (task.tag == tag.title) {
+        matchyEvents.add(task);
+      }
+    }
+    return matchyEvents;
+  }
+
   _buildTags(Tags tag, int index) {
     return Row(
       children: [
-        ChoiceChip(
-          backgroundColor: Colors.white,
-          selectedColor: _getTagColor(tag),
-          label: Text(
-            tag.title,
-            style: selectedIndex == index ? TextStyle(color: Colors.black) : TextStyle(color: _getTagColor(tag)),
+        LongPressDraggable(
+          feedback: Opacity(opacity: 0.8),
+          child: ChoiceChip(
+            backgroundColor: Colors.white,
+            selectedColor: _getTagColor(tag),
+            label: Text(
+              tag.title,
+              style: selectedIndex == index
+                  ? TextStyle(color: Colors.white)
+                  : TextStyle(color: _getTagColor(tag)),
+            ),
+            selected: selectedIndex == index,
+            onSelected: (bool selected) {
+              setState(() {
+                selectedIndex = index;
+                selectedEvents =
+                    getMatchyEvent(tags[selectedIndex], eventTagList);
+              });
+            },
           ),
-          selected: selectedIndex == index,
-          onSelected: (bool selected) {
-            setState(() {
-              selectedIndex = index;
-            });
-          },
         ),
         SizedBox(
           width: MediaQuery.of(context).size.width * 0.02,
@@ -65,71 +138,265 @@ class _ListTagState extends State<ListTag> {
 
   @override
   Widget build(BuildContext context) {
+    DateTime now = DateTime.now();
     Size size = MediaQuery.of(context).size;
-    return loading? const Loading() : Scaffold(
-        extendBodyBehindAppBar: true,
-        resizeToAvoidBottomInset: false,
-        appBar: AppBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            title: SizedBox(
-              height: size.height * 0.1,
-              child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: tags.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    Tags tag = tags[index];
-                    return _buildTags(tag, index);
-                  }),
-            )),
-        body: Stack(children: [
-          Container(
-            constraints: const BoxConstraints.expand(),
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/images/mainscreen.png'),
-                fit: BoxFit.cover,
+    return loading
+        ? const Loading()
+        : Scaffold(
+            extendBodyBehindAppBar: true,
+            resizeToAvoidBottomInset: false,
+            appBar: AppBar(
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+                title: SizedBox(
+                  height: size.height * 0.1,
+                  child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: tags.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        Tags tag = tags[index];
+                        return _buildTags(tag, index);
+                      }),
+                )),
+            body: Stack(children: [
+              Container(
+                constraints: const BoxConstraints.expand(),
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('assets/images/mainscreen.png'),
+                    fit: BoxFit.cover,
+                  ),
+                ),
               ),
-            ),
-          ),
-          SafeArea(
-            child: Container(
-              margin: EdgeInsets.fromLTRB(10, 0, 10, 10),
-              width: double.infinity,
-              decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  gradient: LinearGradient(colors: [
-                    Colors.indigo.withOpacity(0.7),
-                    Colors.white.withOpacity(0.7)
-                  ]),
-                  boxShadow: const <BoxShadow>[
-                    BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 5,
-                        offset: Offset(0.0, 5))
-                  ]),
-              child: Column(),
-            ),
-          ),
-          Padding(
-              padding:
-                  EdgeInsets.all(MediaQuery.of(context).size.height * 0.05),
-              child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: FloatingActionButton(
-                      child: Icon(Icons.add, color: Colors.white),
-                      onPressed: () async {
-                        await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => AddEventPage(
-                                      selectedDate: DateTime.now(),
-                                      updateTaskDetails: () {
-                                        //TODO
-                                      },
-                                    )));
-                      })))
-        ]));
+              SafeArea(
+                child: Container(
+                  margin: EdgeInsets.fromLTRB(10, 0, 10, 10),
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      gradient: LinearGradient(colors: [
+                        Colors.indigo.withOpacity(0.7),
+                        Colors.white.withOpacity(0.7)
+                      ]),
+                      boxShadow: const <BoxShadow>[
+                        BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 5,
+                            offset: Offset(0.0, 5))
+                      ]),
+                  child: Scrollbar(
+                    child: ValueListenableBuilder<List<AppTask>>(
+                        valueListenable: ValueNotifier(selectedEvents),
+                        builder: (context, value, _) {
+                          return selectedEvents.isEmpty
+                              ? Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Wrap(
+                                      runAlignment: WrapAlignment.center,
+                                      crossAxisAlignment:
+                                          WrapCrossAlignment.center,
+                                      alignment: WrapAlignment.center,
+                                      children: const [
+                                        Text("No tasks",
+                                            style: TextStyle(
+                                                color: Color.fromARGB(
+                                                    255, 59, 59, 59),
+                                                fontSize: 20)),
+                                      ],
+                                    ),
+                                  ],
+                                )
+                              : ListView.builder(
+                                  itemCount: value.length,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    AppTask event = value[index];
+                                    return Slidable(
+                                      key: Key(event.id),
+                                      endActionPane: ActionPane(
+                                        motion: const BehindMotion(),
+                                        dismissible: DismissiblePane(
+                                            onDismissed: () async {
+                                          await _onDelete(event);
+                                        }),
+                                        children: [
+                                          SlidableAction(
+                                            onPressed: (context) async {
+                                              await Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          AddEventPage(
+                                                            task: event,
+                                                            selectedDate:
+                                                                event.date,
+                                                            updateTaskDetails:
+                                                                _updateTask,
+                                                          )));
+                                            },
+                                            backgroundColor: Color(0xFF21B7CA),
+                                            foregroundColor: Colors.white,
+                                            icon: Icons.edit,
+                                            label: 'Edit',
+                                          ),
+                                          SlidableAction(
+                                            onPressed: (context) async {
+                                              await _onDelete(event);
+                                            },
+                                            backgroundColor:
+                                                const Color(0xFFFE4A49),
+                                            foregroundColor: Colors.white,
+                                            icon: Icons.delete,
+                                            label: 'Delete',
+                                          ),
+                                        ],
+                                      ),
+                                      child: Wrap(
+                                        children: [
+                                          ListTile(
+                                              title: Text(
+                                                event.title,
+                                                style: TextStyle(
+                                                    color: Colors.white),
+                                              ),
+                                              onTap: () async {
+                                                await Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            TaskDetails(
+                                                                event)));
+                                                _updateTask();
+                                              },
+                                              subtitle: Wrap(
+                                                children: [
+                                                  Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.start,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Text(
+                                                        DateFormat('dd/MM/yy')
+                                                            .format(event.date),
+                                                        style: (event.date
+                                                                .isAfter(DateTime(
+                                                                    now.year,
+                                                                    now.month,
+                                                                    now.day)))
+                                                            ? TextStyle(
+                                                                color: Colors
+                                                                    .white)
+                                                            : TextStyle(
+                                                                color: Color
+                                                                    .fromARGB(
+                                                                        255,
+                                                                        228,
+                                                                        72,
+                                                                        61)),
+                                                      ),
+                                                      event.hasTime
+                                                          ? Text(
+                                                              DateFormat(
+                                                                      'HH : mm ')
+                                                                  .format(event
+                                                                      .time!),
+                                                              style: TextStyle(
+                                                                  color: Colors
+                                                                      .white),
+                                                            )
+                                                          : Container(),
+                                                      repeatText(event
+                                                                  .repeat) !=
+                                                              ""
+                                                          ? Text(
+                                                              '${repeatText(event.repeat)} ',
+                                                              style: TextStyle(
+                                                                  color: Colors
+                                                                      .white),
+                                                            )
+                                                          : Container(),
+                                                      event.hasTime
+                                                          ? (reminderText(event
+                                                                      .reminder!) !=
+                                                                  ""
+                                                              ? Text(
+                                                                  '${reminderText(event.reminder!)} ',
+                                                                  style: TextStyle(
+                                                                      color: Colors
+                                                                          .white),
+                                                                )
+                                                              : Container())
+                                                          : Container(),
+                                                      Text(
+                                                        '#${event.tag}',
+                                                        style: TextStyle(
+                                                          color: Colors.white,
+                                                        ),
+                                                      )
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                              leading: IconButton(
+                                                icon: Icon(
+                                                  event.isCompleted
+                                                      ? Icons.check_circle
+                                                      : Icons.circle_outlined,
+                                                  color: Colors.white,
+                                                ),
+                                                onPressed: () async {
+                                                  setState(() {
+                                                    selectedEvents[index]
+                                                            .isCompleted =
+                                                        !event.isCompleted;
+                                                  });
+                                                  await taskDBS
+                                                      .updateData(event.id, {
+                                                    'isCompleted':
+                                                        event.isCompleted,
+                                                  });
+                                                },
+                                              )),
+                                          Divider(
+                                            color: Colors.white,
+                                            indent: 3,
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  });
+                        }),
+                  ),
+                ),
+              ),
+              Padding(
+                  padding:
+                      EdgeInsets.all(MediaQuery.of(context).size.height * 0.05),
+                  child: Align(
+                      alignment: Alignment.bottomCenter,
+                      child: 
+                      addTaskMode 
+                      ? FloatingActionButton(
+                          child: Icon(Icons.add, color: Colors.white),
+                          onPressed: () async {
+                            await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => AddEventPage(
+                                          selectedDate: DateTime.now(),
+                                          updateTaskDetails: _updateTask,
+                                        )));
+                          })
+                      : FloatingActionButton(
+                        backgroundColor: Colors.red,
+                        child: Icon(Icons.delete, color: Colors.white),
+                        onPressed: () {}),
+                          ))
+            ]));
   }
 }
