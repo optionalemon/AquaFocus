@@ -11,6 +11,7 @@ class DatabaseServices {
   late CollectionReference tagsCollection;
   late DocumentReference userDoc;
   late CollectionReference focusTimeCollection;
+  late CollectionReference taskCollection;
 
   DatabaseServices({FirebaseFirestore? instanceInjection}) {
     FirebaseFirestore instance;
@@ -27,6 +28,8 @@ class DatabaseServices {
     userCollection = instance.collection('users');
     userDoc = instance.collection('users').doc(uid);
     tagsCollection = instance.collection('users').doc(uid).collection('Tags');
+    taskCollection =
+        instance.collection('users').doc(uid).collection('tasks');
     focusTimeCollection =
         instance.collection('users').doc(uid).collection('FocusTime');
   }

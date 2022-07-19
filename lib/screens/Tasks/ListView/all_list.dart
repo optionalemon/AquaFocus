@@ -1,5 +1,6 @@
 import 'package:AquaFocus/screens/Tasks/add_task.dart';
 import 'package:AquaFocus/screens/Tasks/task_details.dart';
+import 'package:AquaFocus/screens/Tasks/task_utils.dart';
 import 'package:AquaFocus/screens/signin_screen.dart';
 import 'package:AquaFocus/services/task_firestore_service.dart';
 import 'package:firebase_helpers/firebase_helpers.dart';
@@ -26,34 +27,6 @@ class _ListAllState extends State<ListAll> {
     ]);
     widget.eventList.sort(((a, b) => a.date.compareTo(b.date)));
     setState(() {});
-  }
-
-  String repeatText(String repeats) {
-    if (repeats == 'daily') {
-      return "Repeats Daily";
-    } else if (repeats == 'weekdays') {
-      return "Repeat on weekdays";
-    } else if (repeats == 'weekends') {
-      return "Repeat on weekends";
-    } else if (repeats == 'weekly') {
-      return "Repeat weekly";
-    } else if (repeats == 'monthly') {
-      return "Repeat monthly";
-    }
-    return "";
-  }
-
-  String reminderText(String reminders) {
-    if (reminders == 'ontime') {
-      return "Reminder send on time";
-    } else if (reminders == '5min') {
-      return "Reminder send 5 minutes before the task";
-    } else if (reminders == '10min') {
-      return "Reminder send 10 minutes before the task";
-    } else if (reminders == '15min') {
-      return "Reminder send 15 minutes before the task";
-    }
-    return "";
   }
 
   _onDelete(AppTask event) async {
@@ -194,7 +167,7 @@ class _ListAllState extends State<ListAll> {
                                                       CrossAxisAlignment.start,
                                                   children: [
                                                     Text(
-                                                      DateFormat('yMd')
+                                                      DateFormat('dd/MM/yy')
                                                           .format(event.date),
                                                       style: (event.date
                                                               .isAfter(DateTime(
