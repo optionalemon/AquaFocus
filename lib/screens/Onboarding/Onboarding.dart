@@ -1,15 +1,14 @@
-import 'package:AquaFocus/screens/home_screen.dart';
 import 'package:AquaFocus/screens/signin_screen.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 
 final List<String> imgList = [
-  'assets/images/Onboarding 1.png',
-  'assets/images/Onboarding 2.png',
-  'assets/images/Onboarding 3.png',
-  'assets/images/Onboarding 4.png',
-  'assets/images/Onboarding 5.png',
-  'assets/images/Onboarding 6.png',
+  'assets/images/Onboarding1.png',
+  'assets/images/Onboarding2.png',
+  'assets/images/Onboarding3.png',
+  'assets/images/Onboarding4.png',
+  'assets/images/Onboarding5.png',
+  'assets/images/Onboarding6.png',
 ];
 
 class Onboarding extends StatelessWidget {

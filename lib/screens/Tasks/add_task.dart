@@ -402,6 +402,8 @@ class _AddEventPageState extends State<AddEventPage> {
                         data['userId'] = user!.uid;
                         data['id'] = Uuid().v1();
                         data['isCompleted'] = false;
+                        data['streak'] = 0;
+                          data['prevCompletionTime'] = 0;
                         await taskDBS.create(data);
                         widget.updateTaskDetails();
                       } else {

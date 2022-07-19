@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'package:AquaFocus/model/app_task.dart';
 import 'package:AquaFocus/screens/FocusTimer/CountDown/countdown_helper.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:AquaFocus/model/app_user.dart';
@@ -54,6 +55,10 @@ class DatabaseServices {
     return tags;
   }
 
+  Future<void> removeTag(Tags tag) async {
+    tagsCollection.doc(tag.title).delete();
+  }
+
   Future<double> getPercentageForTag(Tags tag) async {
     QuerySnapshot tasks = await userDoc.collection('tasks').where('tag', isEqualTo: tag.title).get();
     //print(tasks.size);
@@ -86,8 +91,13 @@ class DatabaseServices {
   }
 
   Future<void> addMoney(int amt) async {
-    userDoc.update({"money": FieldValue.increment(amt)});
+    await userDoc.update({"money": FieldValue.increment(amt)});
   }
+
+  Future<void> removeTagTask(AppTask task) async {
+    await taskCollection.doc(task.id).update({"tag" : null});
+  }
+
 
   Future<bool> hasEnoughMoney(int price) async {
     int userMoney = await getMoney();
