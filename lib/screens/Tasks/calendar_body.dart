@@ -69,6 +69,7 @@ class _CalendarBodyState extends State<CalendarBody> {
         isEqualTo: user!.uid,
       ),
     ]);
+    eventList.sort(taskCompare);
 
     if (!mounted) return;
     setState(() {
@@ -361,60 +362,67 @@ class _CalendarBodyState extends State<CalendarBody> {
                                                 //_selectedDay = null;
                                                 //_selectedEvents.value = [];
                                               },
-                                              subtitle: !hasSubtitle(event) ? null : Wrap(
-                                                children: [
-                                                  Column(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment.start,
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      event.hasTime
-                                                          ? Text(
-                                                              DateFormat(
-                                                                      'HH : mm ')
-                                                                  .format(event
-                                                                      .time!),
-                                                              style: TextStyle(
-                                                                  color: Colors
-                                                                      .white),
-                                                            )
-                                                          : Container(),
-                                                      repeatText(event
-                                                                  .repeat) !=
-                                                              ""
-                                                          ? Text(
-                                                              '${repeatText(event.repeat)} ',
-                                                              style: TextStyle(
-                                                                  color: Colors
-                                                                      .white),
-                                                            )
-                                                          : Container(),
-                                                      event.hasTime
-                                                          ? (reminderText(event
-                                                                      .reminder!) !=
-                                                                  ""
-                                                              ? Text(
-                                                                  '${reminderText(event.reminder!)} ',
-                                                                  style: TextStyle(
-                                                                      color: Colors
-                                                                          .white),
-                                                                )
-                                                              : Container())
-                                                          : Container(),
-                                                      event.tag != null
-                                                          ? Text(
-                                                              '#${event.tag}',
-                                                              style: TextStyle(
-                                                                  color: Colors
-                                                                      .white),
-                                                            )
-                                                          : Container(),
-                                                    ],
-                                                  ),
-                                                ],
-                                              ),
+                                              subtitle: !hasSubtitle(event)
+                                                  ? null
+                                                  : Wrap(
+                                                      children: [
+                                                        Column(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .start,
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            event.hasTime
+                                                                ? Text(
+                                                                    DateFormat(
+                                                                            'HH : mm ')
+                                                                        .format(
+                                                                            event.time!),
+                                                                    style: expiredTime(event)
+                                                                    ? TextStyle(
+                                                                        color: Colors
+                                                                            .red)
+                                                                            : TextStyle(
+                                                                        color: Colors
+                                                                            .white),
+                                                                  )
+                                                                : Container(),
+                                                            repeatText(event
+                                                                        .repeat) !=
+                                                                    ""
+                                                                ? Text(
+                                                                    '${repeatText(event.repeat)} ',
+                                                                    style: TextStyle(
+                                                                        color: Colors
+                                                                            .white),
+                                                                  )
+                                                                : Container(),
+                                                            event.hasTime
+                                                                ? (reminderText(
+                                                                            event.reminder!) !=
+                                                                        ""
+                                                                    ? Text(
+                                                                        '${reminderText(event.reminder!)} ',
+                                                                        style: TextStyle(
+                                                                            color:
+                                                                                Colors.white),
+                                                                      )
+                                                                    : Container())
+                                                                : Container(),
+                                                            event.tag != null
+                                                                ? Text(
+                                                                    '#${event.tag}',
+                                                                    style: TextStyle(
+                                                                        color: Colors
+                                                                            .white),
+                                                                  )
+                                                                : Container(),
+                                                          ],
+                                                        ),
+                                                      ],
+                                                    ),
                                               leading: IconButton(
                                                 icon: Icon(
                                                   event.isCompleted
@@ -425,12 +433,12 @@ class _CalendarBodyState extends State<CalendarBody> {
                                                 onPressed: () async {
                                                   if (!event.isCompleted) {
                                                     event.isCompleted =
-                                                      !event.isCompleted;
-                                                  await taskDBS
-                                                      .updateData(event.id, {
-                                                    'isCompleted':
-                                                        event.isCompleted,
-                                                  });
+                                                        !event.isCompleted;
+                                                    await taskDBS
+                                                        .updateData(event.id, {
+                                                      'isCompleted':
+                                                          event.isCompleted,
+                                                    });
                                                   }
                                                 },
                                               )),

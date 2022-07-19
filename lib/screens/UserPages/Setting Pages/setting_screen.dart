@@ -11,10 +11,9 @@ import 'package:flutter/material.dart';
 class SettingScreen extends StatefulWidget {
   User? user;
   final Function _updateHomeName;
-  final Function _updateHomeCheckList;
-  bool isCheckList;
   SettingScreen(
-      this._updateHomeName, this._updateHomeCheckList, this.isCheckList);
+    this._updateHomeName,
+  );
 
   @override
   State<SettingScreen> createState() => _SettingScreenState();
@@ -25,6 +24,7 @@ class _SettingScreenState extends State<SettingScreen> {
   bool loading = true;
   late bool allowNotif;
   late bool showCompleted;
+  late bool isCheckList;
 
   updateSetting(String newName) {
     setState(() {
@@ -76,6 +76,7 @@ class _SettingScreenState extends State<SettingScreen> {
       name = await DatabaseServices().getUserName(user.uid);
       allowNotif = await DatabaseServices().getAllowNotif();
       showCompleted = await DatabaseServices().getShowCompl();
+      isCheckList = await DatabaseServices().getisCheckList();
     }
     setState(() {
       loading = false;
@@ -300,7 +301,7 @@ class _SettingScreenState extends State<SettingScreen> {
                               thickness: 2,
                             ),
                             SwitchListTile(
-                              value: widget.isCheckList,
+                              value: isCheckList,
                               secondary: Icon(
                                 Icons.all_inbox,
                                 size: size.height * 0.025,
@@ -314,11 +315,10 @@ class _SettingScreenState extends State<SettingScreen> {
                               ),
                               onChanged: (bool value) async {
                                 setState(() {
-                                  widget.isCheckList = !widget.isCheckList;
+                                  isCheckList = !isCheckList;
                                 });
-                                widget._updateHomeCheckList(widget.isCheckList);
                                 DatabaseServices()
-                                    .updateCheckList(widget.isCheckList);
+                                    .updateCheckList(isCheckList);
                               },
                             ),
                             SwitchListTile(
@@ -555,8 +555,8 @@ showClearRecordAlertDialog(BuildContext context) {
   Widget continueButton = TextButton(
     child: const Text("Clear Anyway"),
     onPressed: () {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Records cleared successfully')));
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Records cleared successfully')));
       Navigator.of(context).pop();
       FirebaseServices().clearRecord(context);
     },

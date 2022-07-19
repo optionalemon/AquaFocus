@@ -53,6 +53,7 @@ class _ListTodayState extends State<ListToday> {
       hashCode: getHashCode,
     )..addAll(groupedEvents);
     widget.selectedEvents.value = (kEvents[DateTime.now()] ?? []);
+    widget.selectedEvents.value.sort(taskCompare);
   }
 
   @override
@@ -190,14 +191,16 @@ class _ListTodayState extends State<ListToday> {
                                                       children: [
                                                         event.hasTime
                                                             ? Text(
-                                                                DateFormat(
-                                                                        'HH : mm ')
-                                                                    .format(event
-                                                                        .time!),
-                                                                style: TextStyle(
-                                                                    color: Colors
-                                                                        .white),
-                                                              )
+                                                          DateFormat('HH : mm ')
+                                                              .format(
+                                                                  event.time!),
+                                                          style: expiredTime(event)
+                                                              ? TextStyle(
+                                                                  color: Colors
+                                                                      .red)
+                                                              : TextStyle(
+                                                                  color:Colors.white),
+                                                        )
                                                             : Container(),
                                                         repeatText(event
                                                                     .repeat) !=
@@ -245,10 +248,10 @@ class _ListTodayState extends State<ListToday> {
                                               if (!event.isCompleted) {
                                                 setState(() {
                                                   widget
-                                                    .selectedEvents
-                                                    .value[index]
-                                                    .isCompleted =
-                                                !event.isCompleted;
+                                                          .selectedEvents
+                                                          .value[index]
+                                                          .isCompleted =
+                                                      !event.isCompleted;
                                                 });
                                                 await taskDBS
                                                     .updateData(event.id, {

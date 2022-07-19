@@ -49,7 +49,7 @@ class _ListTagState extends State<ListTag> {
         eventTagList.add(event);
       }
     }
-    eventTagList.sort(((a, b) => (a.tag ?? "").compareTo(b.tag ?? "")));
+    eventTagList.sort(taskCompare);
     selectedEvents = eventTagList;
     setState(() {
       loading = false;
@@ -69,7 +69,7 @@ class _ListTagState extends State<ListTag> {
         eventTagList.add(event);
       }
     }
-    eventTagList.sort(((a, b) => (a.tag ?? "").compareTo(b.tag ?? "")));
+    eventTagList.sort(taskCompare);
     selectedEvents = getMatchyEvent(currTag, eventTagList);
     tags = await DatabaseServices().getUserTags();
     tags.insert(0, Tags(title: "All", color: "default"));
@@ -323,21 +323,12 @@ class _ListTagState extends State<ListTag> {
                                                       Text(
                                                         DateFormat('dd/MM/yy')
                                                             .format(event.date),
-                                                        style: (event.date
-                                                                .isAfter(DateTime(
-                                                                    now.year,
-                                                                    now.month,
-                                                                    now.day)))
+                                                        style: expiredDate(event)
                                                             ? TextStyle(
                                                                 color: Colors
-                                                                    .white)
+                                                                    .red)
                                                             : TextStyle(
-                                                                color: Color
-                                                                    .fromARGB(
-                                                                        255,
-                                                                        228,
-                                                                        72,
-                                                                        61)),
+                                                                color: Colors.white),
                                                       ),
                                                       event.hasTime
                                                           ? Text(
@@ -345,9 +336,13 @@ class _ListTagState extends State<ListTag> {
                                                                       'HH : mm ')
                                                                   .format(event
                                                                       .time!),
-                                                              style: TextStyle(
-                                                                  color: Colors
-                                                                      .white),
+                                                              style: expiredTime(event)
+                                                                  ? TextStyle(
+                                                                      color: Colors
+                                                                          .red)
+                                                                  : TextStyle(
+                                                                      color: Colors
+                                                                          .white),
                                                             )
                                                           : Container(),
                                                       repeatText(event
