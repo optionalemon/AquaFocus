@@ -4,19 +4,16 @@ import 'package:AquaFocus/widgets/loading.dart';
 import 'package:AquaFocus/screens/Tasks/add_task.dart';
 import 'package:AquaFocus/screens/Tasks/task_details.dart';
 import 'package:AquaFocus/screens/Tasks/task_utils.dart';
-import 'package:AquaFocus/screens/signin_screen.dart';
 import 'package:AquaFocus/services/task_firestore_service.dart';
-import 'package:firebase_helpers/firebase_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:uuid/uuid.dart';
-
 import '../../model/app_task.dart';
 
 class CalendarBody extends StatefulWidget {
-  const CalendarBody({Key? key}) : super(key: key);
+  const CalendarBody({Key? key, required this.showCompleted}) : super(key: key);
+  final bool showCompleted;
 
   @override
   State<CalendarBody> createState() => _CalendarBodyState();
@@ -34,7 +31,6 @@ class _CalendarBodyState extends State<CalendarBody> {
       LinkedHashMap<DateTime, List<AppTask>>();
   List<AppTask> eventList = [];
   bool loading = true;
-  late bool showCompleted;
 
   @override
   void initState() {
@@ -49,28 +45,20 @@ class _CalendarBodyState extends State<CalendarBody> {
     super.dispose();
   }
 
-  groupEvents(List<AppTask>? events) {
-    Map<DateTime, List<AppTask>> groupedEvents = {};
-    if (events != null) {
-      for (var event in events) {
-        DateTime date =
-            DateTime.utc(event.date.year, event.date.month, event.date.day, 12);
-        if (groupedEvents[date] == null) groupedEvents[date] = [];
-        groupedEvents[date]!.add(event);
-      }
-    }
-    return groupedEvents;
+  ifEventCompleted(AppTask event) async {
+    if (!event.isCompleted) {
+      event.isCompleted =
+          !event.isCompleted;
+      await taskDBS
+          .updateData(event.id, {
+        'isCompleted':
+            event.isCompleted,
+      });
+                                                  }
   }
 
   _getEvents() async {
-    eventList = await taskDBS.getQueryList(args: [
-      QueryArgsV2(
-        "userId",
-        isEqualTo: user!.uid,
-      ),
-    ]);
-    eventList.sort(taskCompare);
-
+    eventList = await getEventList(widget.showCompleted);
     if (!mounted) return;
     setState(() {
       loading = false;
@@ -88,9 +76,7 @@ class _CalendarBodyState extends State<CalendarBody> {
   }
 
   List<AppTask> _getEventsForRange(DateTime start, DateTime end) {
-    // Implementation example
     final days = daysInRange(start, end);
-
     return [
       for (final d in days) ..._getEventsForDay(d),
     ];
@@ -143,37 +129,8 @@ class _CalendarBodyState extends State<CalendarBody> {
         .showSnackBar(SnackBar(content: Text('Task ${event.title} deleted')));
   }
 
-  String repeatText(String repeats) {
-    if (repeats == 'daily') {
-      return "Repeats Daily";
-    } else if (repeats == 'weekdays') {
-      return "Repeat on weekdays";
-    } else if (repeats == 'weekends') {
-      return "Repeat on weekends";
-    } else if (repeats == 'weekly') {
-      return "Repeat weekly";
-    } else if (repeats == 'monthly') {
-      return "Repeat monthly";
-    }
-    return "";
-  }
-
-  String reminderText(String reminders) {
-    if (reminders == 'ontime') {
-      return "Reminder send on time";
-    } else if (reminders == '5min') {
-      return "Reminder send 5 minutes before the task";
-    } else if (reminders == '10min') {
-      return "Reminder send 10 minutes before the task";
-    } else if (reminders == '15min') {
-      return "Reminder send 15 minutes before the task";
-    }
-    return "";
-  }
-
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
     _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay));
 
     return loading
@@ -244,12 +201,12 @@ class _CalendarBodyState extends State<CalendarBody> {
                                 borderRadius:
                                     const BorderRadius.all(Radius.circular(15)),
                               ),
-                              rightChevronIcon: Icon(Icons.chevron_right,
+                              rightChevronIcon: const Icon(Icons.chevron_right,
                                   color: Colors.white),
-                              leftChevronIcon:
-                                  Icon(Icons.chevron_left, color: Colors.white),
+                              leftChevronIcon: const Icon(Icons.chevron_left,
+                                  color: Colors.white),
                             ),
-                            calendarStyle: CalendarStyle(
+                            calendarStyle: const CalendarStyle(
                               weekendTextStyle: TextStyle(color: Colors.white),
                               outsideTextStyle: TextStyle(
                                   color: Color.fromARGB(255, 196, 196, 196)),
@@ -257,7 +214,7 @@ class _CalendarBodyState extends State<CalendarBody> {
                               markerDecoration: BoxDecoration(
                                   shape: BoxShape.circle, color: Colors.indigo),
                             ),
-                            daysOfWeekStyle: DaysOfWeekStyle(
+                            daysOfWeekStyle: const DaysOfWeekStyle(
                               weekendStyle: TextStyle(color: Colors.cyanAccent),
                               weekdayStyle: TextStyle(color: Colors.cyanAccent),
                             ),
@@ -272,7 +229,8 @@ class _CalendarBodyState extends State<CalendarBody> {
                                               .withOpacity(0.7)),
                                       child: Text(
                                         date.day.toString(),
-                                        style: TextStyle(color: Colors.white),
+                                        style: const TextStyle(
+                                            color: Colors.white),
                                       )),
                               todayBuilder: (context, date, events) =>
                                   Container(
@@ -284,7 +242,8 @@ class _CalendarBodyState extends State<CalendarBody> {
                                               .withOpacity(0.4)),
                                       child: Text(
                                         date.day.toString(),
-                                        style: TextStyle(color: Colors.white),
+                                        style: const TextStyle(
+                                            color: Colors.white),
                                       )),
                             )),
                         Expanded(
@@ -325,8 +284,6 @@ class _CalendarBodyState extends State<CalendarBody> {
                                                                   });
                                                                 },
                                                               )));
-                                                  //_selectedDay = null;
-                                                  //_selectedEvents.value = [];
                                                 },
                                                 backgroundColor:
                                                     Color(0xFF21B7CA),
@@ -347,11 +304,7 @@ class _CalendarBodyState extends State<CalendarBody> {
                                             ],
                                           ),
                                           child: ListTile(
-                                              title: Text(
-                                                event.title,
-                                                style: TextStyle(
-                                                    color: Colors.white),
-                                              ),
+                                              title: eventVar(event.title,event),
                                               onTap: () async {
                                                 await Navigator.push(
                                                     context,
@@ -359,87 +312,13 @@ class _CalendarBodyState extends State<CalendarBody> {
                                                         builder: (context) =>
                                                             TaskDetails(
                                                                 event)));
-                                                //_selectedDay = null;
-                                                //_selectedEvents.value = [];
                                               },
-                                              subtitle: !hasSubtitle(event)
-                                                  ? null
-                                                  : Wrap(
-                                                      children: [
-                                                        Column(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .start,
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .start,
-                                                          children: [
-                                                            event.hasTime
-                                                                ? Text(
-                                                                    DateFormat(
-                                                                            'HH : mm ')
-                                                                        .format(
-                                                                            event.time!),
-                                                                    style: expiredTime(event)
-                                                                    ? TextStyle(
-                                                                        color: Colors
-                                                                            .red)
-                                                                            : TextStyle(
-                                                                        color: Colors
-                                                                            .white),
-                                                                  )
-                                                                : Container(),
-                                                            repeatText(event
-                                                                        .repeat) !=
-                                                                    ""
-                                                                ? Text(
-                                                                    '${repeatText(event.repeat)} ',
-                                                                    style: TextStyle(
-                                                                        color: Colors
-                                                                            .white),
-                                                                  )
-                                                                : Container(),
-                                                            event.hasTime
-                                                                ? (reminderText(
-                                                                            event.reminder!) !=
-                                                                        ""
-                                                                    ? Text(
-                                                                        '${reminderText(event.reminder!)} ',
-                                                                        style: TextStyle(
-                                                                            color:
-                                                                                Colors.white),
-                                                                      )
-                                                                    : Container())
-                                                                : Container(),
-                                                            event.tag != null
-                                                                ? Text(
-                                                                    '#${event.tag}',
-                                                                    style: TextStyle(
-                                                                        color: Colors
-                                                                            .white),
-                                                                  )
-                                                                : Container(),
-                                                          ],
-                                                        ),
-                                                      ],
-                                                    ),
+                                              subtitle: todayNCalendar(event),
                                               leading: IconButton(
-                                                icon: Icon(
-                                                  event.isCompleted
-                                                      ? Icons.check_circle
-                                                      : Icons.circle_outlined,
-                                                  color: Colors.white,
-                                                ),
+                                                icon: complStatusIcon(event),
                                                 onPressed: () async {
-                                                  if (!event.isCompleted) {
-                                                    event.isCompleted =
-                                                        !event.isCompleted;
-                                                    await taskDBS
-                                                        .updateData(event.id, {
-                                                      'isCompleted':
-                                                          event.isCompleted,
-                                                    });
-                                                  }
+                                                  //Removed from list automatically, need to let it have a removed animation? or wait 0.5 sec
+                                                  await ifEventCompleted(event);
                                                 },
                                               )),
                                         );

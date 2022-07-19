@@ -1,21 +1,17 @@
-import 'dart:collection';
 import 'package:AquaFocus/screens/Tasks/ListView/all_list.dart';
 import 'package:AquaFocus/screens/Tasks/ListView/tag_list.dart';
 import 'package:AquaFocus/screens/Tasks/ListView/today_list.dart';
 import 'package:AquaFocus/widgets/loading.dart';
 import 'package:AquaFocus/screens/Tasks/task_utils.dart';
-import 'package:AquaFocus/services/task_firestore_service.dart';
 import 'package:dotted_border/dotted_border.dart';
-import 'package:firebase_helpers/firebase_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:AquaFocus/screens/Tasks/add_task.dart';
 import 'package:intl/intl.dart';
-import 'package:table_calendar/table_calendar.dart';
 import '../../../model/app_task.dart';
-import '../../signin_screen.dart';
 
 class ListBodyPage extends StatefulWidget {
-  const ListBodyPage({Key? key}) : super(key: key);
+  const ListBodyPage({Key? key, required this.showCompleted}) : super(key: key);
+  final bool showCompleted;
 
   @override
   State<ListBodyPage> createState() => _ListBodyPageState();
@@ -26,8 +22,6 @@ class _ListBodyPageState extends State<ListBodyPage> {
   List<AppTask> eventList = [];
   bool loading = true;
   late ValueNotifier<List<AppTask>> _selectedEvents;
-  LinkedHashMap<DateTime, List<AppTask>> kEvents =
-      LinkedHashMap<DateTime, List<AppTask>>();
   DateTime _selectedDay = DateTime.now();
   late List tagList;
 
@@ -43,39 +37,8 @@ class _ListBodyPageState extends State<ListBodyPage> {
     super.dispose();
   }
 
-  groupEvents(List<AppTask>? events) {
-    Map<DateTime, List<AppTask>> groupedEvents = {};
-    if (events != null) {
-      for (var event in events) {
-        DateTime date =
-            DateTime.utc(event.date.year, event.date.month, event.date.day, 12);
-        if (groupedEvents[date] == null) groupedEvents[date] = [];
-        groupedEvents[date]!.add(event);
-      }
-    }
-    return groupedEvents;
-  }
-
-  List<AppTask> _getEventsForDay(DateTime? day) {
-    _getEvents();
-    Map<DateTime, List<AppTask>> groupedEvents = groupEvents(eventList);
-    kEvents = LinkedHashMap<DateTime, List<AppTask>>(
-      equals: isSameDay,
-      hashCode: getHashCode,
-    )..addAll(groupedEvents);
-    return day == null ? [] : (kEvents[day] ?? []);
-  }
-
   _getEvents() async {
-    eventList = await taskDBS.getQueryList(args: [
-      QueryArgsV2(
-        "userId",
-        isEqualTo: user!.uid,
-      ),
-    ]);
-    eventList.sort(taskCompare);
-    
-
+    eventList = await getEventList(widget.showCompleted);
     if (!mounted) return;
     setState(() {
       loading = false;
@@ -85,7 +48,7 @@ class _ListBodyPageState extends State<ListBodyPage> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay));
+    _selectedEvents = ValueNotifier(getEventsForDay(_selectedDay, eventList));
 
     return loading
         ? Loading()
@@ -127,6 +90,7 @@ class _ListBodyPageState extends State<ListBodyPage> {
                               MaterialPageRoute(
                                   builder: (context) => ListToday(
                                         selectedEvents: _selectedEvents,
+                                        showCompleted: widget.showCompleted,
                                       )));
                         },
                         child: DottedBorder(
@@ -216,6 +180,7 @@ class _ListBodyPageState extends State<ListBodyPage> {
                               MaterialPageRoute(
                                   builder: (context) => ListAll(
                                         eventList: eventList,
+                                        showCompleted: widget.showCompleted,
                                       )));
                         },
                         child: DottedBorder(
@@ -287,7 +252,9 @@ class _ListBodyPageState extends State<ListBodyPage> {
                           await Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => ListTag()));
+                                  builder: (context) => ListTag(
+                                        showCompleted: widget.showCompleted,
+                                      )));
                         },
                         child: DottedBorder(
                           color: Colors.white,

@@ -1,13 +1,166 @@
+import 'dart:collection';
+
 import 'package:AquaFocus/model/app_task.dart';
+import 'package:AquaFocus/screens/signin_screen.dart';
+import 'package:AquaFocus/services/task_firestore_service.dart';
+import 'package:firebase_helpers/firebase_helpers.dart';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 DateTime now = DateTime.now();
 DateTime nowDate = DateTime(now.year, now.month, now.day);
 DateTime nowTime = DateTime(1970, 1, 1, now.hour, now.minute);
 
+processCompletion(AppTask task) {
+  //set next time if have repeat
+  if (task.repeat != "never") {
+    DateTime nextTime = findNextTime(task);
+  }
+
+  //give reward according to streak and prevCompletionTime
+
+  //re-sort the list
+}
+
+findNextTime(AppTask task) {}
+
+List<AppTask> getEventsForDay(DateTime? day, List<AppTask> eventList) {
+  Map<DateTime, List<AppTask>> groupedEvents = groupEvents(eventList);
+  LinkedHashMap<DateTime, List<AppTask>> kEvents =
+      LinkedHashMap<DateTime, List<AppTask>>(
+    equals: isSameDay,
+    hashCode: getHashCode,
+  )..addAll(groupedEvents);
+  return day == null ? [] : (kEvents[day] ?? []);
+}
+
+Future<List<AppTask>> getEventList(bool showCompleted) async {
+  List<AppTask> eventList = [];
+  if (showCompleted) {
+    eventList = await taskDBS.getQueryList(args: [
+      QueryArgsV2(
+        "userId",
+        isEqualTo: user!.uid,
+      ),
+    ]);
+  } else {
+    eventList = await taskDBS.getQueryList(args: [
+      QueryArgsV2(
+        "userId",
+        isEqualTo: user!.uid,
+      ),
+      QueryArgsV2(
+        "isCompleted",
+        isEqualTo: false,
+      ),
+    ]);
+  }
+  eventList.sort(taskCompare);
+  return eventList;
+}
+
+groupEvents(List<AppTask>? events) {
+  Map<DateTime, List<AppTask>> groupedEvents = {};
+  if (events != null) {
+    for (var event in events) {
+      DateTime date =
+          DateTime.utc(event.date.year, event.date.month, event.date.day, 12);
+      if (groupedEvents[date] == null) groupedEvents[date] = [];
+      groupedEvents[date]!.add(event);
+    }
+  }
+  return groupedEvents;
+}
+
+Widget? allNTag(AppTask event) {
+  return Wrap(
+    children: [
+      Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          eventDate(event),
+          eventTime(event),
+          repeatText(event.repeat) != ""
+              ? eventVar(repeatText(event.reminder!), event)
+              : Container(),
+          event.hasTime
+              ? (reminderText(event.reminder!) != ""
+                  ? eventVar(reminderText(event.reminder!), event)
+                  : Container())
+              : Container(),
+          event.tag != null
+              ? eventVar('${event.tag}', event)
+              : Container(),
+        ],
+      ),
+    ],
+  );
+}
+
+Widget? todayNCalendar(AppTask event) {
+  return hasSubtitle(event)
+      ? Wrap(
+          children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                eventTime(event),
+                repeatText(event.repeat) != ""
+                    ? eventVar(repeatText(event.reminder!), event)
+                    : Container(),
+                event.hasTime
+                    ? (reminderText(event.reminder!) != ""
+                        ? eventVar(reminderText(event.reminder!), event)
+                        : Container())
+                    : Container(),
+                event.tag != null
+                    ? eventVar('${event.tag}', event)
+                    : Container(),
+              ],
+            ),
+          ],
+        )
+      : null;
+}
+
 bool expiredDate(AppTask event) {
   DateTime eventDate =
       DateTime(event.date.year, event.date.month, event.date.day);
   return eventDate.isBefore(nowDate);
+}
+
+complStatusIcon(AppTask event) {
+  return Icon(
+    event.isCompleted ? Icons.check_circle : Icons.circle_outlined,
+    color: event.isCompleted ?  Color.fromARGB(255, 201, 201, 201) :Colors.white,
+  );
+}
+
+eventVar(String eventVar,AppTask event) {
+  return Text(
+    eventVar,
+    style: event.isCompleted
+        ? const TextStyle(color: Color.fromARGB(255, 201, 201, 201))
+        : const TextStyle(color: Colors.white),
+  );
+}
+
+eventDate(AppTask event) {
+  TextStyle style;
+  if (event.isCompleted) {
+    style = TextStyle(color: Color.fromARGB(255, 201, 201, 201));
+  } else if (expiredDate(event)) {
+    style = TextStyle(color: Colors.red);
+  } else {
+    style = TextStyle(color: Colors.white);
+  }
+  return Text(
+    DateFormat('dd/MM/yy').format(event.date),
+    style: style,
+  );
 }
 
 bool expiredTime(AppTask event) {
@@ -17,7 +170,25 @@ bool expiredTime(AppTask event) {
   DateTime eventTime =
       DateTime(1970, 1, 1, event.time!.hour, event.time!.minute);
   return expiredDate(event) ||
-      eventTime.isBefore(nowTime) && eventDate.isAtSameMomentAs(nowDate);
+      (eventTime.isBefore(nowTime) && eventDate.isAtSameMomentAs(nowDate));
+}
+
+eventTime(AppTask event) {
+  if (!event.hasTime) {
+    return Container();
+  }
+  TextStyle style;
+  if (event.isCompleted) {
+    style = TextStyle(color: Color.fromARGB(255, 201, 201, 201));
+  } else if (expiredTime(event)) {
+    style = TextStyle(color: Colors.red);
+  } else {
+    style = TextStyle(color: Colors.white);
+  }
+  return Text(
+    DateFormat('HH : mm').format(event.time!),
+    style: style,
+  );
 }
 
 int getHashCode(DateTime key) {

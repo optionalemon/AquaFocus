@@ -1,9 +1,7 @@
 import 'package:AquaFocus/screens/Tasks/add_task.dart';
 import 'package:AquaFocus/screens/Tasks/task_details.dart';
 import 'package:AquaFocus/screens/Tasks/task_utils.dart';
-import 'package:AquaFocus/screens/signin_screen.dart';
 import 'package:AquaFocus/services/task_firestore_service.dart';
-import 'package:firebase_helpers/firebase_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:intl/intl.dart';
@@ -11,21 +9,26 @@ import '../../../model/app_task.dart';
 
 class ListAll extends StatefulWidget {
   List<AppTask> eventList;
-  ListAll({Key? key, required this.eventList}) : super(key: key);
+  final bool showCompleted;
+  ListAll({Key? key, required this.eventList, required this.showCompleted})
+      : super(key: key);
 
   @override
   State<ListAll> createState() => _ListAllState();
 }
 
 class _ListAllState extends State<ListAll> {
+  ifEventCompleted(AppTask event, int index) async {
+    setState(() {
+      widget.eventList[index].isCompleted = !event.isCompleted;
+    });
+    await taskDBS.updateData(event.id, {
+      'isCompleted': event.isCompleted,
+    });
+  }
+
   updateTaskDetails() async {
-    widget.eventList = await taskDBS.getQueryList(args: [
-      QueryArgsV2(
-        "userId",
-        isEqualTo: user!.uid,
-      ),
-    ]);
-    widget.eventList.sort(taskCompare);
+    widget.eventList = await getEventList(widget.showCompleted);
     setState(() {});
   }
 
@@ -40,14 +43,13 @@ class _ListAllState extends State<ListAll> {
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
     return Scaffold(
         extendBodyBehindAppBar: true,
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
-          title: Text('All Tasks'),
+          title: const Text('All Tasks'),
         ),
         body: Stack(children: [
           Container(
@@ -146,100 +148,23 @@ class _ListAllState extends State<ListAll> {
                                   child: Wrap(
                                     children: [
                                       ListTile(
-                                          title: Text(
-                                            event.title,
-                                            style:
-                                                TextStyle(color: Colors.white),
-                                          ),
+                                          title: eventVar(event.title,event),
                                           onTap: () async {
                                             await Navigator.push(
                                                 context,
                                                 MaterialPageRoute(
                                                     builder: (context) =>
                                                         TaskDetails(event)));
-                                            updateTaskDetails();
+                                            await updateTaskDetails();
                                           },
-                                          subtitle: Wrap(
-                                            children: [
-                                              Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    DateFormat('dd/MM/yy')
-                                                        .format(event.date),
-                                                    style: expiredDate(event)
-                                                        ? TextStyle(
-                                                            color: Colors.red)
-                                                        : TextStyle(
-                                                            color:Colors.white),
-                                                  ),
-                                                  event.hasTime
-                                                      ? Text(
-                                                          DateFormat('HH : mm ')
-                                                              .format(
-                                                                  event.time!),
-                                                          style: expiredTime(event)
-                                                              ? TextStyle(
-                                                                  color: Colors
-                                                                      .red)
-                                                              : TextStyle(
-                                                                  color:Colors.white),
-                                                        )
-                                                      : Container(),
-                                                  repeatText(event.repeat) != ""
-                                                      ? Text(
-                                                          '${repeatText(event.repeat)} ',
-                                                          style: TextStyle(
-                                                              color:
-                                                                  Colors.white),
-                                                        )
-                                                      : Container(),
-                                                  event.hasTime
-                                                      ? (reminderText(event
-                                                                  .reminder!) !=
-                                                              ""
-                                                          ? Text(
-                                                              '${reminderText(event.reminder!)} ',
-                                                              style: TextStyle(
-                                                                  color: Colors
-                                                                      .white),
-                                                            )
-                                                          : Container())
-                                                      : Container(),
-                                                  event.tag != null
-                                                      ? Text(
-                                                          '#${event.tag}',
-                                                          style: TextStyle(
-                                                              color:
-                                                                  Colors.white),
-                                                        )
-                                                      : Container(),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
+                                          subtitle: allNTag(event),
                                           leading: IconButton(
-                                            icon: Icon(
-                                              event.isCompleted
-                                                  ? Icons.check_circle
-                                                  : Icons.circle_outlined,
-                                              color: Colors.white,
-                                            ),
+                                            icon: complStatusIcon(event),
                                             onPressed: () async {
                                               if (!event.isCompleted) {
-                                                setState(() {
-                                                  widget.eventList[index]
-                                                          .isCompleted =
-                                                      !event.isCompleted;
-                                                });
-                                                await taskDBS
-                                                    .updateData(event.id, {
-                                                  'isCompleted':
-                                                      event.isCompleted,
-                                                });
+                                                //TODO
+                                                await ifEventCompleted(
+                                                    event, index);
                                               }
                                             },
                                           )),
