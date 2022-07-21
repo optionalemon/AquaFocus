@@ -22,30 +22,40 @@ class _PercentIndicatorWidgetState extends State<PercentIndicatorWidget> {
   }
 
   Future<void> setPercent() async {
-    await DatabaseServices().getPercentageCompleted().then((input) {
-      setState(() {
-        percentCompleted = input;
-        loading = false;
-      });
+    double percent = await DatabaseServices().getPercentageCompleted();
+    percentCompleted = percent;
+    setState(() {
+      loading = false;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return loading
-        ? LoadingWidget()
-        : LinearPercentIndicator(
-      backgroundColor: Colors.grey.withOpacity(0.7),
-      barRadius: Radius.circular(5.0),
-      width: MediaQuery.of(context).size.width * 0.78,
-      animation: true,
-      lineHeight: 30.0,
-      animationDuration: 1500,
-      percent: percentCompleted / 100,
-      center: Text("${percentCompleted}%",
-          style: const TextStyle(color: Colors.white)),
-      linearStrokeCap: LinearStrokeCap.roundAll,
-      progressColor: Colors.greenAccent.withOpacity(0.7),
-    );
+    if (loading == true) {
+      return LoadingWidget();
+    } else if (percentCompleted == 2) {
+      return const Text(
+          "No tasks",
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 16,
+            fontStyle: FontStyle.italic,
+          )
+      );
+    } else {
+      return LinearPercentIndicator(
+        backgroundColor: Colors.grey.withOpacity(0.7),
+        barRadius: Radius.circular(5.0),
+        width: MediaQuery.of(context).size.width * 0.78,
+        animation: true,
+        lineHeight: 30.0,
+        animationDuration: 1500,
+        percent: percentCompleted / 100,
+        center: Text("${percentCompleted}%",
+            style: const TextStyle(color: Colors.white)),
+        linearStrokeCap: LinearStrokeCap.roundAll,
+        progressColor: Colors.greenAccent.withOpacity(0.7),
+      );
+    }
   }
 }

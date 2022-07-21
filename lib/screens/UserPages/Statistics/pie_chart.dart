@@ -17,6 +17,7 @@ class _PieChartWidgetState extends State<PieChartWidget> {
   late List percentageList;
 
   bool loading = true;
+  late bool noTask;
 
   @override
   void initState() {
@@ -35,17 +36,12 @@ class _PieChartWidgetState extends State<PieChartWidget> {
     } else {
       for (Tags tag in tags) {
         double percentage = await DatabaseServices().getPercentageForTag(tag);
-        //print('percentage:$percentage');
         percentages.add(percentage);
       }
       sum = percentages.reduce((p, c) => p + c);
     }
 
     percentages.add(double.parse((100.0 - sum).toStringAsFixed(2)));
-
-    // print('tags:$tags');
-    // print('sum:$sum');
-    // print('percentages:$percentages');
 
     setState(() {
       tagList = tags;
@@ -72,30 +68,43 @@ class _PieChartWidgetState extends State<PieChartWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return loading
-        ? LoadingWidget()
-        : PieChart(
-      PieChartData(
-          pieTouchData: PieTouchData(touchCallback:
-              (FlTouchEvent event, pieTouchResponse) {
-            setState(() {
-              if (!event.isInterestedForInteractions ||
-                  pieTouchResponse == null ||
-                  pieTouchResponse.touchedSection == null) {
-                touchedIndex = -1;
-                return;
-              }
-              touchedIndex = pieTouchResponse
-                  .touchedSection!.touchedSectionIndex;
-            });
-          }),
-          borderData: FlBorderData(
-            show: false,
-          ),
-          sectionsSpace: 5,
-          centerSpaceRadius: 45,
-          sections: showingSections()),
-    );
+    if (loading == true) {
+      return LoadingWidget();
+    } else if (percentageList.contains(2)) {
+      return const Center(
+        child: Text(
+            "No tasks",
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontStyle: FontStyle.italic,
+            )
+        ),
+      );
+    } else {
+      return PieChart(
+        PieChartData(
+            pieTouchData: PieTouchData(touchCallback:
+                (FlTouchEvent event, pieTouchResponse) {
+              setState(() {
+                if (!event.isInterestedForInteractions ||
+                    pieTouchResponse == null ||
+                    pieTouchResponse.touchedSection == null) {
+                  touchedIndex = -1;
+                  return;
+                }
+                touchedIndex = pieTouchResponse
+                    .touchedSection!.touchedSectionIndex;
+              });
+            }),
+            borderData: FlBorderData(
+              show: false,
+            ),
+            sectionsSpace: 5,
+            centerSpaceRadius: 45,
+            sections: showingSections()),
+      );
+    }
   }
 
   List<PieChartSectionData>? showingSections() {
