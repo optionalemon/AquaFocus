@@ -12,6 +12,7 @@ import 'firebase_options.dart';
 int? initScreen;
 NotifyHelper notifyHelper = NotifyHelper();
 
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SharedPreferences preferences = await SharedPreferences.getInstance();
@@ -35,6 +36,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   // This widget is the root of your application.
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(

@@ -5,7 +5,6 @@ import 'package:AquaFocus/screens/UserPages/Setting%20Pages/setting_screen.dart'
 import 'package:AquaFocus/screens/UserPages/Shop/shop_screen.dart';
 import 'package:AquaFocus/screens/signin_screen.dart';
 import 'package:AquaFocus/services/firebase_services.dart';
-import 'package:AquaFocus/services/notification_services.dart';
 import 'package:AquaFocus/widgets/focus_timer.dart';
 import 'package:AquaFocus/widgets/tasks_today.dart';
 import 'package:auto_size_text/auto_size_text.dart';
