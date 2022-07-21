@@ -1,3 +1,5 @@
+import 'package:AquaFocus/screens/Tasks/task_utils.dart';
+import 'package:AquaFocus/services/notification_services.dart';
 import 'package:AquaFocus/services/task_firestore_service.dart';
 import 'package:flutter/material.dart';
 import 'package:AquaFocus/model/app_task.dart';
@@ -102,7 +104,7 @@ class _TaskDetailsState extends State<TaskDetails> {
                                 ])) ??
                     false;
                 if (confirm) {
-                  await taskDBS.removeItem(widget.task.id);
+                  await removeNotification(widget.task);
                   Navigator.pop(context);
                 }
               },
@@ -175,9 +177,9 @@ class _TaskDetailsState extends State<TaskDetails> {
                           style: TextStyle(color: Colors.white),
                         )),
                     SizedBox(height: size.height * 0.0125),
-                    widget.task.tag != null ? ListTile(
-                            leading:
-                                Icon(Icons.tag, color: Colors.white),
+                    widget.task.tag != null
+                        ? ListTile(
+                            leading: Icon(Icons.tag, color: Colors.white),
                             title: Text(
                               widget.task.tag ?? "",
                               style: TextStyle(color: Colors.white),
@@ -202,7 +204,6 @@ class _TaskDetailsState extends State<TaskDetails> {
                             ))
                         : Container(),
                     SizedBox(height: size.height * 0.0125),
-                    
                   ]),
             ),
           ),

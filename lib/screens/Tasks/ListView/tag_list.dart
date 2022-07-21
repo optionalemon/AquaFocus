@@ -80,6 +80,7 @@ class _ListTagState extends State<ListTag> {
   _onDelete(AppTask event, Tags currTag) async {
     selectedEvents.remove(event);
     await taskDBS.removeItem(event.id);
+    await removeNotification(event);
     _updateTask(currTag);
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text('Task ${event.title} deleted')));

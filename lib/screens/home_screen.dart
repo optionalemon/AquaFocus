@@ -14,8 +14,6 @@ import 'package:flutter/material.dart';
 import 'package:AquaFocus/services/database_services.dart';
 
 class HomeScreen extends StatefulWidget {
-  User? user;
-
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
@@ -26,7 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool loading = true;
   late bool isCheckList;
   late bool showCompleted;
-  late NotifyHelper notifyHelper;
+  late bool allowNotif;
 
   _updateHomeScreen(int newMoney) {
     setState(() {
@@ -55,10 +53,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
-    getNameAndMoney();
     super.initState();
-    notifyHelper = NotifyHelper();
-    notifyHelper.initializeNotification();
+    getNameAndMoney();
   }
 
   @override
@@ -292,8 +288,7 @@ class NavigationDrawer extends StatelessWidget {
               onTap: () {
                 Navigator.pop(context);
                 Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => SettingScreen(
-                        updateHomeName)));
+                    builder: (context) => SettingScreen(updateHomeName)));
               },
             ),
             ListTile(

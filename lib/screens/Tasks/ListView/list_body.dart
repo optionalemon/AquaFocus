@@ -27,7 +27,6 @@ class _ListBodyPageState extends State<ListBodyPage> {
   List<AppTask> eventList = [];
   bool loading = true;
   late ValueNotifier<List<AppTask>> _selectedEvents;
-  DateTime _selectedDay = DateTime.now();
   late List tagList;
   List<AppTask> eventTagList = [];
 
@@ -65,7 +64,7 @@ class _ListBodyPageState extends State<ListBodyPage> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    _selectedEvents = ValueNotifier(getEventsForDay(_selectedDay, eventList));
+    _selectedEvents = ValueNotifier(getEventsForDay(now, eventList));
 
     return loading
         ? Loading()
@@ -304,7 +303,7 @@ class _ListBodyPageState extends State<ListBodyPage> {
                                     size: size.width * 0.15,
                                   ),
                                   const Text(
-                                    " Tags",
+                                    " Tags  ",
                                     style: TextStyle(
                                         color: Colors.white,
                                         fontFamily: 'Alata',
@@ -313,7 +312,13 @@ class _ListBodyPageState extends State<ListBodyPage> {
                                   SizedBox(
                                     width: size.width * 0.3,
                                   ),
-                                  Wrap(),
+                                  Text(
+                                    "${eventTagList.length}",
+                                    style: TextStyle(
+                                        color: Color.fromARGB(255, 58, 41, 145),
+                                        fontFamily: 'Alata',
+                                        fontSize: 30),
+                                  ),
                                 ],
                               ),
                             ],

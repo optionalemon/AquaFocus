@@ -1,3 +1,8 @@
+import 'package:AquaFocus/model/app_task.dart';
+import 'package:AquaFocus/screens/Tasks/task_utils.dart';
+import 'package:AquaFocus/screens/signin_screen.dart';
+import 'package:AquaFocus/services/notification_services.dart';
+import 'package:AquaFocus/services/task_firestore_service.dart';
 import 'package:AquaFocus/widgets/loading.dart';
 import 'package:AquaFocus/screens/Onboarding/core_concept.dart';
 import 'package:AquaFocus/screens/UserPages/Setting%20Pages/change_username_screen.dart';
@@ -6,6 +11,7 @@ import 'package:AquaFocus/screens/reset_password.dart';
 import 'package:AquaFocus/services/database_services.dart';
 import 'package:AquaFocus/services/firebase_services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_helpers/firebase_helpers.dart';
 import 'package:flutter/material.dart';
 
 class SettingScreen extends StatefulWidget {
@@ -317,8 +323,7 @@ class _SettingScreenState extends State<SettingScreen> {
                                 setState(() {
                                   isCheckList = !isCheckList;
                                 });
-                                DatabaseServices()
-                                    .updateCheckList(isCheckList);
+                                DatabaseServices().updateCheckList(isCheckList);
                               },
                             ),
                             SwitchListTile(
@@ -339,6 +344,31 @@ class _SettingScreenState extends State<SettingScreen> {
                                   setState(() {
                                     allowNotif = !allowNotif;
                                   });
+                                  if (allowNotif) {
+                                    //get Everything with notification
+                                    List<AppTask> eventList =
+                                        await taskDBS.getQueryList(args: [
+                                      QueryArgsV2(
+                                        "userId",
+                                        isEqualTo: user!.uid,
+                                      ),
+                                      QueryArgsV2(
+                                        "isCompleted",
+                                        isEqualTo: false,
+                                      ),
+                                      QueryArgsV2(
+                                        "hasTime",
+                                        isEqualTo: true,
+                                      ),
+                                    ]);
+                                    for (AppTask event in eventList) {
+                                      addNotification(event);
+                                    }
+                                  } else {
+                                    await NotifyHelper()
+                                        .flutterLocalNotificationsPlugin
+                                        .cancelAll();
+                                  }
                                   await DatabaseServices()
                                       .updateNotif(allowNotif);
                                 } else {
