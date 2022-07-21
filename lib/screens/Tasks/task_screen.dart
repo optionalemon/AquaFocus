@@ -8,7 +8,9 @@ import 'package:AquaFocus/screens/Tasks/ListView/list_body.dart';
 class TaskScreen extends StatefulWidget {
   TaskScreen({
     Key? key,
+    required this.updateHomeMoney,
   }) : super(key: key);
+  final updateHomeMoney;
 
   @override
   State<TaskScreen> createState() => _TaskScreenState();
@@ -38,35 +40,43 @@ class _TaskScreenState extends State<TaskScreen> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return loading? Loading() : Scaffold(
-        extendBodyBehindAppBar: true,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          title: Text('Tasks'),
-          actions: [
-            Container(
-                margin: EdgeInsets.only(
-                  right: size.width * 0.05,
-                ),
-                child: IconButton(
-                    onPressed: () {
-                      setState(() {
-                        isCheckList = !isCheckList;
-                      });
-                    },
-                    icon: Icon(
-                      isCheckList
-                          ? Icons.calendar_month_outlined
-                          : Icons.checklist,
-                      color: Colors.white,
-                    ))),
-          ],
-        ),
-        body: isCheckList
-            ? ListBodyPage(showCompleted: showCompleted,)
-            : CalendarBody(showCompleted: showCompleted) // put the arguments here
+    return loading
+        ? const Loading()
+        : Scaffold(
+            extendBodyBehindAppBar: true,
+            appBar: AppBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              title: Text('Tasks'),
+              actions: [
+                Container(
+                    margin: EdgeInsets.only(
+                      right: size.width * 0.05,
+                    ),
+                    child: IconButton(
+                        onPressed: () {
+                          setState(() {
+                            isCheckList = !isCheckList;
+                          });
+                        },
+                        icon: Icon(
+                          isCheckList
+                              ? Icons.calendar_month_outlined
+                              : Icons.checklist,
+                          color: Colors.white,
+                        ))),
+              ],
+            ),
+            body: isCheckList
+                ? ListBodyPage(
+                    showCompleted: showCompleted,
+                    updateHomeMoney: widget.updateHomeMoney,
+                  )
+                : CalendarBody(
+                    showCompleted: showCompleted,
+                    updateHomeMoney: widget.updateHomeMoney,
+                    ) // put the arguments here
 
-        );
+            );
   }
 }

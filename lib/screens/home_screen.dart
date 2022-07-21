@@ -26,7 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool loading = true;
   late bool isCheckList;
   late bool showCompleted;
-  var notifyHelper;
+  late NotifyHelper notifyHelper;
 
   _updateHomeScreen(int newMoney) {
     setState(() {
@@ -88,8 +88,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Tasks(
-                  ),
+                  Tasks(updateHomeMoney: _updateHomeScreen),
                   Expanded(
                     child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,

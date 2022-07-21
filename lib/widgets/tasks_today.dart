@@ -3,19 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class Tasks extends StatelessWidget {
-  const Tasks(
-      {Key? key,})
-      : super(key: key);
+  const Tasks({Key? key, required this.updateHomeMoney}) : super(key: key);
+  final updateHomeMoney;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => TaskScreen(
-                    )));
+            context, MaterialPageRoute(builder: (context) => TaskScreen(updateHomeMoney: updateHomeMoney)));
       },
       child: Container(
           height: MediaQuery.of(context).size.height / 2.5,

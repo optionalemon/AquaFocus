@@ -76,6 +76,7 @@ class DatabaseServices {
       'money': user.fishMoney,
       'isCheckList': true,
       'allowNotif': true,
+      'showCompleted': false,
     });
   }
 

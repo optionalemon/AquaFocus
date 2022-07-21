@@ -2,6 +2,7 @@ import 'dart:collection';
 
 import 'package:AquaFocus/model/app_task.dart';
 import 'package:AquaFocus/screens/signin_screen.dart';
+import 'package:AquaFocus/services/database_services.dart';
 import 'package:AquaFocus/services/task_firestore_service.dart';
 import 'package:firebase_helpers/firebase_helpers.dart';
 import 'package:flutter/material.dart';
@@ -12,18 +13,249 @@ DateTime now = DateTime.now();
 DateTime nowDate = DateTime(now.year, now.month, now.day);
 DateTime nowTime = DateTime(1970, 1, 1, now.hour, now.minute);
 
-processCompletion(AppTask task) {
-  //set next time if have repeat
-  if (task.repeat != "never") {
-    DateTime nextTime = findNextTime(task);
+ifStreak(AppTask task, Size size) {
+  if (task.repeat != 'never') {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(
+          Icons.local_fire_department,
+          color: Color.fromARGB(255, 255, 85, 0),
+        ),
+        SizedBox(width: size.width * 0.02),
+        Text('Streak ${task.streak + 1}'),
+      ],
+    );
   }
-
-  //give reward according to streak and prevCompletionTime
-
-  //re-sort the list
+  return Container();
 }
 
-findNextTime(AppTask task) {}
+_noMoneyTaskDialog(context) {
+  AlertDialog alert = AlertDialog(
+    title: const Text("No money is awarded"),
+    content: Wrap(
+      children: const[
+        Text("You have completed the task within the same repeated duration as the previous task."),
+      ],
+    ),
+    actions: [
+      ElevatedButton(
+        onPressed: () async {
+          Navigator.pop(context);
+        },
+        child: Text("Back"),
+      ),
+    ],
+  );
+  showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return alert;
+        });
+}
+
+_completeTaskDialog(int moneyEarned, int fishMoney, BuildContext context,
+    Function updateHomeMoney, AppTask task) {
+  Size size = MediaQuery.of(context).size;
+  
+  AlertDialog alert = AlertDialog(
+    title: const Text("Congrats!"),
+    content: Wrap(children: [
+      Column(
+        children: [
+          ifStreak(task, size),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset(
+                'assets/icons/money.png',
+                height: size.height * 0.035,
+              ),
+              SizedBox(width: size.width * 0.02),
+              Text(
+                '$moneyEarned',
+              ),
+            ],
+          )
+        ],
+      ),
+    ]),
+    actions: [
+      ElevatedButton(
+        onPressed: () async {
+          Navigator.pop(context);
+          updateHomeMoney(moneyEarned + fishMoney);
+          await DatabaseServices().addMoney(moneyEarned);
+        },
+        child: Text("Back"),
+      ),
+    ],
+  );
+
+  showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return alert;
+        });
+}
+
+processCompletion(
+    AppTask task, Function updateHomeMoney, BuildContext context) async {
+  DateTime? nextTime = null;
+  ScaffoldMessenger.of(context)
+      .showSnackBar(SnackBar(content: Text('Task ${task.title} completed')));
+    await taskDBS.updateData(task.id, {
+        'isCompleted': task.isCompleted,
+      });
+
+  //set next time if have repeat
+  if (task.repeat != "never") {
+    nextTime = findNextTime(task);
+  }
+  //give reward according to streak and prevCompletionTime -> sync database and home screen + explain two completion within a day/week/month so no reward
+  if (giveMoney(task)) {
+    int currMoney = await DatabaseServices().getMoney();
+    int moneyAdded = (task.streak + 1) * (task.streak + 1);
+    if (task.repeat == 'never') {
+      moneyAdded = 5;
+    }
+    if (task.repeat != "never") {
+      if (task.hasTime) {
+      await taskDBS.updateData(task.id, {
+        'prevCompletionTime': now.millisecondsSinceEpoch,
+        'streak': task.streak + 1,
+        'date': DateTime(nextTime!.year, nextTime.month, nextTime.day)
+            .millisecondsSinceEpoch,
+        'time': nextTime.millisecondsSinceEpoch,
+        'isCompleted': false,
+      });
+    } else {
+      await taskDBS.updateData(task.id, {
+        'prevCompletionTime': now.millisecondsSinceEpoch,
+        'streak': task.streak + 1,
+        'date': DateTime(nextTime!.year, nextTime.month, nextTime.day)
+            .millisecondsSinceEpoch,
+        'isCompleted': false,
+      });
+    }
+    }
+    return _completeTaskDialog(moneyAdded, currMoney, context, updateHomeMoney, task);
+  } else {
+    if (task.repeat != "never") {
+      if (task.hasTime) {
+      await taskDBS.updateData(task.id, {
+        'prevCompletionTime': now.millisecondsSinceEpoch,
+        'streak': task.streak,
+        'date': DateTime(nextTime!.year, nextTime.month, nextTime.day)
+            .millisecondsSinceEpoch,
+        'time': nextTime.millisecondsSinceEpoch,
+        'isCompleted': false,
+      });
+    } else {
+      await taskDBS.updateData(task.id, {
+        'prevCompletionTime': now.millisecondsSinceEpoch,
+        'streak': task.streak,
+        'date': DateTime(nextTime!.year, nextTime.month, nextTime.day)
+            .millisecondsSinceEpoch,
+        'isCompleted': false,
+      });
+    }
+    }
+    return _noMoneyTaskDialog(context);
+  }
+}
+
+int daysBetween(DateTime from, DateTime to) {
+  from = DateTime(from.year, from.month, from.day);
+  to = DateTime(to.year, to.month, to.day);
+  return (to.difference(from).inHours / 24).round();
+}
+
+bool giveMoney(AppTask task) {
+  if (task.repeat == 'never') {
+    return true;
+  }
+  if (task.repeat == 'daily' ||
+      task.repeat == 'weekdays' ||
+      task.repeat == 'weekends') {
+    if (task.prevCompletionTime.isBefore(nowDate)) {
+      return true;
+    }
+  } else if (task.repeat == 'weekly') {
+    if (now.weekday - task.prevCompletionTime.weekday < 0) {
+      return true;
+    } else if (daysBetween(task.prevCompletionTime, now) >= 7) {
+      return true;
+    }
+  } else if (task.repeat == 'monthly') {
+    if (task.prevCompletionTime.month != now.month) {
+      return true;
+    }
+  }
+  return false;
+}
+
+extension DateTimeExtension on DateTime {
+  DateTime next(int day) {
+    return add(
+      Duration(
+        days: (day - weekday) % DateTime.daysPerWeek,
+      ),
+    );
+  }
+}
+
+findNextTime(AppTask task) {
+  DateTime nextDate;
+  if (task.repeat == "daily") {
+    nextDate = nowDate.add(const Duration(days: 1));
+    while (!nextDate.isAfter(task.date)) {
+      nextDate = nextDate.add(const Duration(days: 1));
+    }
+  } else if (task.repeat == "weekdays") {
+    if (nowDate.weekday >= 5) {
+      nextDate = nowDate.next(DateTime.monday);
+    } else {
+      nextDate = nowDate.add(const Duration(days: 1));
+    }
+    while (!nextDate.isAfter(task.date)) {
+      if (nextDate.weekday >= 5) {
+        nextDate = nextDate.next(DateTime.monday);
+      } else {
+        nextDate = nextDate.add(const Duration(days: 1));
+      }
+    }
+  } else if (task.repeat == "weekends") {
+    if (nowDate.weekday != 6) {
+      nextDate = nowDate.next(DateTime.saturday);
+    } else {
+      nextDate = nowDate.add(const Duration(days: 1));
+    }
+    while (!nextDate.isAfter(task.date)) {
+      if (nextDate.weekday != 6) {
+        nextDate = nextDate.next(DateTime.saturday);
+      } else {
+        nextDate = nextDate.add(const Duration(days: 1));
+      }
+    }
+  } else if (task.repeat == "weekly") {
+    nextDate = task.date.add(const Duration(days: 7));
+    while (!nextDate.isAfter(nowDate)) {
+      nextDate = nextDate.add(const Duration(days: 7));
+    }
+  } else {
+    //monthly
+    nextDate = DateTime(task.date.year, task.date.month + 1, task.date.day);
+    while (!nowDate.isBefore(nextDate)) {
+      nextDate = DateTime(nextDate.year, nextDate.month + 1, nextDate.day);
+    }
+  }
+  if (task.hasTime) {
+    nextDate = DateTime(nextDate.year, nextDate.month, nextDate.day,
+        task.time!.hour, task.time!.minute);
+  }
+  return nextDate;
+}
 
 List<AppTask> getEventsForDay(DateTime? day, List<AppTask> eventList) {
   Map<DateTime, List<AppTask>> groupedEvents = groupEvents(eventList);
@@ -83,16 +315,14 @@ Widget? allNTag(AppTask event) {
           eventDate(event),
           eventTime(event),
           repeatText(event.repeat) != ""
-              ? eventVar(repeatText(event.reminder!), event)
+              ? eventVar(repeatText(event.repeat), event)
               : Container(),
           event.hasTime
               ? (reminderText(event.reminder!) != ""
                   ? eventVar(reminderText(event.reminder!), event)
                   : Container())
               : Container(),
-          event.tag != null
-              ? eventVar('${event.tag}', event)
-              : Container(),
+          event.tag != null ? eventVar('# ${event.tag}', event) : Container(),
         ],
       ),
     ],
@@ -109,7 +339,7 @@ Widget? todayNCalendar(AppTask event) {
               children: [
                 eventTime(event),
                 repeatText(event.repeat) != ""
-                    ? eventVar(repeatText(event.reminder!), event)
+                    ? eventVar(repeatText(event.repeat), event)
                     : Container(),
                 event.hasTime
                     ? (reminderText(event.reminder!) != ""
@@ -117,7 +347,7 @@ Widget? todayNCalendar(AppTask event) {
                         : Container())
                     : Container(),
                 event.tag != null
-                    ? eventVar('${event.tag}', event)
+                    ? eventVar('# ${event.tag}', event)
                     : Container(),
               ],
             ),
@@ -135,11 +365,12 @@ bool expiredDate(AppTask event) {
 complStatusIcon(AppTask event) {
   return Icon(
     event.isCompleted ? Icons.check_circle : Icons.circle_outlined,
-    color: event.isCompleted ?  Color.fromARGB(255, 201, 201, 201) :Colors.white,
+    color:
+        event.isCompleted ? Color.fromARGB(255, 201, 201, 201) : Colors.white,
   );
 }
 
-eventVar(String eventVar,AppTask event) {
+eventVar(String eventVar, AppTask event) {
   return Text(
     eventVar,
     style: event.isCompleted

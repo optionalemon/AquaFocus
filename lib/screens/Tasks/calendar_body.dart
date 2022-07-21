@@ -7,13 +7,15 @@ import 'package:AquaFocus/screens/Tasks/task_utils.dart';
 import 'package:AquaFocus/services/task_firestore_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 import '../../model/app_task.dart';
 
 class CalendarBody extends StatefulWidget {
-  const CalendarBody({Key? key, required this.showCompleted}) : super(key: key);
+  const CalendarBody(
+      {Key? key, required this.showCompleted, required this.updateHomeMoney})
+      : super(key: key);
   final bool showCompleted;
+  final updateHomeMoney;
 
   @override
   State<CalendarBody> createState() => _CalendarBodyState();
@@ -47,14 +49,9 @@ class _CalendarBodyState extends State<CalendarBody> {
 
   ifEventCompleted(AppTask event) async {
     if (!event.isCompleted) {
-      event.isCompleted =
-          !event.isCompleted;
-      await taskDBS
-          .updateData(event.id, {
-        'isCompleted':
-            event.isCompleted,
-      });
-                                                  }
+      event.isCompleted = !event.isCompleted;
+      await processCompletion(event, widget.updateHomeMoney, context);
+    }
   }
 
   _getEvents() async {
@@ -304,7 +301,8 @@ class _CalendarBodyState extends State<CalendarBody> {
                                             ],
                                           ),
                                           child: ListTile(
-                                              title: eventVar(event.title,event),
+                                              title:
+                                                  eventVar(event.title, event),
                                               onTap: () async {
                                                 await Navigator.push(
                                                     context,
@@ -317,7 +315,6 @@ class _CalendarBodyState extends State<CalendarBody> {
                                               leading: IconButton(
                                                 icon: complStatusIcon(event),
                                                 onPressed: () async {
-                                                  //Removed from list automatically, need to let it have a removed animation? or wait 0.5 sec
                                                   await ifEventCompleted(event);
                                                 },
                                               )),
