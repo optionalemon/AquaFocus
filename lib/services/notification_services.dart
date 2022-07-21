@@ -40,22 +40,12 @@ class NotifyHelper {
         onSelectNotification: selectNotification);
   }
 
-  onDidReceiveLocalNotification(
-    int id,
-    String? title,
-    String? body,
-    String? payload,
-  ) async {
-    Get.dialog(Text("Welcome to AquaFocus"));
-  }
-
   selectNotification(String? payload) async {
     if (payload != null) {
       debugPrint('notification payload: $payload');
     } else {
       debugPrint('notification done');
     }
-    Get.to(SignInScreen());
   }
 
   Future<void> _configureLocalTimezone() async {
