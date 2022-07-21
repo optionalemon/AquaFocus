@@ -67,6 +67,12 @@ class DatabaseServices {
     return tasks.size / totalTasks.size * 100;
   }
 
+  Future<double> getPercentageCompleted() async {
+    QuerySnapshot tasks = await userDoc.collection('tasks').where('isCompleted', isEqualTo: true).get();
+    QuerySnapshot totalTasks = await userDoc.collection('tasks').get();
+    return double.parse((tasks.size / totalTasks.size * 100).toStringAsFixed(2));
+  }
+
   Future<void> addUser(AppUser user, String uid) async {
     await userCollection.doc(uid).set({
       'uid': uid,
