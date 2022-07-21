@@ -18,8 +18,8 @@ In total, we have 4 main features(Still implementing).
 
 ### Tech Stacks used
 1. Git and GitHub
-2. Flutter
-3. Firebase
+2. Flutter and Dart
+3. Firebase and Firestore
 
 ## Team Members
 
