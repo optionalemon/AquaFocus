@@ -1,6 +1,8 @@
+import 'package:AquaFocus/model/tags.dart';
 import 'package:AquaFocus/screens/Tasks/ListView/all_list.dart';
 import 'package:AquaFocus/screens/Tasks/ListView/tag_list.dart';
 import 'package:AquaFocus/screens/Tasks/ListView/today_list.dart';
+import 'package:AquaFocus/services/database_services.dart';
 import 'package:AquaFocus/widgets/loading.dart';
 import 'package:AquaFocus/screens/Tasks/task_utils.dart';
 import 'package:dotted_border/dotted_border.dart';
@@ -10,8 +12,11 @@ import 'package:intl/intl.dart';
 import '../../../model/app_task.dart';
 
 class ListBodyPage extends StatefulWidget {
-  const ListBodyPage({Key? key, required this.showCompleted}) : super(key: key);
+  const ListBodyPage(
+      {Key? key, required this.showCompleted, required this.updateHomeMoney,})
+      : super(key: key);
   final bool showCompleted;
+  final updateHomeMoney;
 
   @override
   State<ListBodyPage> createState() => _ListBodyPageState();
@@ -24,6 +29,7 @@ class _ListBodyPageState extends State<ListBodyPage> {
   late ValueNotifier<List<AppTask>> _selectedEvents;
   DateTime _selectedDay = DateTime.now();
   late List tagList;
+  List<AppTask> eventTagList = [];
 
   @override
   void initState() {
@@ -38,7 +44,18 @@ class _ListBodyPageState extends State<ListBodyPage> {
   }
 
   _getEvents() async {
+    setState(() {
+      loading = true;
+    });
     eventList = await getEventList(widget.showCompleted);
+    tagList = await DatabaseServices().getUserTags();
+    tagList.insert(0, Tags(title: "All", color: "default"));
+    eventTagList = [];
+    for (AppTask event in eventList) {
+      if (event.tag != null) {
+        eventTagList.add(event);
+      }
+    }
     if (!mounted) return;
     setState(() {
       loading = false;
@@ -91,6 +108,8 @@ class _ListBodyPageState extends State<ListBodyPage> {
                                   builder: (context) => ListToday(
                                         selectedEvents: _selectedEvents,
                                         showCompleted: widget.showCompleted,
+                                        updateHomeMoney: widget.updateHomeMoney,
+                                        getMainPageEvents: _getEvents,
                                       )));
                         },
                         child: DottedBorder(
@@ -117,10 +136,11 @@ class _ListBodyPageState extends State<ListBodyPage> {
                                         size: size.width * 0.15,
                                       ),
                                       Positioned(
-                                        top: size.height * 0.01875,
-                                        left: size.width * 0.04,
+                                        top: size.height * 0.0187,
+                                        left: size.width * 0.028,
                                         child: Text(
                                           dateToday,
+                                          textAlign: TextAlign.center,
                                           style: TextStyle(
                                               color: Colors.white,
                                               fontFamily: 'Alata',
@@ -179,9 +199,11 @@ class _ListBodyPageState extends State<ListBodyPage> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) => ListAll(
-                                        eventList: eventList,
-                                        showCompleted: widget.showCompleted,
-                                      )));
+                                      eventList: eventList,
+                                      showCompleted: widget.showCompleted,
+                                      getMainPageEvents: _getEvents,
+                                      updateHomeMoney:
+                                          widget.updateHomeMoney)));
                         },
                         child: DottedBorder(
                           color: Colors.white,
@@ -253,8 +275,13 @@ class _ListBodyPageState extends State<ListBodyPage> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) => ListTag(
-                                        showCompleted: widget.showCompleted,
-                                      )));
+                                      eventList: eventList,
+                                      eventTagList: eventTagList,
+                                      tags: tagList,
+                                      showCompleted: widget.showCompleted,
+                                      getMainPageEvents: _getEvents,
+                                      updateHomeMoney:
+                                          widget.updateHomeMoney)));
                         },
                         child: DottedBorder(
                           color: Colors.white,

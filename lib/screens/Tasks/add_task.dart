@@ -418,7 +418,7 @@ class _AddEventPageState extends State<AddEventPage> {
 
                       Navigator.pop(context);
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Submitted')),
+                        const SnackBar(content: Text('New task added')),
                       );
                     }
                   }),

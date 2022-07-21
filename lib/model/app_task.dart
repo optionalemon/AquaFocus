@@ -12,8 +12,8 @@ class AppTask {
   final String repeat;
   final String? reminder;
   final String? tag;
-  final int? streak;
-  final DateTime? prevCompletionTime;
+  final int streak;
+  final DateTime prevCompletionTime;
 
   AppTask({
     this.title = "",
@@ -27,9 +27,9 @@ class AppTask {
     this.reminder,
     this.repeat = "never",
     this.tag,
-    this.streak,
-    this.prevCompletionTime,
-  }) : this.date = date ?? DateTime(1970);
+    this.streak = 0,
+    DateTime? prevCompletionTime,
+  }) : date = date ?? DateTime(1970), prevCompletionTime = prevCompletionTime ?? DateTime(1970);
 
   AppTask copyWith({
     String? title,

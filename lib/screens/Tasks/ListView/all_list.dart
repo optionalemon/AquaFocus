@@ -8,27 +8,48 @@ import 'package:intl/intl.dart';
 import '../../../model/app_task.dart';
 
 class ListAll extends StatefulWidget {
+  ListAll(
+      {Key? key,
+      required this.eventList,
+      required this.showCompleted,
+      required this.getMainPageEvents,
+      required this.updateHomeMoney})
+      : super(key: key);
   List<AppTask> eventList;
   final bool showCompleted;
-  ListAll({Key? key, required this.eventList, required this.showCompleted})
-      : super(key: key);
+  final updateHomeMoney;
+  final getMainPageEvents;
 
   @override
   State<ListAll> createState() => _ListAllState();
 }
 
 class _ListAllState extends State<ListAll> {
+  final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
+
   ifEventCompleted(AppTask event, int index) async {
-    setState(() {
-      widget.eventList[index].isCompleted = !event.isCompleted;
-    });
-    await taskDBS.updateData(event.id, {
-      'isCompleted': event.isCompleted,
-    });
+    if (!event.isCompleted) {
+      setState(() {
+        widget.eventList[index].isCompleted = !event.isCompleted;
+      });
+      if (!widget.showCompleted && event.repeat == "never") {
+        await Future.delayed(Duration(milliseconds: 400));
+        setState(() {
+          widget.eventList.remove(event);
+        });
+      }
+      await processCompletion(event, widget.updateHomeMoney, context);
+      if (event.repeat != "never") {
+        updateTaskDetails();
+      } else {
+        widget.getMainPageEvents();
+      }
+    }
   }
 
   updateTaskDetails() async {
     widget.eventList = await getEventList(widget.showCompleted);
+    widget.getMainPageEvents();
     setState(() {});
   }
 
@@ -37,6 +58,7 @@ class _ListAllState extends State<ListAll> {
       widget.eventList.remove(event);
     });
     await taskDBS.removeItem(event.id);
+    widget.getMainPageEvents();
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text('Task ${event.title} deleted')));
   }
@@ -92,7 +114,7 @@ class _ListAllState extends State<ListAll> {
                                   crossAxisAlignment: WrapCrossAlignment.center,
                                   alignment: WrapAlignment.center,
                                   children: const [
-                                    Text("You have completed all your tasks!",
+                                    Text("You have no more tasks!",
                                         style: TextStyle(
                                             color:
                                                 Color.fromARGB(255, 59, 59, 59),
@@ -148,7 +170,7 @@ class _ListAllState extends State<ListAll> {
                                   child: Wrap(
                                     children: [
                                       ListTile(
-                                          title: eventVar(event.title,event),
+                                          title: eventVar(event.title, event),
                                           onTap: () async {
                                             await Navigator.push(
                                                 context,

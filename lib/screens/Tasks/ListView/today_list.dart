@@ -4,27 +4,54 @@ import 'package:AquaFocus/screens/Tasks/task_utils.dart';
 import 'package:AquaFocus/services/task_firestore_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:intl/intl.dart';
 import '../../../model/app_task.dart';
 
 class ListToday extends StatefulWidget {
+  ListToday(
+      {Key? key,
+      required this.selectedEvents,
+      required this.showCompleted,
+      required this.updateHomeMoney,
+      required this.getMainPageEvents})
+      : super(key: key);
+
   ValueNotifier<List<AppTask>> selectedEvents;
   final bool showCompleted;
-
-  ListToday(
-      {Key? key, required this.selectedEvents, required this.showCompleted})
-      : super(key: key);
+  final updateHomeMoney;
+  final getMainPageEvents;
 
   @override
   State<ListToday> createState() => _ListTodayState();
 }
 
 class _ListTodayState extends State<ListToday> {
+  ifEventCompleted(AppTask event, int index) async {
+    if (!event.isCompleted) {
+      setState(() {
+        widget.selectedEvents.value[index].isCompleted = !event.isCompleted;
+      });
+      if (!widget.showCompleted && event.repeat == "never") {
+        await Future.delayed(Duration(milliseconds: 400));
+        setState(() {
+          widget.selectedEvents.value
+              .remove(widget.selectedEvents.value[index]);
+        });
+      }
+      await processCompletion(event, widget.updateHomeMoney, context);
+      if (event.repeat != "never") {
+        updateTaskDetails();
+      } else {
+        widget.getMainPageEvents();
+      }
+    }
+  }
+
   _onDelete(AppTask event) async {
     setState(() {
       widget.selectedEvents.value.remove(event);
     });
     await taskDBS.removeItem(event.id);
+    widget.getMainPageEvents(); //update Main List Page
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text('Task ${event.title} deleted')));
   }
@@ -32,7 +59,7 @@ class _ListTodayState extends State<ListToday> {
   updateTaskDetails() async {
     List<AppTask> eventList = await getEventList(widget.showCompleted);
     widget.selectedEvents.value = getEventsForDay(DateTime.now(), eventList);
-    //widget.selectedEvents.value.sort(taskCompare);
+    widget.getMainPageEvents(); //update Main List Page
   }
 
   @override
@@ -159,18 +186,7 @@ class _ListTodayState extends State<ListToday> {
                                             onPressed: () async {
                                               if (!event.isCompleted) {
                                                 //TODO
-                                                setState(() {
-                                                  widget
-                                                          .selectedEvents
-                                                          .value[index]
-                                                          .isCompleted =
-                                                      !event.isCompleted;
-                                                });
-                                                await taskDBS
-                                                    .updateData(event.id, {
-                                                  'isCompleted':
-                                                      event.isCompleted,
-                                                });
+                                                ifEventCompleted(event, index);
                                               }
                                             },
                                           )),
