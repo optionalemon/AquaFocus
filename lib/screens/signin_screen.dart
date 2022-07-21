@@ -7,7 +7,7 @@ import 'package:AquaFocus/screens/signup_screen.dart';
 import 'package:flutter/material.dart';
 
 final FirebaseAuth auth = FirebaseAuth.instance;
-late User? user;
+User? user;
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({Key? key}) : super(key: key);

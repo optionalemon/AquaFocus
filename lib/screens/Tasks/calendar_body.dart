@@ -119,6 +119,7 @@ class _CalendarBodyState extends State<CalendarBody> {
       _selectedEvents.value.remove(event);
     });
     await taskDBS.removeItem(event.id);
+    await removeNotification(event);
     setState(() {
       _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay));
     });

@@ -58,6 +58,7 @@ class _ListAllState extends State<ListAll> {
       widget.eventList.remove(event);
     });
     await taskDBS.removeItem(event.id);
+    await removeNotification(event);
     widget.getMainPageEvents();
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text('Task ${event.title} deleted')));

@@ -81,9 +81,7 @@ class AppTask {
     };
   }
 
-  static AppTask? fromMap(Map<String, dynamic> map) {
-    if (map == null) return null;
-
+  static AppTask fromMap(Map<String, dynamic> map) {
     return AppTask(
       title: map['title'],
       id: map['id'],
@@ -99,7 +97,7 @@ class AppTask {
       reminder: map['reminder'],
       tag: map['tag'],
       streak: map['streak'],
-      prevCompletionTime: map['prevCompletionTime'],
+      prevCompletionTime: DateTime.fromMillisecondsSinceEpoch(map['prevCompletionTime']),
     );
   }
 
@@ -156,14 +154,11 @@ class AppTask {
         description.hashCode ^
         date.hashCode ^
         userId.hashCode ^
-        isCompleted.hashCode ^
         hasTime.hashCode ^
         time.hashCode ^
         repeat.hashCode ^
         reminder.hashCode ^
-        tag.hashCode ^
-        streak.hashCode ^
-        prevCompletionTime.hashCode;
+        tag.hashCode;
   }
 }
 

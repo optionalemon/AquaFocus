@@ -1,6 +1,8 @@
 import 'package:AquaFocus/model/app_task.dart';
 import 'package:AquaFocus/model/tag_colors.dart';
 import 'package:AquaFocus/model/tags.dart';
+import 'package:AquaFocus/screens/Tasks/task_utils.dart';
+import 'package:AquaFocus/services/notification_services.dart';
 import 'package:AquaFocus/widgets/loading.dart';
 import 'package:AquaFocus/widgets/reusable_widget.dart';
 import 'package:AquaFocus/services/task_firestore_service.dart';
@@ -397,14 +399,21 @@ class _AddEventPageState extends State<AddEventPage> {
                       if (data['hasTime']) {
                         data['time'] =
                             (data['time'] as DateTime).millisecondsSinceEpoch;
+                      } else {
+                        data['time'] = null;
+                        data['reminder'] = 'never';
                       }
                       if (widget.task == null) {
+                        //new task
                         data['userId'] = user!.uid;
                         data['id'] = Uuid().v1();
                         data['isCompleted'] = false;
                         data['streak'] = 0;
-                          data['prevCompletionTime'] = 0;
+                        data['prevCompletionTime'] =
+                            DateTime(1970).millisecondsSinceEpoch;
                         await taskDBS.create(data);
+                        AppTask event = AppTask.fromMap(data);
+                        await addNotification(event);
                         widget.updateTaskDetails();
                       } else {
                         //edit and update
@@ -412,7 +421,11 @@ class _AddEventPageState extends State<AddEventPage> {
                           data['time'] = null;
                           data['reminder'] = 'never';
                         }
+                        await removeNotification(widget.task!);
                         await taskDBS.updateData(widget.task!.id, data);
+                        AppTask? event =
+                            await taskDBS.getSingle(widget.task!.id);
+                        await addNotification(event!);
                         widget.updateTaskDetails();
                       }
 

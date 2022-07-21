@@ -51,6 +51,7 @@ class _ListTodayState extends State<ListToday> {
       widget.selectedEvents.value.remove(event);
     });
     await taskDBS.removeItem(event.id);
+    await removeNotification(event);
     widget.getMainPageEvents(); //update Main List Page
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text('Task ${event.title} deleted')));

@@ -1,8 +1,10 @@
 import 'dart:collection';
 
+import 'package:AquaFocus/main.dart';
 import 'package:AquaFocus/model/app_task.dart';
 import 'package:AquaFocus/screens/signin_screen.dart';
 import 'package:AquaFocus/services/database_services.dart';
+import 'package:AquaFocus/services/notification_services.dart';
 import 'package:AquaFocus/services/task_firestore_service.dart';
 import 'package:firebase_helpers/firebase_helpers.dart';
 import 'package:flutter/material.dart';
@@ -34,8 +36,9 @@ _noMoneyTaskDialog(context) {
   AlertDialog alert = AlertDialog(
     title: const Text("No money is awarded"),
     content: Wrap(
-      children: const[
-        Text("You have completed the task within the same repeated duration as the previous task."),
+      children: const [
+        Text(
+            "You have completed the task within the same repeated duration as the previous task."),
       ],
     ),
     actions: [
@@ -48,16 +51,16 @@ _noMoneyTaskDialog(context) {
     ],
   );
   showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return alert;
-        });
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      });
 }
 
 _completeTaskDialog(int moneyEarned, int fishMoney, BuildContext context,
     Function updateHomeMoney, AppTask task) {
   Size size = MediaQuery.of(context).size;
-  
+
   AlertDialog alert = AlertDialog(
     title: const Text("Congrats!"),
     content: Wrap(children: [
@@ -93,10 +96,10 @@ _completeTaskDialog(int moneyEarned, int fishMoney, BuildContext context,
   );
 
   showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return alert;
-        });
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      });
 }
 
 processCompletion(
@@ -104,9 +107,11 @@ processCompletion(
   DateTime? nextTime = null;
   ScaffoldMessenger.of(context)
       .showSnackBar(SnackBar(content: Text('Task ${task.title} completed')));
-    await taskDBS.updateData(task.id, {
-        'isCompleted': task.isCompleted,
-      });
+  await removeNotification(task);
+  await taskDBS.updateData(task.id, {
+    'isCompleted': task.isCompleted,
+  });
+  
 
   //set next time if have repeat
   if (task.repeat != "never") {
@@ -121,45 +126,50 @@ processCompletion(
     }
     if (task.repeat != "never") {
       if (task.hasTime) {
-      await taskDBS.updateData(task.id, {
-        'prevCompletionTime': now.millisecondsSinceEpoch,
-        'streak': task.streak + 1,
-        'date': DateTime(nextTime!.year, nextTime.month, nextTime.day)
-            .millisecondsSinceEpoch,
-        'time': nextTime.millisecondsSinceEpoch,
-        'isCompleted': false,
-      });
-    } else {
-      await taskDBS.updateData(task.id, {
-        'prevCompletionTime': now.millisecondsSinceEpoch,
-        'streak': task.streak + 1,
-        'date': DateTime(nextTime!.year, nextTime.month, nextTime.day)
-            .millisecondsSinceEpoch,
-        'isCompleted': false,
-      });
+        await taskDBS.updateData(task.id, {
+          'prevCompletionTime': now.millisecondsSinceEpoch,
+          'streak': task.streak + 1,
+          'date': DateTime(nextTime!.year, nextTime.month, nextTime.day)
+              .millisecondsSinceEpoch,
+          'time': nextTime.millisecondsSinceEpoch,
+          'isCompleted': false,
+        });
+        AppTask? event = await taskDBS.getSingle(task.id);
+        await addNotification(event!);
+      } else {
+        await taskDBS.updateData(task.id, {
+          'prevCompletionTime': now.millisecondsSinceEpoch,
+          'streak': task.streak + 1,
+          'date': DateTime(nextTime!.year, nextTime.month, nextTime.day)
+              .millisecondsSinceEpoch,
+          'isCompleted': false,
+        });
+      }
     }
-    }
-    return _completeTaskDialog(moneyAdded, currMoney, context, updateHomeMoney, task);
+    return _completeTaskDialog(
+        moneyAdded, currMoney, context, updateHomeMoney, task);
   } else {
     if (task.repeat != "never") {
       if (task.hasTime) {
-      await taskDBS.updateData(task.id, {
-        'prevCompletionTime': now.millisecondsSinceEpoch,
-        'streak': task.streak,
-        'date': DateTime(nextTime!.year, nextTime.month, nextTime.day)
-            .millisecondsSinceEpoch,
-        'time': nextTime.millisecondsSinceEpoch,
-        'isCompleted': false,
-      });
-    } else {
-      await taskDBS.updateData(task.id, {
-        'prevCompletionTime': now.millisecondsSinceEpoch,
-        'streak': task.streak,
-        'date': DateTime(nextTime!.year, nextTime.month, nextTime.day)
-            .millisecondsSinceEpoch,
-        'isCompleted': false,
-      });
-    }
+        await taskDBS.updateData(task.id, {
+          'prevCompletionTime': now.millisecondsSinceEpoch,
+          'streak': task.streak,
+          'date': DateTime(nextTime!.year, nextTime.month, nextTime.day)
+              .millisecondsSinceEpoch,
+          'time': nextTime.millisecondsSinceEpoch,
+          'isCompleted': false,
+        });
+        AppTask? event = await taskDBS.getSingle(task.id);
+        await addNotification(event!);
+      } else {
+        await taskDBS.updateData(task.id, {
+          'prevCompletionTime': now.millisecondsSinceEpoch,
+          'streak': task.streak,
+          'date': DateTime(nextTime!.year, nextTime.month, nextTime.day)
+              .millisecondsSinceEpoch,
+          'isCompleted': false,
+        });
+      }
     }
     return _noMoneyTaskDialog(context);
   }
@@ -265,6 +275,38 @@ List<AppTask> getEventsForDay(DateTime? day, List<AppTask> eventList) {
     hashCode: getHashCode,
   )..addAll(groupedEvents);
   return day == null ? [] : (kEvents[day] ?? []);
+}
+
+removeNotification(AppTask task) async {
+  if (isScheduledEvent(task) != null) {
+    await NotifyHelper().removeNotification(task);
+  }
+}
+
+addNotification(AppTask event) async {
+  DateTime? scheduledTime = isScheduledEvent(event);
+  if (scheduledTime != null) {
+    await notifyHelper.scheduleNotification(event, scheduledTime);
+  }
+}
+
+DateTime? isScheduledEvent(AppTask event) {
+  if (event.reminder != "never") {
+    print(event.reminder);
+    DateTime scheduledTime = DateTime(event.date.year, event.date.month,
+        event.date.day, event.time!.hour, event.time!.minute);
+    if (event.reminder == '5min') {
+      scheduledTime = scheduledTime.subtract(Duration(minutes: 5));
+    } else if (event.reminder == '10min') {
+      scheduledTime = scheduledTime.subtract(Duration(minutes: 10));
+    } else if (event.reminder == '15min') {
+      scheduledTime = scheduledTime.subtract(Duration(minutes: 15));
+    }
+    if (scheduledTime.isAfter(now)) {
+      return scheduledTime;
+    }
+  }
+  return null;
 }
 
 Future<List<AppTask>> getEventList(bool showCompleted) async {
@@ -482,11 +524,11 @@ String reminderText(String reminders) {
   if (reminders == 'ontime') {
     return "Reminder send on time";
   } else if (reminders == '5min') {
-    return "Reminder send 5 minutes before the task";
+    return "Reminder send 5 minutes before";
   } else if (reminders == '10min') {
-    return "Reminder send 10 minutes before the task";
+    return "Reminder send 10 minutes before";
   } else if (reminders == '15min') {
-    return "Reminder send 15 minutes before the task";
+    return "Reminder send 15 minutes before";
   }
   return "";
 }

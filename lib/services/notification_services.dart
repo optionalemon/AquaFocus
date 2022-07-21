@@ -1,7 +1,9 @@
+import 'package:AquaFocus/screens/Tasks/task_utils.dart';
 import 'package:AquaFocus/screens/home_screen.dart';
 import 'package:AquaFocus/screens/signin_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:intl/intl.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:get/get.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
@@ -19,10 +21,9 @@ import 'package:flutter/services.dart';
 class NotifyHelper {
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
-  late List<AppTask> taskList;
 
   initializeNotification() async {
-    tz.initializeTimeZones();
+    _configureLocalTimezone();
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('app_icon');
 
@@ -54,33 +55,51 @@ class NotifyHelper {
     } else {
       debugPrint('notification done');
     }
-    Get.to(() => HomeScreen());
+    Get.to(SignInScreen());
   }
 
-  Future<void> _scheduleDailyTenAMNotification() async {
+  Future<void> _configureLocalTimezone() async {
+    tz.initializeTimeZones();
+    final String timeZone = await FlutterNativeTimezone.getLocalTimezone();
+    tz.setLocalLocation(tz.getLocation(timeZone));
+  }
+
+  Future<void> scheduleNotification(
+      AppTask task, DateTime scheduledTime) async {
+    print("add ${task.title}");
+    print(task.hashCode);
     await flutterLocalNotificationsPlugin.zonedSchedule(
-        0,
-        'daily scheduled notification title',
-        'daily scheduled notification body',
-        _nextInstanceOfScheduledTask(),
-        const NotificationDetails(
-          android: AndroidNotificationDetails('daily notification channel id',
-              'daily notification channel name',
-              channelDescription: 'daily notification description'),
-        ),
-        androidAllowWhileIdle: true,
-        uiLocalNotificationDateInterpretation:
-            UILocalNotificationDateInterpretation.absoluteTime,
-        matchDateTimeComponents: DateTimeComponents.time);
+      task.hashCode,
+      'Your have an upcoming task!',
+      '${task.title} scheduled at ${DateFormat('HH : mm').format(task.time!)}',
+      await _nextInstanceOfScheduledTask(scheduledTime),
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+            'daily notification channel id', 'daily notification channel name',
+            channelDescription: 'daily notification description'),
+      ),
+      androidAllowWhileIdle: true,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+      matchDateTimeComponents: DateTimeComponents.time,
+    );
   }
 
-  tz.TZDateTime _nextInstanceOfScheduledTask() {
-    final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
-    tz.TZDateTime scheduledDate =
-        tz.TZDateTime(tz.local, now.year, now.month, now.day, 10);
-    if (scheduledDate.isBefore(now)) {
-      scheduledDate = scheduledDate.add(const Duration(days: 1));
-    }
+  removeNotification(AppTask task) async {
+    print("remove ${task.title}");
+    print(task.hashCode);
+    await flutterLocalNotificationsPlugin.cancel(task.hashCode);
+  }
+
+  Future<tz.TZDateTime> _nextInstanceOfScheduledTask(
+      DateTime scheduledTime) async {
+    tz.TZDateTime scheduledDate = tz.TZDateTime(
+        tz.local,
+        scheduledTime.year,
+        scheduledTime.month,
+        scheduledTime.day,
+        scheduledTime.hour,
+        scheduledTime.minute);
     return scheduledDate;
   }
 }
