@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:AquaFocus/model/app_user.dart';
 import 'package:AquaFocus/model/tags.dart';
 import 'package:AquaFocus/screens/signin_screen.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class DatabaseServices {
@@ -61,16 +62,22 @@ class DatabaseServices {
 
   Future<double> getPercentageForTag(Tags tag) async {
     QuerySnapshot tasks = await userDoc.collection('tasks').where('tag', isEqualTo: tag.title).get();
-    //print(tasks.size);
     QuerySnapshot totalTasks = await userDoc.collection('tasks').get();
-    //print(totalTasks.size);
-    return tasks.size / totalTasks.size * 100;
+    if(totalTasks.size == 0) {
+      return 2;
+    } else {
+      return tasks.size / totalTasks.size * 100;
+    }
   }
 
   Future<double> getPercentageCompleted() async {
     QuerySnapshot tasks = await userDoc.collection('tasks').where('isCompleted', isEqualTo: true).get();
     QuerySnapshot totalTasks = await userDoc.collection('tasks').get();
-    return double.parse((tasks.size / totalTasks.size * 100).toStringAsFixed(2));
+    if(totalTasks.size == 0) {
+      return 2;
+    } else {
+      return double.parse((tasks.size / totalTasks.size * 100).toStringAsFixed(2));
+    }
   }
 
   Future<void> addUser(AppUser user, String uid) async {
