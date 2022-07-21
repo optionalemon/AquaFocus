@@ -1,3 +1,4 @@
+import 'package:AquaFocus/screens/UserPages/Statistics/percent_indicator.dart';
 import 'package:AquaFocus/screens/UserPages/Statistics/pie_chart.dart';
 import 'package:AquaFocus/screens/UserPages/Statistics/pie_chart_indicator.dart';
 import 'package:AquaFocus/services/database_services.dart';
@@ -62,20 +63,20 @@ class _TasksStatsState extends State<TasksStats> {
             ),
           )),
       loading
-      ? LoadingWidget()
-      : SafeArea(
+          ? LoadingWidget()
+          : SafeArea(
           child: SingleChildScrollView(
               child: Column(
                   children: <Widget>[
                     AspectRatio(
-                      aspectRatio: 0.7,
+                      aspectRatio: 1.8,
                       child: Card(
                         margin: EdgeInsets.all(size.height * 0.03),
                         elevation: 4,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(32),
                         ),
-                        color: Colors.indigoAccent[100]!.withOpacity(0.4),
+                        color: Colors.teal[200]!.withOpacity(0.4),
                         child: Padding(
                           padding: EdgeInsets.all(size.width * 0.05),
                           child: Column(
@@ -85,6 +86,55 @@ class _TasksStatsState extends State<TasksStats> {
                             children: <Widget>[
                               const Text(
                                 'Task Management',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              SizedBox(height: size.height * 0.01),
+                              Text(
+                                'Percentage of tasks completed',
+                                style: TextStyle(
+                                  color: Colors.cyan[200],
+                                  fontSize: 14,
+                                  fontStyle: FontStyle.italic,
+                                ),
+                              ),
+                              SizedBox(
+                                height: size.height * 0.03,
+                              ),
+                              const Expanded(
+                                child: Center(
+                                  child: PercentIndicatorWidget(),
+                                ),
+                              ),
+                              //),
+                              SizedBox(
+                                height: size.height * 0.01,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    AspectRatio(
+                      aspectRatio: 0.75,
+                      child: Card(
+                        margin: EdgeInsets.all(size.height * 0.03),
+                        elevation: 4,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(32),
+                        ),
+                        color: Colors.indigo[200]!.withOpacity(0.4),
+                        child: Padding(
+                          padding: EdgeInsets.all(size.width * 0.05),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              const Text(
+                                'Tag Distribution',
                                 style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 22,
@@ -102,10 +152,10 @@ class _TasksStatsState extends State<TasksStats> {
                               SizedBox(
                                 height: size.height * 0.03,
                               ),
-                              Expanded(
+                              const Expanded(
                                 child: Padding(
                                     padding:
-                                    const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                                    EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
                                     child: PieChartWidget()),
                               ),
                               SizedBox(
@@ -130,7 +180,7 @@ class _TasksStatsState extends State<TasksStats> {
                                         ])
                                     ),
                                   ),
-                                  Indicator(
+                                  const Indicator(
                                     color: Colors.grey,
                                     text: 'no tag',
                                     isSquare: false,
@@ -142,6 +192,7 @@ class _TasksStatsState extends State<TasksStats> {
                         ),
                       ),
                     ),
+
                   ]
               )
           )
