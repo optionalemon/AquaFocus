@@ -1,5 +1,6 @@
 import 'package:AquaFocus/screens/reset_password.dart';
 import 'package:AquaFocus/services/firebase_services.dart';
+import 'package:AquaFocus/services/notification_services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:AquaFocus/widgets/reusable_widget.dart';
 import 'package:AquaFocus/screens/home_screen.dart';
@@ -8,6 +9,7 @@ import 'package:flutter/material.dart';
 
 final FirebaseAuth auth = FirebaseAuth.instance;
 User? user;
+
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({Key? key}) : super(key: key);
@@ -21,6 +23,7 @@ class _SignInScreenState extends State<SignInScreen> {
   void initState() {
     auth.userChanges().listen((event) => mounted ? setState(() => user = event) : null);
     super.initState();
+    
   }
 
   TextEditingController _passwordTextController = TextEditingController();

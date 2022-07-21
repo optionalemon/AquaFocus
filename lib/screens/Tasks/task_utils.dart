@@ -1,5 +1,4 @@
 import 'dart:collection';
-
 import 'package:AquaFocus/main.dart';
 import 'package:AquaFocus/model/app_task.dart';
 import 'package:AquaFocus/screens/signin_screen.dart';
@@ -104,12 +103,12 @@ _completeTaskDialog(int moneyEarned, int fishMoney, BuildContext context,
 
 processCompletion(
     AppTask task, Function updateHomeMoney, BuildContext context) async {
-  DateTime? nextTime = null;
+  DateTime? nextTime;
   ScaffoldMessenger.of(context)
       .showSnackBar(SnackBar(content: Text('Task ${task.title} completed')));
   await removeNotification(task);
   await taskDBS.updateData(task.id, {
-    'isCompleted': task.isCompleted,
+    'isCompleted': true,
   });
   
 
@@ -124,7 +123,7 @@ processCompletion(
     if (task.repeat == 'never') {
       moneyAdded = 5;
     }
-    if (task.repeat != "never") {
+    else if (task.repeat != "never") {
       if (task.hasTime) {
         await taskDBS.updateData(task.id, {
           'prevCompletionTime': now.millisecondsSinceEpoch,

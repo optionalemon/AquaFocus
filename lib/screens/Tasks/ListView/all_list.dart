@@ -30,7 +30,7 @@ class _ListAllState extends State<ListAll> {
   ifEventCompleted(AppTask event, int index) async {
     if (!event.isCompleted) {
       setState(() {
-        widget.eventList[index].isCompleted = !event.isCompleted;
+        widget.eventList[index].isCompleted = true;
       });
       if (!widget.showCompleted && event.repeat == "never") {
         await Future.delayed(Duration(milliseconds: 400));
@@ -185,7 +185,6 @@ class _ListAllState extends State<ListAll> {
                                             icon: complStatusIcon(event),
                                             onPressed: () async {
                                               if (!event.isCompleted) {
-                                                //TODO
                                                 await ifEventCompleted(
                                                     event, index);
                                               }
