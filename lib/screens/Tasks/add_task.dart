@@ -2,7 +2,6 @@ import 'package:AquaFocus/model/app_task.dart';
 import 'package:AquaFocus/model/tag_colors.dart';
 import 'package:AquaFocus/model/tags.dart';
 import 'package:AquaFocus/screens/Tasks/task_utils.dart';
-import 'package:AquaFocus/services/notification_services.dart';
 import 'package:AquaFocus/widgets/loading.dart';
 import 'package:AquaFocus/widgets/reusable_widget.dart';
 import 'package:AquaFocus/services/task_firestore_service.dart';

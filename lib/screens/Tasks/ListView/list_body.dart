@@ -342,7 +342,7 @@ class _ListBodyPageState extends State<ListBodyPage> {
                                 MaterialPageRoute(
                                     builder: (context) => AddEventPage(
                                           selectedDate: DateTime.now(),
-                                          updateTaskDetails: () {},
+                                          updateTaskDetails: _getEvents,
                                         )));
                           })))
             ],

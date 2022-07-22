@@ -149,16 +149,9 @@ class AppTask {
 
   @override
   int get hashCode {
-    return title.hashCode ^
+    return
         id.hashCode ^
-        description.hashCode ^
-        date.hashCode ^
-        userId.hashCode ^
-        hasTime.hashCode ^
-        time.hashCode ^
-        repeat.hashCode ^
-        reminder.hashCode ^
-        tag.hashCode;
+        userId.hashCode;
   }
 }
 
