@@ -39,11 +39,7 @@ class _ListAllState extends State<ListAll> {
         });
       }
       await processCompletion(event, widget.updateHomeMoney, context);
-      if (event.repeat != "never") {
-        updateTaskDetails();
-      } else {
-        widget.getMainPageEvents();
-      }
+      updateTaskDetails();
     }
   }
 

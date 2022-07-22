@@ -53,12 +53,8 @@ class _ListTagState extends State<ListTag> {
         });
       }
       await processCompletion(event, widget.updateHomeMoney, context);
-
-      if (event.repeat != "never") {
-        _updateTask(currTag);
-      } else {
-        widget.getMainPageEvents();
-      }
+      _updateTask(currTag);
+      
     }
   }
 
