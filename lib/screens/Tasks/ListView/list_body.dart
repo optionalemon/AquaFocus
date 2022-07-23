@@ -111,64 +111,57 @@ class _ListBodyPageState extends State<ListBodyPage> {
                                         getMainPageEvents: _getEvents,
                                       )));
                         },
-                        child: DottedBorder(
-                          color: Colors.white,
-                          padding: EdgeInsets.all(6),
-                          radius: Radius.circular(15),
-                          borderType: BorderType.RRect,
-                          dashPattern: const [8, 4],
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  SizedBox(
-                                    width: size.width * 0.05,
-                                  ),
-                                  Stack(
-                                    children: [
-                                      Icon(
-                                        Icons.calendar_today,
-                                        color:
-                                            Color.fromARGB(255, 255, 255, 255),
-                                        size: size.width * 0.15,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                SizedBox(
+                                  width: size.width * 0.05,
+                                ),
+                                Stack(
+                                  children: [
+                                    Icon(
+                                      Icons.calendar_today,
+                                      color:
+                                          Color.fromARGB(255, 255, 255, 255),
+                                      size: size.width * 0.15,
+                                    ),
+                                    Positioned(
+                                      top: size.height * 0.0187,
+                                      left: size.width * 0.028,
+                                      child: Text(
+                                        dateToday,
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontFamily: 'Alata',
+                                            fontSize: 30),
                                       ),
-                                      Positioned(
-                                        top: size.height * 0.0187,
-                                        left: size.width * 0.028,
-                                        child: Text(
-                                          dateToday,
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontFamily: 'Alata',
-                                              fontSize: 30),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const Text(
-                                    " Today",
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontFamily: 'Alata',
-                                        fontSize: 30),
-                                  ),
-                                  SizedBox(
-                                    width: size.width * 0.3,
-                                  ),
-                                  Text(
-                                    "${_selectedEvents.value.length}",
-                                    style: TextStyle(
-                                        color: Color.fromARGB(255, 22, 91, 147),
-                                        fontFamily: 'Alata',
-                                        fontSize: 30),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
+                                    ),
+                                  ],
+                                ),
+                                const Text(
+                                  " Today",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontFamily: 'Alata',
+                                      fontSize: 30),
+                                ),
+                                SizedBox(
+                                  width: size.width * 0.3,
+                                ),
+                                Text(
+                                  "${_selectedEvents.value.length}",
+                                  style: TextStyle(
+                                      color: Color.fromARGB(255, 22, 91, 147),
+                                      fontFamily: 'Alata',
+                                      fontSize: 30),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
                       ),
                     ),
@@ -204,47 +197,40 @@ class _ListBodyPageState extends State<ListBodyPage> {
                                       updateHomeMoney:
                                           widget.updateHomeMoney)));
                         },
-                        child: DottedBorder(
-                          color: Colors.white,
-                          padding: EdgeInsets.all(6),
-                          radius: Radius.circular(15),
-                          borderType: BorderType.RRect,
-                          dashPattern: const [8, 4],
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  SizedBox(
-                                    width: size.width * 0.05,
-                                  ),
-                                  Icon(
-                                    Icons.all_inbox,
-                                    color: Color.fromARGB(255, 255, 255, 255),
-                                    size: size.width * 0.15,
-                                  ),
-                                  const Text(
-                                    " All      ",
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontFamily: 'Alata',
-                                        fontSize: 30),
-                                  ),
-                                  SizedBox(
-                                    width: size.width * 0.3,
-                                  ),
-                                  Text(
-                                    "${eventList.length}",
-                                    style: TextStyle(
-                                        color: Color.fromARGB(255, 44, 81, 175),
-                                        fontFamily: 'Alata',
-                                        fontSize: 30),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                SizedBox(
+                                  width: size.width * 0.05,
+                                ),
+                                Icon(
+                                  Icons.all_inbox,
+                                  color: Color.fromARGB(255, 255, 255, 255),
+                                  size: size.width * 0.15,
+                                ),
+                                const Text(
+                                  " All      ",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontFamily: 'Alata',
+                                      fontSize: 30),
+                                ),
+                                SizedBox(
+                                  width: size.width * 0.3,
+                                ),
+                                Text(
+                                  "${eventList.length}",
+                                  style: TextStyle(
+                                      color: Color.fromARGB(255, 44, 81, 175),
+                                      fontFamily: 'Alata',
+                                      fontSize: 30),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
                       ),
                     ),
@@ -282,47 +268,40 @@ class _ListBodyPageState extends State<ListBodyPage> {
                                       updateHomeMoney:
                                           widget.updateHomeMoney)));
                         },
-                        child: DottedBorder(
-                          color: Colors.white,
-                          padding: EdgeInsets.all(6),
-                          radius: Radius.circular(15),
-                          borderType: BorderType.RRect,
-                          dashPattern: const [8, 4],
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  SizedBox(
-                                    width: size.width * 0.05,
-                                  ),
-                                  Icon(
-                                    Icons.tag,
-                                    color: Color.fromARGB(255, 255, 255, 255),
-                                    size: size.width * 0.15,
-                                  ),
-                                  const Text(
-                                    " Tags  ",
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontFamily: 'Alata',
-                                        fontSize: 30),
-                                  ),
-                                  SizedBox(
-                                    width: size.width * 0.3,
-                                  ),
-                                  Text(
-                                    "${eventTagList.length}",
-                                    style: TextStyle(
-                                        color: Color.fromARGB(255, 58, 41, 145),
-                                        fontFamily: 'Alata',
-                                        fontSize: 30),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                SizedBox(
+                                  width: size.width * 0.05,
+                                ),
+                                Icon(
+                                  Icons.tag,
+                                  color: Color.fromARGB(255, 255, 255, 255),
+                                  size: size.width * 0.15,
+                                ),
+                                const Text(
+                                  " Tags  ",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontFamily: 'Alata',
+                                      fontSize: 30),
+                                ),
+                                SizedBox(
+                                  width: size.width * 0.3,
+                                ),
+                                Text(
+                                  "${eventTagList.length}",
+                                  style: TextStyle(
+                                      color: Color.fromARGB(255, 58, 41, 145),
+                                      fontFamily: 'Alata',
+                                      fontSize: 30),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
                       ),
                     ),
