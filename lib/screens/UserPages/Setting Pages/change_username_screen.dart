@@ -148,7 +148,7 @@ class _changeUsernameScreenState extends State<changeUsernameScreen> {
                                     SizedBox(height: size.height * 0.03),
                                     ElevatedButton(
                                         style: ElevatedButton.styleFrom(
-                                            backgroundColor: Colors.blue.withOpacity(0.5),
+                                            primary: Colors.blue.withOpacity(0.5),
                                             fixedSize:
                                                 Size(size.width * 0.8, 50),
                                             shape: RoundedRectangleBorder(
