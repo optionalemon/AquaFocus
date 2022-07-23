@@ -61,7 +61,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 forgetPassword(size),
                 firebaseButton(context, "Log In", () {
                   _signin();
-                }),
+                }, false),
                 signUpOption(),
                 buildSignInWithText(size),
                 buildSocialBtnRow(size)

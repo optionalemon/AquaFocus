@@ -206,8 +206,8 @@ class _CountDownScreenState extends State<CountDownScreen> {
         hvStarted
             ? _startedDisplay(context)
             : duration.inSeconds >= 10
-            ? firebaseButton(context, "Start", () => startTimer())
-            : firebaseButton(context, "Start!", () {}),
+            ? firebaseButton(context, "Start", () => startTimer(),true)
+            : firebaseButton(context, "Start!", () {},true),
       ],
     );
   }
@@ -225,7 +225,7 @@ class _CountDownScreenState extends State<CountDownScreen> {
               showDialog(
                   context: context, builder: (_) => _cancelTaskDialog());
               timer!.cancel();
-            },
+            },true
           )
               : firebaseButton(
             context,
@@ -234,7 +234,7 @@ class _CountDownScreenState extends State<CountDownScreen> {
               showDialog(
                   context: context,
                   builder: (_) => _completeTaskDialog(context));
-            },
+            },true
           )
         ]);
   }

@@ -170,6 +170,7 @@ class _CalendarBodyState extends State<CalendarBody> {
                             calendarFormat: _calendarFormat,
                             rangeSelectionMode: _rangeSelectionMode,
                             eventLoader: _getEventsForDay,
+                            availableCalendarFormats: const {CalendarFormat.month : 'Week', CalendarFormat.twoWeeks: 'Month', CalendarFormat.week: '2 weeks'},
                             startingDayOfWeek: StartingDayOfWeek.monday,
                             rangeStartDay: _rangeStart,
                             rangeEndDay: _rangeEnd,

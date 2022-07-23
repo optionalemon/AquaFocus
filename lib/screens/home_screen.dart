@@ -224,8 +224,10 @@ class NavigationDrawer extends StatelessWidget {
                 size: size.height * 0.025,
                 color: Colors.blue,
               ),
-              title: Text(
+              title: AutoSizeText(
                 "Aquarium",
+                maxLines: 1,
+                minFontSize: 9,
                 style:
                     TextStyle(fontSize: size.height * 0.02, color: Colors.blue),
               ),
@@ -241,8 +243,10 @@ class NavigationDrawer extends StatelessWidget {
                 size: size.height * 0.025,
                 color: Colors.blue,
               ),
-              title: Text(
+              title: AutoSizeText(
                 "Shop",
+                maxLines: 1,
+                minFontSize: 9,
                 style:
                     TextStyle(fontSize: size.height * 0.02, color: Colors.blue),
               ),
@@ -258,8 +262,10 @@ class NavigationDrawer extends StatelessWidget {
                 size: size.height * 0.025,
                 color: Colors.blue,
               ),
-              title: Text(
+              title: AutoSizeText(
                 "Statistics",
+                maxLines: 1,
+                 minFontSize: 9,
                 style:
                     TextStyle(fontSize: size.height * 0.02, color: Colors.blue),
               ),
@@ -275,8 +281,10 @@ class NavigationDrawer extends StatelessWidget {
                 Icons.settings,
                 size: size.height * 0.025,
               ),
-              title: Text(
+              title: AutoSizeText(
                 "Settings",
+                maxLines: 1,
+                 minFontSize: 9,
                 style: TextStyle(fontSize: size.height * 0.02),
               ),
               onTap: () {
@@ -290,8 +298,10 @@ class NavigationDrawer extends StatelessWidget {
                 Icons.sensor_door_outlined,
                 size: size.height * 0.025,
               ),
-              title: Text(
+              title: AutoSizeText(
                 "Log out",
+                 minFontSize: 9,
+                maxLines: 1,
                 style: TextStyle(fontSize: size.height * 0.02),
               ),
               onTap: () {
