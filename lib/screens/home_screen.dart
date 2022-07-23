@@ -68,6 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
               updateHomeScreen: _updateHomeScreen,
               updateHomeName: _updateHomeName,
               isCheckList: isCheckList,
+              name: name,
             ),
             body: Stack(children: <Widget>[
               Container(
@@ -155,11 +156,13 @@ class NavigationDrawer extends StatelessWidget {
       {required this.updateHomeScreen,
       required this.updateHomeName,
       required this.isCheckList,
+      required this.name,
       Key? key})
       : super(key: key);
   final currUser = FirebaseAuth.instance.currentUser;
   final updateHomeScreen;
   final updateHomeName;
+  String name;
   bool isCheckList;
 
   @override
@@ -192,20 +195,12 @@ class NavigationDrawer extends StatelessWidget {
               backgroundImage: NetworkImage(getProfilePhoto()),
             ),
             Padding(padding: EdgeInsets.all(size.height * 0.01)),
-            Text(getEmail(),
+            Text(name,
                 style: TextStyle(
                     fontSize: size.height * 0.02, color: Colors.white)),
             Padding(padding: EdgeInsets.all(size.height * 0.01)),
           ],
         ));
-  }
-
-  getEmail() {
-    if (currUser != null) {
-      return currUser!.email;
-    } else {
-      return "Annoymous user";
-    }
   }
 
   getProfilePhoto() {
