@@ -6,10 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class LineChartWidget extends StatefulWidget {
-const LineChartWidget({Key? key}) : super(key: key);
+  const LineChartWidget({Key? key}) : super(key: key);
 
-@override
-State<LineChartWidget> createState() => _LineChartWidgetState();
+  @override
+  State<LineChartWidget> createState() => _LineChartWidgetState();
 }
 
 class _LineChartWidgetState extends State<LineChartWidget> {
@@ -173,23 +173,35 @@ class _LineChartWidgetState extends State<LineChartWidget> {
             ),
           ),
           Positioned(
-            top: 36,
-            right: 30,
-            child: TextButton(
-              onPressed: () {
-                setState(() {
-                  showAvg = !showAvg;
-                });
-              },
-              child: Text(
-                'show average',
-                style: TextStyle(
-                    fontSize: 14,
-                    fontStyle: FontStyle.italic,
-                    color:
-                    showAvg ? Colors.white.withOpacity(0.5) : Colors.white),
-              ),
-            ),
+              top: 36,
+              right: 30,
+              child: ElevatedButton(
+                style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStateProperty.resolveWith((states) {
+                      if (states.contains(MaterialState.pressed)) {
+                        return Colors.black26;
+                      }
+                      return Color(0xff02d39a).withOpacity(0.5);
+                    }),
+                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20)))),
+                onPressed: () {
+                  setState(() {
+                    showAvg = !showAvg;
+                  });
+                },
+                child: Text(
+                  'show average',
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontStyle: FontStyle.italic,
+                      color: showAvg
+                          ? Colors.white.withOpacity(0.5)
+                          : Colors.white),
+                ),
+              )
           ),
         ],
       );
@@ -231,49 +243,62 @@ class _LineChartWidgetState extends State<LineChartWidget> {
     );
   }
 
+  // Widget leftTitleWidgets(double value, TitleMeta meta) {
+  //   const style = TextStyle(
+  //     color: Colors.white,
+  //     //fontWeight: FontWeight.bold,
+  //     fontSize: 10,
+  //   );
+  //   String text;
+  //   switch (value.toInt()) {
+  //     case 10:
+  //       text = '10';
+  //       break;
+  //     case 30:
+  //       text = '30';
+  //       break;
+  //     case 50:
+  //       text = '50';
+  //       break;
+  //     case 70:
+  //       text = '70';
+  //       break;
+  //     case 90:
+  //       text = '90';
+  //       break;
+  //     case 110:
+  //       text = '110';
+  //       break;
+  //     case 130:
+  //       text = '130';
+  //       break;
+  //     case 150:
+  //       text = '150';
+  //       break;
+  //     case 170:
+  //       text = '170';
+  //       break;
+  //     case 190:
+  //       text = '190';
+  //       break;
+  //     default:
+  //       return Container();
+  //   }
+  //
+  //   return Text(text, style: style, textAlign: TextAlign.left);
+  // }
+
   Widget leftTitleWidgets(double value, TitleMeta meta) {
     const style = TextStyle(
       color: Colors.white,
-      //fontWeight: FontWeight.bold,
-      fontSize: 10,
+      fontSize: 9,
     );
-    String text;
-    switch (value.toInt()) {
-      case 10:
-        text = '10';
-        break;
-      case 30:
-        text = '30';
-        break;
-      case 50:
-        text = '50';
-        break;
-      case 70:
-        text = '70';
-        break;
-      case 90:
-        text = '90';
-        break;
-      case 110:
-        text = '110';
-        break;
-      case 130:
-        text = '130';
-        break;
-      case 150:
-        text = '150';
-        break;
-      case 170:
-        text = '170';
-        break;
-      case 190:
-        text = '190';
-        break;
-      default:
-        return Container();
-    }
-
-    return Text(text, style: style, textAlign: TextAlign.left);
+    Widget text;
+    text = Text(value.toInt().toString(), style: style);
+    return SideTitleWidget(
+      axisSide: meta.axisSide,
+      child: text,
+    );
   }
 
   LineChartData mainData() {
@@ -281,7 +306,7 @@ class _LineChartWidgetState extends State<LineChartWidget> {
       gridData: FlGridData(
         show: true,
         drawVerticalLine: true,
-        horizontalInterval: 1,
+        horizontalInterval: 5,
         verticalInterval: 1,
         getDrawingHorizontalLine: (value) {
           return FlLine(
@@ -315,7 +340,7 @@ class _LineChartWidgetState extends State<LineChartWidget> {
         leftTitles: AxisTitles(
           sideTitles: SideTitles(
             showTitles: true,
-            interval: 1,
+            interval: 40,
             getTitlesWidget: leftTitleWidgets,
             reservedSize: 42,
           ),
@@ -323,19 +348,18 @@ class _LineChartWidgetState extends State<LineChartWidget> {
       ),
       borderData: FlBorderData(
           show: true,
-          border: Border.all(color: const Color(0xff37434d).withOpacity(0.5), width: 1)),
+          border: Border.all(
+              color: const Color(0xff37434d).withOpacity(0.5), width: 1)),
       minX: 0,
       maxX: 23,
       minY: 0,
-      maxY: 190,
+      maxY: (dailyHours.reduce((value, element) => value > element ? value : element) / 10).ceilToDouble() * 10,
       lineBarsData: [
         LineChartBarData(
           spots: List.generate(
-              24, (index) => FlSpot(
-              index.roundToDouble(),
-              dailyHours[index].roundToDouble()
-          )
-          ),
+              24,
+              (index) => FlSpot(
+                  index.roundToDouble(), dailyHours[index].roundToDouble())),
           isCurved: true,
           gradient: LinearGradient(
             colors: gradientColors,
@@ -371,7 +395,7 @@ class _LineChartWidgetState extends State<LineChartWidget> {
         show: true,
         drawHorizontalLine: true,
         verticalInterval: 1,
-        horizontalInterval: 1,
+        horizontalInterval: 5,
         getDrawingVerticalLine: (value) {
           return FlLine(
             color: const Color(0xff37434d).withOpacity(0.5),
@@ -400,7 +424,7 @@ class _LineChartWidgetState extends State<LineChartWidget> {
             showTitles: true,
             getTitlesWidget: leftTitleWidgets,
             reservedSize: 42,
-            interval: 1,
+            interval: 40,
           ),
         ),
         topTitles: AxisTitles(
@@ -412,14 +436,16 @@ class _LineChartWidgetState extends State<LineChartWidget> {
       ),
       borderData: FlBorderData(
           show: true,
-          border: Border.all(color: const Color(0xff37434d).withOpacity(0.5), width: 1)),
+          border: Border.all(
+              color: const Color(0xff37434d).withOpacity(0.5), width: 1)),
       minX: 0,
       maxX: 23,
       minY: 0,
-      maxY: 190,
+      maxY: (dailyHours.reduce((value, element) => value > element ? value : element) / 10).ceilToDouble() * 10,
       lineBarsData: [
         LineChartBarData(
-          spots: List.generate(24, (index) => FlSpot(index.roundToDouble(), dailyAverage)),
+          spots: List.generate(
+              24, (index) => FlSpot(index.roundToDouble(), dailyAverage)),
           isCurved: true,
           gradient: LinearGradient(
             colors: [
@@ -463,7 +489,7 @@ class _LineChartWidgetState extends State<LineChartWidget> {
         show: true,
         drawHorizontalLine: true,
         verticalInterval: 1,
-        horizontalInterval: 1,
+        horizontalInterval: 5,
         getDrawingVerticalLine: (value) {
           return FlLine(
             color: const Color(0xff37434d).withOpacity(0.5),
@@ -492,7 +518,7 @@ class _LineChartWidgetState extends State<LineChartWidget> {
             showTitles: true,
             getTitlesWidget: leftTitleWidgets,
             reservedSize: 42,
-            interval: 1,
+            interval: 40,
           ),
         ),
         topTitles: AxisTitles(
@@ -504,11 +530,12 @@ class _LineChartWidgetState extends State<LineChartWidget> {
       ),
       borderData: FlBorderData(
           show: true,
-          border: Border.all(color: const Color(0xff37434d).withOpacity(0.5), width: 1)),
+          border: Border.all(
+              color: const Color(0xff37434d).withOpacity(0.5), width: 1)),
       minX: 0,
       maxX: 23,
       minY: 0,
-      maxY: 190,
+      maxY: 200,
       lineBarsData: [
         LineChartBarData(
           spots: List.generate(24, (index) => FlSpot(index.roundToDouble(), 0)),

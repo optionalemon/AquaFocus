@@ -1,5 +1,6 @@
 import 'package:AquaFocus/screens/signin_screen.dart';
 import 'package:AquaFocus/services/database_services.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 
@@ -66,7 +67,7 @@ class _BarChartWidgetState extends State<BarChartWidget> {
                 ),
                 children: <TextSpan>[
                   TextSpan(
-                    text: (rod.toY - 1).toString(),
+                    text: (rod.toY).toString(),
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 16,
@@ -183,7 +184,7 @@ class _BarChartWidgetState extends State<BarChartWidget> {
       x: x,
       barRods: [
         BarChartRodData(
-          toY: isTouched ? y + 1 : y,
+          toY: isTouched ? y : y,
           color: isTouched ? Colors.white : Colors.cyanAccent,
           width: width,
           borderSide: isTouched
@@ -191,13 +192,14 @@ class _BarChartWidgetState extends State<BarChartWidget> {
               : const BorderSide(color: Colors.white, width: 0),
           backDrawRodData: BackgroundBarChartRodData(
             show: true,
-            toY: 200,
+            toY: listEquals(weekHours, [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]) ? 200 : (weekHours.reduce((value, element) => value > element ? value : element) / 10).ceilToDouble() * 10,
             color: Colors.blueGrey[400]!.withOpacity(0.5),
           ),
         ),
       ],
       showingTooltipIndicators: showTooltips,
     );
+
   }
 
   List<BarChartGroupData> showingGroups() => List.generate(7, (i) {

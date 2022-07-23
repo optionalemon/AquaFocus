@@ -44,10 +44,6 @@ class _HeatMapWidgetState extends State<HeatMapWidget> {
             colorsets: {
               1: Color.fromARGB(255, 72, 174, 157),
             },
-            onClick: (value) {
-              ScaffoldMessenger.of(context)
-                  .showSnackBar(SnackBar(content: Text(value.toString())));
-            },
             showColorTip: true,
             colorTipCount: 5,
           );
