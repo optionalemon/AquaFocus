@@ -8,6 +8,7 @@ import 'package:AquaFocus/screens/signin_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_options.dart';
+import 'package:flutter/services.dart';
 
 int? initScreen;
 NotifyHelper notifyHelper = NotifyHelper();
@@ -39,6 +40,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations(
+      [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
     return FutureBuilder(
         future: Firebase.initializeApp(),
         builder: (context, snapshot) {

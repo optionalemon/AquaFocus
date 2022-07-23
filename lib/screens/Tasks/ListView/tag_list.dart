@@ -124,21 +124,17 @@ class _ListTagState extends State<ListTag> {
             });
           },
           feedback: Card(
-            color: Colors.amber.withOpacity(0),
-            child: Row(
-              children: [
-                ChoiceChip(
-                  backgroundColor: Colors.white,
-                  selectedColor: _getTagColor(tag),
-                  label: Text(
-                    tag.title,
-                    style: selectedIndex == index
-                        ? TextStyle(color: Colors.white)
-                        : TextStyle(color: _getTagColor(tag)),
-                  ),
-                  selected: selectedIndex == index,
-                ),
-              ],
+            elevation: 0,
+            color: Colors.transparent,
+            child: ChoiceChip(
+              backgroundColor: Colors.white,
+              label: Text(
+                tag.title,
+                style: selectedIndex == index
+                    ? TextStyle(color: Colors.white)
+                    : TextStyle(color: _getTagColor(tag)),
+              ),
+              selected: selectedIndex == index,
             ),
           ),
           child: Row(

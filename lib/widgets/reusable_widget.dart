@@ -40,7 +40,7 @@ TextField reusableTextField(String text, IconData icon, bool isPasswordType,
 }
 
 Container firebaseButton(
-    BuildContext context, String title, Function onTap) {
+    BuildContext context, String title, Function onTap, bool isOceanBackground) {
   return Container(
     width: MediaQuery.of(context).size.width,
     height: MediaQuery.of(context).size.height * 0.07,
@@ -60,7 +60,7 @@ Container firebaseButton(
             if (states.contains(MaterialState.pressed)) {
               return Colors.black26;
             }
-            return Color.fromARGB(255, 40, 64, 104).withOpacity(0.9);
+            return isOceanBackground ? Color.fromARGB(218, 96, 163, 218):Color.fromARGB(255, 40, 64, 104).withOpacity(0.9);
           }),
           shape: MaterialStateProperty.all<RoundedRectangleBorder>(
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)))),

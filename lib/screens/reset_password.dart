@@ -25,6 +25,9 @@ class _ResetPasswordState extends State<ResetPassword> {
     try {
       await FirebaseAuth.instance
           .sendPasswordResetEmail(email: _emailTextController.text);
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Instructions have been sent to your email successfully!'),
+      ));
       Navigator.of(context).pop();
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -61,8 +64,8 @@ class _ResetPasswordState extends State<ResetPassword> {
             padding: EdgeInsets.fromLTRB(20, 120, 20, 0),
             child: Column(
               children: <Widget>[
-              SizedBox(
-                  height: size.height*0.02,
+                SizedBox(
+                  height: size.height * 0.02,
                 ),
                 reusableTextField(
                     "Enter Email Id",
@@ -72,11 +75,11 @@ class _ResetPasswordState extends State<ResetPassword> {
                     _emailErrorText,
                     (_) => setState(() {})),
                 SizedBox(
-                  height: size.height*0.02,
+                  height: size.height * 0.02,
                 ),
                 firebaseButton(context, "Reset Password", () {
                   _emailErrorText == null ? _resetPass() : null;
-                })
+                },false)
               ],
             ),
           ))),

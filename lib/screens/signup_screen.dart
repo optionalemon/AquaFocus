@@ -104,7 +104,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               content: Text("Passwords do not match"),
                             )))
                       : null;
-                })
+                }, false)
               ],
             ),
           ))),

@@ -27,15 +27,17 @@ class AddEventPage extends StatefulWidget {
 }
 
 class _AddEventPageState extends State<AddEventPage> {
-  final _formKey = GlobalKey<FormBuilderState>();
+  var _formKey = GlobalKey<FormBuilderState>();
   late bool isTimeSetted;
   late List tags;
   bool loading = true;
+  String? initialTag;
 
   @override
   void initState() {
     super.initState();
     isTimeSetted = widget.task?.hasTime ?? false;
+    initialTag = widget.task?.tag;
     getTags();
   }
 
@@ -77,6 +79,7 @@ class _AddEventPageState extends State<AddEventPage> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    _formKey = GlobalKey<FormBuilderState>(); 
 
     return loading
         ? const Loading()
@@ -353,7 +356,7 @@ class _AddEventPageState extends State<AddEventPage> {
                         Divider(),
                         FormBuilderChoiceChip(
                           name: 'tag',
-                          initialValue: widget.task?.tag,
+                          initialValue: initialTag,
                           spacing: size.width * 0.01,
                           backgroundColor: Colors.grey,
                           selectedColor: Color.fromARGB(54, 255, 255, 255),
@@ -372,20 +375,18 @@ class _AddEventPageState extends State<AddEventPage> {
                         ),
                         TextButton(
                             onPressed: () => newTag(),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: const [
-                                Text(
-                                  "Add tag",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    decoration: TextDecoration.underline,
-                                  ),
+                            child: const Align(
+                              alignment: Alignment.centerRight,
+                              child: Text(
+                                "Add tag",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  decoration: TextDecoration.underline,
                                 ),
-                              ],
-                            ))
-                      ])),
+                              ),
+                            ),
+                            )
+                      ])), 
                   SizedBox(height: MediaQuery.of(context).size.height * 0.02),
                   firebaseButton(context, "Save", () async {
                     bool validated = _formKey.currentState!.validate();
@@ -433,7 +434,7 @@ class _AddEventPageState extends State<AddEventPage> {
                         const SnackBar(content: Text('New task added')),
                       );
                     }
-                  }),
+                  }, true),
                 ]),
               )
             ]));
@@ -443,7 +444,7 @@ class _AddEventPageState extends State<AddEventPage> {
     Size size = MediaQuery.of(context).size;
     String color = '';
     TextEditingController _tagController = TextEditingController();
-    final _tagFormKey = GlobalKey<FormState>();
+    final tagFormKey = GlobalKey<FormState>();
     Widget cancelButton = TextButton(
       child: const Text("Cancel", style: TextStyle(color: Colors.blue)),
       onPressed: () {
@@ -452,12 +453,13 @@ class _AddEventPageState extends State<AddEventPage> {
     );
     Widget doneButton = TextButton(
         onPressed: () async {
-          if (_tagFormKey.currentState!.validate()) {
-            _tagFormKey.currentState!.save();
+          if (tagFormKey.currentState!.validate()) {
+            tagFormKey.currentState!.save();
             Tags newTag = Tags(title: _tagController.text, color: color);
             await DatabaseServices().addTags(newTag);
+            tags.add(newTag);
             setState(() {
-              tags.add(newTag);
+              initialTag = newTag.title;
             });
             Navigator.of(context).pop();
           }
@@ -470,7 +472,7 @@ class _AddEventPageState extends State<AddEventPage> {
           borderRadius: BorderRadius.all(Radius.circular(20.0))),
       title: const Text("New Tag"),
       content: Form(
-        key: _tagFormKey,
+        key: tagFormKey,
         child: Wrap(children: [
           TextFormField(
               controller: _tagController,
@@ -489,13 +491,14 @@ class _AddEventPageState extends State<AddEventPage> {
                 filled: true,
                 fillColor: Colors.cyan.withOpacity(0.5),
                 labelText: 'Tag Name',
+                labelStyle: TextStyle(color: Color.fromARGB(255, 99, 99, 99)),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(20),
                   borderSide: BorderSide.none,
                 ),
               )),
-          Divider(),
-          SizedBox(height: 40),
+          const Divider(),
+          const SizedBox(height: 40),
           FormBuilderChoiceChip<String>(
               onSaved: (value) {
                 color = value!;

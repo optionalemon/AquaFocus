@@ -144,7 +144,7 @@ class _CountUpScreenState extends State<CountUpScreen> {
       children: [
         hvStarted
             ? _startedDisplay()
-            : firebaseButton(context, "Start", () => startTimer()),
+            : firebaseButton(context, "Start", () => startTimer(),true),
       ],
     );
   }
@@ -166,7 +166,7 @@ class _CountUpScreenState extends State<CountUpScreen> {
               setState(() {
                 timer!.cancel();
               });
-            },
+            },true
           )
         ]);
   }
