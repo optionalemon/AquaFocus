@@ -13,13 +13,14 @@ class FocusTimerScreen extends StatefulWidget {
 class _FocusTimerScreenState extends State<FocusTimerScreen> {
   int currentIndex = 0;
   late final _pages;
+  bool hvStarted = false;
 
   @override
   void initState() {
     super.initState();
     _pages = <Widget>[
-      CountDownScreen(widget._updateHomeScreen),
-      CountUpScreen(widget._updateHomeScreen),
+      CountDownScreen(widget._updateHomeScreen, hvStarted, updateStart),
+      CountUpScreen(widget._updateHomeScreen, hvStarted, updateStart),
     ];
   }
 
@@ -29,17 +30,23 @@ class _FocusTimerScreenState extends State<FocusTimerScreen> {
     });
   }
 
+  void updateStart(bool newStart) {
+    setState(() {
+      hvStarted = newStart;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       extendBody: true,
       extendBodyBehindAppBar: true,
-      appBar: AppBar(
+      appBar: hvStarted ? null : AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: const Text('Focus Timer'),
       ),
-      bottomNavigationBar: BottomNavigationBar(
+      bottomNavigationBar: hvStarted ? null : BottomNavigationBar(
         elevation: 0,
         backgroundColor: Colors.blue[400]!.withOpacity(0.5),
         selectedItemColor: Colors.white,
@@ -47,13 +54,9 @@ class _FocusTimerScreenState extends State<FocusTimerScreen> {
         showUnselectedLabels: false,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-              icon: Icon(Icons.access_time_filled),
-              label: 'Countdown'
-          ),
+              icon: Icon(Icons.access_time_filled), label: 'Countdown'),
           BottomNavigationBarItem(
-              icon: Icon(Icons.access_time),
-              label: 'Count up'
-          ),
+              icon: Icon(Icons.access_time), label: 'Count up'),
         ],
         currentIndex: currentIndex,
         onTap: _onItemTapped,

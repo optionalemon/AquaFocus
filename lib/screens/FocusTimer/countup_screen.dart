@@ -9,7 +9,9 @@ import 'package:intl/intl.dart';
 
 class CountUpScreen extends StatefulWidget {
   final Function _updateHomeScreen;
-  CountUpScreen(this._updateHomeScreen);
+  bool hvStarted;
+  final Function updateStart;
+  CountUpScreen(this._updateHomeScreen, this.hvStarted, this.updateStart);
 
   @override
   State<CountUpScreen> createState() => _CountUpScreenState();
@@ -20,7 +22,6 @@ class _CountUpScreenState extends State<CountUpScreen> {
   DateTime? startTime;
   DateTime? endTime;
   Timer? timer;
-  bool hvStarted = false;
   int fishMoney = 0;
   bool loading = true;
 
@@ -47,7 +48,8 @@ class _CountUpScreenState extends State<CountUpScreen> {
   }
 
   void startTimer() {
-    hvStarted = true;
+    widget.hvStarted = true;
+    widget.updateStart(true);
     timer?.cancel();
     timer = Timer.periodic(Duration(seconds: 1), (_) => setCountUp());
     startTime = DateTime.now();
@@ -62,7 +64,8 @@ class _CountUpScreenState extends State<CountUpScreen> {
   }
 
   void stopTimer(bool isComplete) {
-    hvStarted = false;
+    widget.hvStarted = false;
+    widget.updateStart(false);
     duration = Duration(seconds: 0);
     timer!.cancel();
   }
@@ -98,11 +101,11 @@ class _CountUpScreenState extends State<CountUpScreen> {
               buildTimeCard(currTimeStr[2], 'SECONDS', screenSize)
             ]),
             _countUpButtons(),
-            hvStarted && duration.inSeconds < 10
+            widget.hvStarted && duration.inSeconds < 10
                 ? Text(
-              "Must be more than 10 seconds",
-              style: TextStyle(color: Color.fromARGB(255, 255, 255, 255)),
-            )
+                    "Must be more than 10 seconds",
+                    style: TextStyle(color: Color.fromARGB(255, 255, 255, 255)),
+                  )
                 : Container(),
           ]),
         ],
@@ -142,9 +145,9 @@ class _CountUpScreenState extends State<CountUpScreen> {
   _countUpButtons() {
     return Column(
       children: [
-        hvStarted
+        widget.hvStarted
             ? _startedDisplay()
-            : firebaseButton(context, "Start", () => startTimer(),true),
+            : firebaseButton(context, "Start", () => startTimer(), true),
       ],
     );
   }
@@ -154,20 +157,17 @@ class _CountUpScreenState extends State<CountUpScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          firebaseButton(
-            context,
-            duration.inSeconds >= 10 ? 'Done' : 'Cancel',
-                () {
-              showDialog(
-                  context: context,
-                  builder: (_) => duration.inSeconds >= 10
-                      ? _completeTaskDialog()
-                      : _cancelTaskDialog());
-              setState(() {
-                timer!.cancel();
-              });
-            },true
-          )
+          firebaseButton(context, duration.inSeconds >= 10 ? 'Done' : 'Cancel',
+              () {
+            showDialog(
+                context: context,
+                builder: (_) => duration.inSeconds >= 10
+                    ? _completeTaskDialog()
+                    : _cancelTaskDialog());
+            setState(() {
+              timer!.cancel();
+            });
+          }, true)
         ]);
   }
 
@@ -177,7 +177,8 @@ class _CountUpScreenState extends State<CountUpScreen> {
     int moneyEarned = int.parse(totalTime[2]) +
         int.parse(totalTime[1]) * 60 +
         int.parse(totalTime[0]) * 60;
-    DatabaseServices().saveFocusTime(moneyEarned, DateFormat('yyyy-MM-dd').format(DateTime.now()), startTime!, endTime!);
+    DatabaseServices().saveFocusTime(moneyEarned,
+        DateFormat('yyyy-MM-dd').format(DateTime.now()), startTime!, endTime!);
     DatabaseServices().addMoney(moneyEarned);
 
     print('startTime:$startTime');
@@ -188,25 +189,25 @@ class _CountUpScreenState extends State<CountUpScreen> {
 
     return AlertDialog(
       title: const Text("Congrats! You have earned"),
-      content: Wrap(
-          children: [Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset(
-                    'assets/icons/money.png',
-                    height: size.height * 0.035,
-                  ),
-                  SizedBox(width: size.width * 0.02),
-                  Text(
-                    '$moneyEarned',
-                  ),
-                ],
-              )
-            ],
-          ),]
-      ),
+      content: Wrap(children: [
+        Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset(
+                  'assets/icons/money.png',
+                  height: size.height * 0.035,
+                ),
+                SizedBox(width: size.width * 0.02),
+                Text(
+                  '$moneyEarned',
+                ),
+              ],
+            )
+          ],
+        ),
+      ]),
       actions: [
         ElevatedButton(
           onPressed: () {
@@ -244,7 +245,6 @@ class _CountUpScreenState extends State<CountUpScreen> {
                     stopTimer(false);
                   });
                   Navigator.pop(context);
-
                 },
                 child: Text("Yes"),
               ),
@@ -253,4 +253,3 @@ class _CountUpScreenState extends State<CountUpScreen> {
         ]);
   }
 }
-

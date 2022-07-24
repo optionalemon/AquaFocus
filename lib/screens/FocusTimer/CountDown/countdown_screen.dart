@@ -1,3 +1,4 @@
+import 'package:AquaFocus/main.dart';
 import 'package:AquaFocus/widgets/loading.dart';
 import 'package:AquaFocus/widgets/reusable_widget.dart';
 import 'package:AquaFocus/screens/FocusTimer/CountDown/countdown_helper.dart';
@@ -6,11 +7,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'dart:async';
-import 'countdown_helper.dart';
 
 class CountDownScreen extends StatefulWidget {
   final Function _updateHomeScreen;
-  CountDownScreen(this._updateHomeScreen);
+  bool hvStarted;
+  final Function updateStart;
+  CountDownScreen(this._updateHomeScreen, this.hvStarted, this.updateStart);
 
   @override
   State<CountDownScreen> createState() => _CountDownScreenState();
@@ -22,7 +24,6 @@ class _CountDownScreenState extends State<CountDownScreen> {
   DateTime? startTime;
   DateTime? endTime;
   Timer? timer;
-  bool hvStarted = false;
   int fishMoney = 0;
   bool loading = true;
 
@@ -49,7 +50,8 @@ class _CountDownScreenState extends State<CountDownScreen> {
   }
 
   void startTimer() {
-    hvStarted = true;
+    widget.hvStarted = true;
+    widget.updateStart(true);
     timer?.cancel();
     initialDur = duration;
     timer = Timer.periodic(Duration(seconds: 1), (_) => setCountDown());
@@ -58,7 +60,8 @@ class _CountDownScreenState extends State<CountDownScreen> {
   }
 
   void stopTimer(bool isComplete) {
-    hvStarted = false;
+    widget.hvStarted = false;
+    widget.updateStart(false);
     duration = initialDur;
     timer!.cancel();
   }
@@ -67,7 +70,10 @@ class _CountDownScreenState extends State<CountDownScreen> {
     final reduceSecondsBy = 1;
     setState(() {
       final seconds = duration.inSeconds - reduceSecondsBy;
-      if (duration.inSeconds == 0 && hvStarted) {
+      if (duration.inSeconds == 0 && widget.hvStarted) {
+        notifyHelper.showNotification();
+        showDialog(
+            context: context, builder: (_) => _completeTaskDialog(context));
         timer!.cancel();
       } else {
         duration = Duration(seconds: seconds);
@@ -82,132 +88,132 @@ class _CountDownScreenState extends State<CountDownScreen> {
     return loading
         ? const Loading()
         : Container(
-        constraints: const BoxConstraints.expand(),
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/images/mainscreen.png'),
-            fit: BoxFit.cover,
-          ),
-        ),
-        child: Column(
-          children: [
-            SizedBox(height: size.height * 0.1),
-            Column(
+            constraints: const BoxConstraints.expand(),
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/mainscreen.png'),
+                fit: BoxFit.cover,
+              ),
+            ),
+            child: Column(
               children: [
-                SizedBox(height: size.height * 0.05),
-                Image.asset(
-                  'assets/images/hourglass.png',
-                  height: size.height * 0.3,
-                ),
-                hvStarted
-                    ? SizedBox(height: size.height * 0.05)
-                    : Container(),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                SizedBox(height: size.height * 0.1),
+                Column(
                   children: [
-                    buildTimeCard(currTimeStr[0], 'HOURS', size),
-                    hvStarted
-                        ? SizedBox(width: size.width * 0.02)
-                        : SizedBox(
-                      width: size.width * 0.1,
-                      child: RotatedBox(
-                          quarterTurns: 3,
-                          child: Slider(
-                            value: duration.inHours.toDouble(),
-                            onChanged: (newHour) {
-                              setState(() {
-                                duration = Duration(
-                                    hours: newHour.toInt(),
-                                    minutes: duration.inMinutes -
-                                        duration.inHours * 60,
-                                    seconds: duration.inSeconds -
-                                        duration.inMinutes * 60);
-                              });
-                            },
-                            min: 0,
-                            max: 5,
-                            activeColor: Colors.white,
-                            inactiveColor:
-                            Color.fromARGB(136, 255, 255, 255),
-                            divisions: 5,
-                          )),
+                    SizedBox(height: size.height * 0.05),
+                    Image.asset(
+                      'assets/images/hourglass.png',
+                      height: size.height * 0.3,
                     ),
-                    buildTimeCard(currTimeStr[1], 'MINUTES', size),
-                    hvStarted
-                        ? SizedBox(width: size.width * 0.02)
-                        : SizedBox(
-                      width: size.width * 0.1,
-                      child: RotatedBox(
-                          quarterTurns: 3,
-                          child: Slider(
-                            value: duration.inMinutes.toDouble() -
-                                duration.inHours * 60,
-                            onChanged: (newMinutes) {
-                              setState(() {
-                                duration = Duration(
-                                    hours: duration.inHours,
-                                    minutes: newMinutes.toInt(),
-                                    seconds: duration.inSeconds -
-                                        duration.inMinutes * 60);
-                              });
-                            },
-                            min: 0,
-                            max: 59,
-                            activeColor: Colors.white,
-                            inactiveColor:
-                            Color.fromARGB(136, 255, 255, 255),
-                          )),
+                    widget.hvStarted
+                        ? SizedBox(height: size.height * 0.05)
+                        : Container(),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        buildTimeCard(currTimeStr[0], 'HOURS', size),
+                        widget.hvStarted
+                            ? SizedBox(width: size.width * 0.02)
+                            : SizedBox(
+                                width: size.width * 0.1,
+                                child: RotatedBox(
+                                    quarterTurns: 3,
+                                    child: Slider(
+                                      value: duration.inHours.toDouble(),
+                                      onChanged: (newHour) {
+                                        setState(() {
+                                          duration = Duration(
+                                              hours: newHour.toInt(),
+                                              minutes: duration.inMinutes -
+                                                  duration.inHours * 60,
+                                              seconds: duration.inSeconds -
+                                                  duration.inMinutes * 60);
+                                        });
+                                      },
+                                      min: 0,
+                                      max: 5,
+                                      activeColor: Colors.white,
+                                      inactiveColor:
+                                          Color.fromARGB(136, 255, 255, 255),
+                                      divisions: 5,
+                                    )),
+                              ),
+                        buildTimeCard(currTimeStr[1], 'MINUTES', size),
+                        widget.hvStarted
+                            ? SizedBox(width: size.width * 0.02)
+                            : SizedBox(
+                                width: size.width * 0.1,
+                                child: RotatedBox(
+                                    quarterTurns: 3,
+                                    child: Slider(
+                                      value: duration.inMinutes.toDouble() -
+                                          duration.inHours * 60,
+                                      onChanged: (newMinutes) {
+                                        setState(() {
+                                          duration = Duration(
+                                              hours: duration.inHours,
+                                              minutes: newMinutes.toInt(),
+                                              seconds: duration.inSeconds -
+                                                  duration.inMinutes * 60);
+                                        });
+                                      },
+                                      min: 0,
+                                      max: 59,
+                                      activeColor: Colors.white,
+                                      inactiveColor:
+                                          Color.fromARGB(136, 255, 255, 255),
+                                    )),
+                              ),
+                        buildTimeCard(currTimeStr[2], 'SECONDS', size),
+                        widget.hvStarted
+                            ? SizedBox(width: size.width * 0.02)
+                            : SizedBox(
+                                width: size.width * 0.1,
+                                child: RotatedBox(
+                                    quarterTurns: 3,
+                                    child: Slider(
+                                      value: duration.inSeconds.toDouble() -
+                                          duration.inMinutes * 60,
+                                      onChanged: (newSeconds) {
+                                        setState(() {
+                                          duration = Duration(
+                                              hours: duration.inHours,
+                                              minutes: duration.inMinutes -
+                                                  duration.inHours * 60,
+                                              seconds: newSeconds.toInt());
+                                        });
+                                      },
+                                      min: 0,
+                                      max: 59,
+                                      activeColor: Colors.white,
+                                      inactiveColor:
+                                          Color.fromARGB(136, 255, 255, 255),
+                                    )),
+                              ),
+                      ],
                     ),
-                    buildTimeCard(currTimeStr[2], 'SECONDS', size),
-                    hvStarted
-                        ? SizedBox(width: size.width * 0.02)
-                        : SizedBox(
-                      width: size.width * 0.1,
-                      child: RotatedBox(
-                          quarterTurns: 3,
-                          child: Slider(
-                            value: duration.inSeconds.toDouble() -
-                                duration.inMinutes * 60,
-                            onChanged: (newSeconds) {
-                              setState(() {
-                                duration = Duration(
-                                    hours: duration.inHours,
-                                    minutes: duration.inMinutes -
-                                        duration.inHours * 60,
-                                    seconds: newSeconds.toInt());
-                              });
-                            },
-                            min: 0,
-                            max: 59,
-                            activeColor: Colors.white,
-                            inactiveColor:
-                            Color.fromARGB(136, 255, 255, 255),
-                          )),
-                    ),
+                    _countDownButtons(context),
+                    widget.hvStarted
+                        ? Container()
+                        : Text(
+                            "Must be more than 10 seconds~",
+                            style: TextStyle(
+                                color: Color.fromARGB(255, 255, 255, 255)),
+                          ),
                   ],
                 ),
-                _countDownButtons(context),
-                hvStarted
-                    ? Container()
-                    : Text(
-                  "Must be more than 10 seconds~",
-                  style: TextStyle(
-                      color: Color.fromARGB(255, 255, 255, 255)),
-                ),
               ],
-            ),
-          ],
-        ));
+            ));
   }
 
   _countDownButtons(BuildContext context) {
     return Column(
       children: [
-        hvStarted
+        widget.hvStarted
             ? _startedDisplay(context)
             : duration.inSeconds >= 10
-            ? firebaseButton(context, "Start", () => startTimer(),true)
-            : firebaseButton(context, "Start!", () {},true),
+                ? firebaseButton(context, "Start", () => startTimer(), true)
+                : firebaseButton(context, "Start!", () {}, true),
       ],
     );
   }
@@ -218,24 +224,12 @@ class _CountDownScreenState extends State<CountDownScreen> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           duration.inSeconds != 0
-              ? firebaseButton(
-            context,
-            'Cancel',
-                () {
-              showDialog(
-                  context: context, builder: (_) => _cancelTaskDialog());
-              timer!.cancel();
-            },true
-          )
-              : firebaseButton(
-            context,
-            'Done',
-                () {
-              showDialog(
-                  context: context,
-                  builder: (_) => _completeTaskDialog(context));
-            },true
-          )
+              ? firebaseButton(context, 'Cancel', () {
+                  showDialog(
+                      context: context, builder: (_) => _cancelTaskDialog());
+                  timer!.cancel();
+                }, true)
+              : Container()
         ]);
   }
 
@@ -261,7 +255,6 @@ class _CountDownScreenState extends State<CountDownScreen> {
                     stopTimer(false);
                   });
                   Navigator.pop(context);
-
                 },
                 child: Text("Yes"),
               ),
@@ -271,10 +264,12 @@ class _CountDownScreenState extends State<CountDownScreen> {
   }
 
   _completeTaskDialog(context) {
-
     List totalTime = CountDownHelper().timeString(initialDur.inSeconds);
-    int moneyEarned = int.parse(totalTime[2]) + int.parse(totalTime[1])*60 + int.parse(totalTime[0]) * 60;
-    DatabaseServices().saveFocusTime(moneyEarned, DateFormat('yyyy-MM-dd').format(DateTime.now()), startTime!, endTime!);
+    int moneyEarned = int.parse(totalTime[2]) +
+        int.parse(totalTime[1]) * 60 +
+        int.parse(totalTime[0]) * 60;
+    DatabaseServices().saveFocusTime(moneyEarned,
+        DateFormat('yyyy-MM-dd').format(DateTime.now()), startTime!, endTime!);
     DatabaseServices().addMoney(moneyEarned);
     fishMoney += moneyEarned;
     Size size = MediaQuery.of(context).size;
@@ -284,25 +279,25 @@ class _CountDownScreenState extends State<CountDownScreen> {
 
     return AlertDialog(
       title: const Text("Congrats! You have earned"),
-      content: Wrap(
-          children: [Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset(
-                    'assets/icons/money.png',
-                    height: size.height * 0.035,
-                  ),
-                  SizedBox(width: size.width * 0.02),
-                  Text(
-                    '$moneyEarned',
-                  ),
-                ],
-              )
-            ],
-          ),]
-      ),
+      content: Wrap(children: [
+        Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset(
+                  'assets/icons/money.png',
+                  height: size.height * 0.035,
+                ),
+                SizedBox(width: size.width * 0.02),
+                Text(
+                  '$moneyEarned',
+                ),
+              ],
+            )
+          ],
+        ),
+      ]),
       actions: [
         ElevatedButton(
           onPressed: () {
@@ -322,7 +317,7 @@ class _CountDownScreenState extends State<CountDownScreen> {
     return Column(
       children: [
         Container(
-          width: hvStarted? size.width*0.312 :size.width * 0.225,
+          width: widget.hvStarted ? size.width * 0.312 : size.width * 0.225,
           padding: EdgeInsets.all(size.width * 0.02),
           decoration: BoxDecoration(
             color: Color.fromARGB(172, 255, 255, 255),
@@ -334,7 +329,7 @@ class _CountDownScreenState extends State<CountDownScreen> {
             style: TextStyle(
               fontWeight: FontWeight.bold,
               color: Colors.blue,
-              fontSize: hvStarted ? size.height * 0.09 : size.height * 0.065,
+              fontSize: widget.hvStarted ? size.height * 0.09 : size.height * 0.065,
             ),
           ),
         ),

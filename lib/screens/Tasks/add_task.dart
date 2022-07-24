@@ -38,6 +38,7 @@ class _AddEventPageState extends State<AddEventPage> {
     super.initState();
     isTimeSetted = widget.task?.hasTime ?? false;
     initialTag = widget.task?.tag;
+    _formKey = GlobalKey<FormBuilderState>(); 
     getTags();
   }
 
@@ -79,7 +80,6 @@ class _AddEventPageState extends State<AddEventPage> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    _formKey = GlobalKey<FormBuilderState>(); 
 
     return loading
         ? const Loading()

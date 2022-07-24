@@ -64,11 +64,17 @@ class _HomeScreenState extends State<HomeScreen> {
             resizeToAvoidBottomInset: false,
             extendBodyBehindAppBar: true,
             appBar: _buildAppBar(MediaQuery.of(context).size),
-            drawer: NavigationDrawer(
-              updateHomeScreen: _updateHomeScreen,
-              updateHomeName: _updateHomeName,
-              isCheckList: isCheckList,
-              name: name,
+            drawer: Theme(
+              data: Theme.of(context).copyWith(
+       // Set the transparency here
+       canvasColor: Colors.white.withOpacity(0.8), //or any other color you want. e.g Colors.blue.withOpacity(0.5)
+      ),
+              child: NavigationDrawer(
+                updateHomeScreen: _updateHomeScreen,
+                updateHomeName: _updateHomeName,
+                isCheckList: isCheckList,
+                name: name,
+              ),
             ),
             body: Stack(children: <Widget>[
               Container(
@@ -184,7 +190,7 @@ class NavigationDrawer extends StatelessWidget {
   Widget buildHeader(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Container(
-        color: Colors.blue.shade700,
+        color: Colors.blue.shade700.withOpacity(0.5),
         padding: EdgeInsets.only(
           top: MediaQuery.of(context).padding.top,
         ),
