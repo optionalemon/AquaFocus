@@ -1,4 +1,4 @@
-import 'package:AquaFocus/screens/signin_screen.dart';
+import 'package:AquaFocus/main.dart';
 import 'package:AquaFocus/services/database_services.dart';
 import 'package:AquaFocus/widgets/loading_widget.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -26,9 +26,11 @@ class _LineChartWidgetState extends State<LineChartWidget> {
   void initState() {
     super.initState();
     getDailyHours().then((value) {
-      setState(() {
+      if (mounted) {
+        setState(() {
         loading = false;
       });
+      }
     });
     print("initializing");
   }
@@ -188,9 +190,11 @@ class _LineChartWidgetState extends State<LineChartWidget> {
                         RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20)))),
                 onPressed: () {
-                  setState(() {
+                  if (mounted) {
+                    setState(() {
                     showAvg = !showAvg;
                   });
+                  }
                 },
                 child: Text(
                   'show average',

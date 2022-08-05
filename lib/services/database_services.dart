@@ -4,8 +4,7 @@ import 'package:AquaFocus/screens/FocusTimer/CountDown/countdown_helper.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:AquaFocus/model/app_user.dart';
 import 'package:AquaFocus/model/tags.dart';
-import 'package:AquaFocus/screens/signin_screen.dart';
-import 'package:get/get.dart';
+import 'package:AquaFocus/main.dart';
 import 'package:intl/intl.dart';
 
 class DatabaseServices {

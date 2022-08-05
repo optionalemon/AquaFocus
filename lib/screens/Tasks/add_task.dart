@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:intl/intl.dart';
-import 'package:AquaFocus/screens/signin_screen.dart';
+import 'package:AquaFocus/main.dart';
 import 'package:uuid/uuid.dart';
 
 class AddEventPage extends StatefulWidget {
@@ -38,7 +38,7 @@ class _AddEventPageState extends State<AddEventPage> {
     super.initState();
     isTimeSetted = widget.task?.hasTime ?? false;
     initialTag = widget.task?.tag;
-    _formKey = GlobalKey<FormBuilderState>(); 
+    _formKey = GlobalKey<FormBuilderState>();
     getTags();
   }
 
@@ -354,39 +354,39 @@ class _AddEventPageState extends State<AddEventPage> {
                           ],
                         ),
                         Divider(),
-                        FormBuilderChoiceChip(
-                          name: 'tag',
-                          initialValue: initialTag,
-                          spacing: size.width * 0.01,
-                          backgroundColor: Colors.grey,
-                          selectedColor: Color.fromARGB(54, 255, 255, 255),
-                          decoration: InputDecoration(
-                            labelText: 'Tags',
-                            labelStyle: TextStyle(color: Colors.white),
-                            filled: true,
-                            fillColor: Colors.cyan.withOpacity(0.5),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
-                              borderSide: BorderSide.none,
+                          FormBuilderChoiceChip(
+                            name: 'tag',
+                            initialValue: initialTag,
+                            spacing: size.width * 0.01,
+                            backgroundColor: Colors.grey,
+                            selectedColor: Color.fromARGB(54, 255, 255, 255),
+                            decoration: InputDecoration(
+                              labelText: 'Tags',
+                              labelStyle: TextStyle(color: Colors.white),
+                              filled: true,
+                              fillColor: Colors.cyan.withOpacity(0.5),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15),
+                                borderSide: BorderSide.none,
+                              ),
+                              prefixIcon: Icon(Icons.tag, color: Colors.white),
                             ),
-                            prefixIcon: Icon(Icons.tag, color: Colors.white),
-                          ),
-                          options: getOptions(),
+                            options: getOptions(),
                         ),
                         TextButton(
-                            onPressed: () => newTag(),
-                            child: const Align(
-                              alignment: Alignment.centerRight,
-                              child: Text(
-                                "Add tag",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  decoration: TextDecoration.underline,
-                                ),
+                          onPressed: () => newTag(),
+                          child: const Align(
+                            alignment: Alignment.centerRight,
+                            child: Text(
+                              "Add tag",
+                              style: TextStyle(
+                                color: Colors.white,
+                                decoration: TextDecoration.underline,
                               ),
                             ),
-                            )
-                      ])), 
+                          ),
+                        )
+                      ])),
                   SizedBox(height: MediaQuery.of(context).size.height * 0.02),
                   firebaseButton(context, "Save", () async {
                     bool validated = _formKey.currentState!.validate();
@@ -460,6 +460,7 @@ class _AddEventPageState extends State<AddEventPage> {
             tags.add(newTag);
             setState(() {
               initialTag = newTag.title;
+              _formKey.currentState!.fields['tag']!.didChange(initialTag);
             });
             Navigator.of(context).pop();
           }

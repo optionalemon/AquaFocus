@@ -1,7 +1,6 @@
 import 'dart:collection';
 import 'package:AquaFocus/main.dart';
 import 'package:AquaFocus/model/app_task.dart';
-import 'package:AquaFocus/screens/signin_screen.dart';
 import 'package:AquaFocus/services/database_services.dart';
 import 'package:AquaFocus/services/notification_services.dart';
 import 'package:AquaFocus/services/task_firestore_service.dart';
@@ -50,6 +49,7 @@ _noMoneyTaskDialog(context) {
     ],
   );
   showDialog(
+      barrierDismissible: false,
       context: context,
       builder: (BuildContext context) {
         return alert;
@@ -95,6 +95,7 @@ _completeTaskDialog(int moneyEarned, int fishMoney, BuildContext context,
   );
 
   showDialog(
+      barrierDismissible: false,
       context: context,
       builder: (BuildContext context) {
         return alert;

@@ -1,4 +1,4 @@
-import 'package:AquaFocus/screens/signin_screen.dart';
+import 'package:AquaFocus/main.dart';
 import 'package:AquaFocus/services/database_services.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -78,7 +78,8 @@ class _BarChartWidgetState extends State<BarChartWidget> {
               );
             }),
         touchCallback: (FlTouchEvent event, barTouchResponse) {
-          setState(() {
+          if (mounted) {
+            setState(() {
             if (!event.isInterestedForInteractions ||
                 barTouchResponse == null ||
                 barTouchResponse.spot == null) {
@@ -87,6 +88,7 @@ class _BarChartWidgetState extends State<BarChartWidget> {
             }
             touchedIndex = barTouchResponse.spot!.touchedBarGroupIndex;
           });
+          }
         },
       ),
       titlesData: FlTitlesData(
@@ -238,9 +240,11 @@ class _BarChartWidgetState extends State<BarChartWidget> {
         weekHours[i] = value.roundToDouble();
       });
     }
-    setState(() {
+    if (mounted) {
+      setState(() {
       loading = false;
     });
+    }
   }
 
   BarChartData InitData() {

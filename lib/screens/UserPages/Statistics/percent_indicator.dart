@@ -24,9 +24,11 @@ class _PercentIndicatorWidgetState extends State<PercentIndicatorWidget> {
   Future<void> setPercent() async {
     double percent = await DatabaseServices().getPercentageCompleted();
     percentCompleted = percent;
-    setState(() {
+    if (mounted) {
+      setState(() {
       loading = false;
     });
+    }
   }
 
   @override

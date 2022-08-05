@@ -73,6 +73,7 @@ class _CountDownScreenState extends State<CountDownScreen> {
       if (duration.inSeconds == 0 && widget.hvStarted) {
         notifyHelper.showNotification();
         showDialog(
+          barrierDismissible: false,
             context: context, builder: (_) => _completeTaskDialog(context));
         timer!.cancel();
       } else {
@@ -226,6 +227,7 @@ class _CountDownScreenState extends State<CountDownScreen> {
           duration.inSeconds != 0
               ? firebaseButton(context, 'Cancel', () {
                   showDialog(
+                    barrierDismissible: false,
                       context: context, builder: (_) => _cancelTaskDialog());
                   timer!.cancel();
                 }, true)

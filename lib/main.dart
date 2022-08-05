@@ -1,6 +1,8 @@
+import 'package:AquaFocus/screens/home_screen.dart';
 import 'package:AquaFocus/services/notification_services.dart';
 import 'package:AquaFocus/widgets/loading.dart';
 import 'package:AquaFocus/screens/Onboarding/Onboarding.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter/material.dart';
@@ -12,11 +14,13 @@ import 'package:flutter/services.dart';
 
 int? initScreen;
 NotifyHelper notifyHelper = NotifyHelper();
-
+final FirebaseAuth auth = FirebaseAuth.instance;
+User? user;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SharedPreferences preferences = await SharedPreferences.getInstance();
+
   initScreen = preferences.getInt('initScreen');
   await preferences.setInt('initScreen', 1);
   notifyHelper.initializeNotification();
@@ -29,7 +33,7 @@ void main() async {
 }
 
 class MyApp extends StatefulWidget {
-  const MyApp({Key? key}) : super(key: key);
+  MyApp({Key? key}) : super(key: key);
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -41,7 +45,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations(
-      [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+        [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
     return FutureBuilder(
         future: Firebase.initializeApp(),
         builder: (context, snapshot) {
@@ -67,19 +71,19 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
               GlobalWidgetsLocalizations.delegate,
               FormBuilderLocalizations.delegate,
             ],
-            initialRoute:
-                initScreen == 0 || initScreen == null ? 'onboard' : 'home',
+            initialRoute: initScreen == 0 || initScreen == null
+                ? 'onboard'
+                : (user?.uid == null ? 'login' : 'home'),
             routes: {
-              'home': (context) => SignInScreen(),
+              'login': (context) => const SignInScreen(),
               'onboard': (context) => Onboarding(),
-              
+              'home': (context) => HomeScreen(),
             },
             title: 'Aquafocus',
             theme: ThemeData(
               fontFamily: 'Alata',
               primarySwatch: Colors.blue,
             ),
-            //home:SignInScreen(),
           );
         });
   }
@@ -87,6 +91,9 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+    auth
+        .userChanges()
+        .listen((event) => mounted ? setState(() => user = event) : null);
     WidgetsBinding.instance.addObserver(this);
   }
 

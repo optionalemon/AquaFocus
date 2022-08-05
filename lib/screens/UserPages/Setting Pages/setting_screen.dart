@@ -1,6 +1,6 @@
 import 'package:AquaFocus/model/app_task.dart';
 import 'package:AquaFocus/screens/Tasks/task_utils.dart';
-import 'package:AquaFocus/screens/signin_screen.dart';
+import 'package:AquaFocus/main.dart';
 import 'package:AquaFocus/services/notification_services.dart';
 import 'package:AquaFocus/services/task_firestore_service.dart';
 import 'package:AquaFocus/widgets/loading.dart';
