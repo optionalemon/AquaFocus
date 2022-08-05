@@ -160,6 +160,7 @@ class _CountUpScreenState extends State<CountUpScreen> {
           firebaseButton(context, duration.inSeconds >= 10 ? 'Done' : 'Cancel',
               () {
             showDialog(
+                barrierDismissible: false,
                 context: context,
                 builder: (_) => duration.inSeconds >= 10
                     ? _completeTaskDialog()

@@ -66,9 +66,10 @@ class _HomeScreenState extends State<HomeScreen> {
             appBar: _buildAppBar(MediaQuery.of(context).size),
             drawer: Theme(
               data: Theme.of(context).copyWith(
-       // Set the transparency here
-       canvasColor: Colors.white.withOpacity(0.8), //or any other color you want. e.g Colors.blue.withOpacity(0.5)
-      ),
+                // Set the transparency here
+                canvasColor: Colors.white.withOpacity(
+                    0.8), //or any other color you want. e.g Colors.blue.withOpacity(0.5)
+              ),
               child: NavigationDrawer(
                 updateHomeScreen: _updateHomeScreen,
                 updateHomeName: _updateHomeName,
@@ -271,7 +272,7 @@ class NavigationDrawer extends StatelessWidget {
               title: AutoSizeText(
                 "Statistics",
                 maxLines: 1,
-                 minFontSize: 9,
+                minFontSize: 9,
                 style:
                     TextStyle(fontSize: size.height * 0.02, color: Colors.blue),
               ),
@@ -290,7 +291,7 @@ class NavigationDrawer extends StatelessWidget {
               title: AutoSizeText(
                 "Settings",
                 maxLines: 1,
-                 minFontSize: 9,
+                minFontSize: 9,
                 style: TextStyle(fontSize: size.height * 0.02),
               ),
               onTap: () {
@@ -306,7 +307,7 @@ class NavigationDrawer extends StatelessWidget {
               ),
               title: AutoSizeText(
                 "Log out",
-                 minFontSize: 9,
+                minFontSize: 9,
                 maxLines: 1,
                 style: TextStyle(fontSize: size.height * 0.02),
               ),
@@ -329,7 +330,7 @@ showAlertDialog(BuildContext context) {
   );
   Widget continueButton = TextButton(
     child: const Text("Continue"),
-    onPressed: () {
+    onPressed: () async {
       Navigator.of(context).pop();
       FirebaseServices().signOut();
       Navigator.of(context).pushReplacement(
