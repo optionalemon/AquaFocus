@@ -4,6 +4,8 @@ Hi! Nice to _SEA_ you here!
 
 Before we start, we would like to present the most detailed description of our project [here](https://docs.google.com/document/d/1eNHYBqamws3Gacb9IJL2wLgzgsRpAp0O7vDygghbgLY/edit)!
 
+And here is our apk: https://drive.google.com/file/d/1TRnaoLxvxcPqPthz2bcDwPwa7JZt32C8/view?usp=sharing
+
 ## Description
 
 ### Aim
